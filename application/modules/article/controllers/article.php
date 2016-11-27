@@ -46,7 +46,7 @@ class Article extends MX_Controller
         $this->output
          ->set_status_header(200)
          ->set_content_type('application/json', 'utf-8')
-         ->set_output(json_encode($output, JSON_PRETTY_PRINT))
+         ->set_output(json_encode($output, 128))
          ->_display();
          exit;  
         }
@@ -58,10 +58,7 @@ class Article extends MX_Controller
 
         $data['title'] = $this->properti['name'].' | Administrator  '.ucwords('Article Manager');
         $data['h2title'] = 'Article Manager';
-
         $data['main_view'] = 'article_view';
-
-        $data['main_view'] = 'Article_view';
 
 	$data['form_action'] = site_url($this->title.'/add_process');
         $data['form_action_update'] = site_url($this->title.'/update_process');

@@ -73,7 +73,7 @@ class Login extends MX_Controller {
         $this->output
         ->set_status_header(201)
         ->set_content_type('application/json', 'utf-8')
-        ->set_output(json_encode($response, JSON_PRETTY_PRINT))
+        ->set_output(json_encode($response, 128))
         ->_display();
         exit;
 
