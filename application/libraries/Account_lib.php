@@ -22,6 +22,18 @@ class Account_lib extends Main_Model {
         foreach($val as $row){ $data['options'][$row->id] = ucfirst($row->name); }
         return $data;
     }
+    
+    function combo_child()
+    {
+        $this->db->select($this->field);
+        $this->db->where('deleted', NULL);
+        $this->db->where('publish',1);
+        $this->db->where('parent_id >',0);
+        $this->db->order_by('name', 'asc');
+        $val = $this->db->get($this->tableName)->result();
+        foreach($val as $row){ $data['options'][$row->id] = ucfirst($row->code.' : '.$row->name); }
+        return $data;
+    }
 
     function combo_all()
     {
@@ -53,13 +65,12 @@ class Account_lib extends Main_Model {
     {
         if ($id)
         {
-            $this->db->select($this->field);
+            $this->db->select('name');
             $this->db->where('id', $id);
             $val = $this->db->get($this->tableName)->row();
-            if ($val){ return $val->name; }
+            if ($val){ return ucfirst($val->name); }
         }
-        else if($id == 0){ return 'Top'; }
-        else { return ''; }
+        return '';
     }
     
     function get_category($id=null)
@@ -129,6 +140,20 @@ class Account_lib extends Main_Model {
         case 523:$res = strtoupper('Belanja Modal');break;
        } 
        return $res;
+    }
+    
+    function get_type($id)
+    {
+        if ($id)
+        {
+            $this->db->select($this->field);
+            $this->db->where('id', $id);
+            $val = $this->db->get($this->tableName)->row();
+            if ($val){
+                return $this->top_category($val->category, 1);
+            }
+        }
+        else { return '0'; } 
     }
     
     function combo_belanja($type=0)

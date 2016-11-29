@@ -37,13 +37,6 @@
 		        echo form_dropdown('cparent', $parent_update, isset($default['parent']) ? $default['parent'] : '', $js); ?>
        </div>
     </div>
-     
-     <div class="form-group">
-      <label for="middle-name" class="control-label col-md-3 col-sm-3 col-xs-12"> Urutan </label>
-      <div class="col-md-2 col-sm-2 col-xs-12">
-        <input id="torder_update" class="form-control col-md-7 col-xs-12" type="number" name="torder" required placeholder="Order">
-      </div>
-    </div>
     
     <div class="form-group">
       <label for="middle-name" class="control-label col-md-3 col-sm-3 col-xs-12"> Keterangan </label>

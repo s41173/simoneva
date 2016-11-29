@@ -18,7 +18,9 @@
 	var sites_del  = "<?php echo site_url('dppa/delete/');?>";
 	var sites_get  = "<?php echo site_url('dppa/update/');?>";
     var sites_dppa = "<?php echo site_url('acategory/get_dppa/');?>";
-   var sites_primary  = "<?php echo site_url('dppa/publish/');?>";
+    var sites_balance = "<?php echo site_url('balance/get_dppa/');?>";
+    var sites_transaction = "<?php echo site_url('transaction/get_dppa/');?>";
+    var sites_primary  = "<?php echo site_url('dppa/publish/');?>";
 	var source = "<?php echo $source;?>";
 	
 </script>

@@ -70,13 +70,13 @@
     
       <!-- Modal - Add Form -->
       <div class="modal fade" id="myModal" role="dialog">
-         <?php $this->load->view('acategory_form'); ?>      
+         <?php $this->load->view('account_form'); ?>      
       </div>
       <!-- Modal - Add Form -->
       
       <!-- Modal Edit Form -->
       <div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-	     <?php $this->load->view('acategory_update'); ?> 
+	     <?php $this->load->view('account_update'); ?> 
       </div>
       <!-- Modal Edit Form -->
       
@@ -86,7 +86,7 @@
       </div>
       <!-- Modal - Report Form -->
       
-       <script src="<?php echo base_url(); ?>js/icheck/icheck.min.js"></script>
+      <script src="<?php echo base_url(); ?>js/icheck/icheck.min.js"></script>
       
        <!-- Datatables JS -->
         <script src="<?php echo base_url(); ?>js/datatables/jquery.dataTables.min.js"></script>

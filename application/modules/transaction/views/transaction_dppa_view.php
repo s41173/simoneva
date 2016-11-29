@@ -8,17 +8,18 @@
 <link href="<?php echo base_url(); ?>js/datatables/dataTables.tableTools.css" rel="stylesheet" type="text/css" />
 <link href="<?php echo base_url(); ?>css/icheck/flat/green.css" rel="stylesheet" type="text/css">
 
-<script src="<?php echo base_url(); ?>js/moduljs/acategory.js"></script>
+<script src="<?php echo base_url(); ?>js/moduljs/transaction.js"></script>
 <script src="<?php echo base_url(); ?>js-old/register.js"></script>
 
 <script type="text/javascript">
 
-	var sites_add  = "<?php echo site_url('acategory/add_process/');?>";
-	var sites_edit = "<?php echo site_url('acategory/update_process/');?>";
-	var sites_del  = "<?php echo site_url('acategory/delete/');?>";
-	var sites_get  = "<?php echo site_url('acategory/update/');?>";
-	var sites_primary  = "<?php echo site_url('acategory/publish/');?>";
+	var sites_add  = "<?php echo site_url('balance/add_process/');?>";
+	var sites_edit = "<?php echo site_url('balance/update_process/');?>";
+	var sites_del  = "<?php echo site_url('balance/delete/');?>";
+	var sites_get  = "<?php echo site_url('balance/update/');?>";
+	var sites_primary  = "<?php echo site_url('balance/publish/');?>";
 	var source = "<?php echo $source;?>";
+    var type = 'dppa';
 	
 </script>
 
@@ -56,9 +57,8 @@
           </form>       
              </div>
 
-               <!-- Trigger the modal with a button --> 
- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal"> <i class="fa fa-plus"></i>&nbsp;Add New </button>
-               <!--<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal3"> Report  </button>-->
+              <!-- Trigger the modal with a button --> 
+              <!--<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal3"> Report  </button>-->
                
                <!-- links -->
 	           <?php if (!empty($link)){foreach($link as $links){echo $links . '';}} ?>
@@ -70,13 +70,19 @@
     
       <!-- Modal - Add Form -->
       <div class="modal fade" id="myModal" role="dialog">
-         <?php $this->load->view('acategory_form'); ?>      
+         <?php //$this->load->view('balance_priority_form'); ?>      
+      </div>
+      <!-- Modal - Add Form -->
+              
+      <!-- Modal - Add Form -->
+      <div class="modal fade" id="myModal4" role="dialog">
+         <?php //$this->load->view('balance_form'); ?>      
       </div>
       <!-- Modal - Add Form -->
       
       <!-- Modal Edit Form -->
       <div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-	     <?php $this->load->view('acategory_update'); ?> 
+	     <?php //$this->load->view('balance_update'); ?> 
       </div>
       <!-- Modal Edit Form -->
       

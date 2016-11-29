@@ -192,7 +192,7 @@ $(document).ready(function (e) {
 	}));
 	
 	// ajax form non upload data
-	$("#upload_form_non,#edit_form_non").on('submit',(function(e) {
+	$("#upload_form_non,#upload_form_non1,#edit_form_non").on('submit',(function(e) {
 		
 		var elem = $(this);
 		e.preventDefault();
@@ -215,7 +215,7 @@ $(document).ready(function (e) {
 				{
 					// invalid file format.
 					error_mess(1,res[1]);
-					if (elem.attr('id') == "upload_form_non"){ resets(); }
+					if (elem.attr('id') == "upload_form_non" || elem.attr('id') == "upload_form_non1"){ resets(); }
 				}
 				else if(res[0] == 'warning'){ error_mess(2,res[1]); }
 				else if(res[0] == 'error'){ error_mess(3,res[1]); }

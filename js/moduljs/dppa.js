@@ -78,13 +78,37 @@ $(document).ready(function (e) {
 		return false;	
 	});
 	
-	// fungsi jquery update
+	// fungsi dppa category
 	$(document).on('click','.text-dppa',function(e)
 	{	
 		e.preventDefault();
 		var element = $(this);
 		var del_id = element.attr("id");
 		var url = sites_dppa +"/"+ del_id;
+		
+		window.location.href = url;
+		
+	});
+	
+	// fungsi dppa money
+	$(document).on('click','.text-money',function(e)
+	{	
+		e.preventDefault();
+		var element = $(this);
+		var del_id = element.attr("id");
+		var url = sites_balance +"/"+ del_id;
+		
+		window.location.href = url;
+		
+	});
+	
+	// fungsi dppa money
+	$(document).on('click','.text-transaction',function(e)
+	{	
+		e.preventDefault();
+		var element = $(this);
+		var del_id = element.attr("id");
+		var url = sites_transaction +"/"+ del_id;
 		
 		window.location.href = url;
 		
@@ -136,7 +160,9 @@ $(document).ready(function (e) {
 										s[i][5],
 										s[i][6],
 '<a href="" class="'+stts+' btn-xs primary_status" id="' +s[i][0]+ '" title="Primary Status"> <i class="fa fa-wrench"> </i> </a> '+
-'<a href="" class="text-dppa" id="' +s[i][0]+ '" title="Category Status"> <i class="fa fa-cogs"> </i> </a> &nbsp; '+
+'<a href="" class="btn btn-primary btn-xs text-dppa" id="' +s[i][0]+ '" title="Category Status"> <i class="fa fa-cogs"> </i> </a>'+
+'<a href="" class="btn btn-warning btn-xs text-money" id="' +s[i][0]+ '" title="Balance Status"> <i class="fa fa-money"> </i> </a> '+
+'<a href="" class="btn btn-info btn-xs text-transaction" id="' +s[i][0]+ '" title="Transaction Status"> <i class="fa fa-calculator"> </i> </a> '+
 '<a href="" class="text-primary" id="' +s[i][0]+ '" title=""> <i class="fa fas-2x fa-edit"> </i> </a> <a href="#" class="text-danger" id="'+s[i][0]+'" title="delete"> <i class="fa fas-2x fa-trash"> </i> </a>'
 											   ]);										
 											} // End For

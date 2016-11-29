@@ -19,7 +19,7 @@ $(document).ready(function (e) {
 		e.preventDefault();
 		var element = $(this);
 		var del_id = element.attr("id");
-		var url = sites_get +"/"+ del_id;
+		var url = sites_get +"/"+ del_id+"/update";
 		$(".error").fadeOut();
 		
 		$("#myModal2").modal('show');
@@ -32,6 +32,8 @@ $(document).ready(function (e) {
 			success: function(result) {
 				
 				res = result.split("|");
+				// $field = array($acategory->id, $acategory->parent_id, $acategory->code, $acategory->name, $acategory->description, 
+                       // $acategory->orders);
 				
 				resets();
 				$("#tid_update").val(res[0]);
@@ -39,6 +41,7 @@ $(document).ready(function (e) {
 				$("#tcode_update").val(res[2]);
 				$("#tname_update").val(res[3]);
 				$("#tdesc_update").val(res[4]);
+				$("#torder_update").val(res[5]);
 			}
 		})
 		return false;	
@@ -82,7 +85,7 @@ $(document).ready(function (e) {
     {
 	  $(document).ready(function (e) {
 		  
-		 $("#tname_update,#tdesc_update,#cparent_update,#tcode_update").val("");
+		 $("#tname,#tcode,#cparent,#cparent,#torder,#ctype,#tdesc").val("");
 	  });
     }
 
@@ -114,6 +117,7 @@ $(document).ready(function (e) {
 										s[i][5],
 										s[i][2],
 										s[i][1],
+										s[i][7],
 										s[i][3],
 										s[i][4],
 '<a href="" class="text-primary" id="' +s[i][0]+ '" title=""> <i class="fa fas-2x fa-edit"> </i> </a> <a href="#" class="text-danger" id="'+s[i][0]+'" title="delete"> <i class="fa fas-2x fa-trash"> </i> </a>'

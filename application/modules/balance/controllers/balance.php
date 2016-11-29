@@ -1,38 +1,45 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-class Acategory extends MX_Controller
+class Balance extends MX_Controller
 {
     function __construct()
     {
         parent::__construct();
         
-        $this->load->model('Acategory_model', '', TRUE);
+        $this->load->model('Balance_model', '', TRUE);
 
         $this->properti = $this->property->get();
         $this->acl->otentikasi();
 
         $this->modul = $this->components->get(strtolower(get_class($this)));
         $this->title = strtolower(get_class($this));
-        $this->acategory = new Acategory_lib();
+        $this->balance = new Balance_lib();
         $this->dppa = new Dppa_lib();
+        $this->account = new Account_lib();
+        $this->category = new Acategory_lib();
     }
 
-    private $properti, $modul, $title, $acategory, $dppa;
+    private $properti, $modul, $title, $balance, $dppa, $account,$category;
 
     function index()
     {
        $this->get_last(); 
     }
     
-    public function getdatatable($search=null)
+    public function getdatatable($search=null,$dppa=null,$cat='null',$type='null',$year='null')
     {
-        if(!$search){ $result = $this->Acategory_model->get_last($this->modul['limit'])->result(); }
+        if(!$search){ $result = $this->Balance_model->get_last($this->modul['limit'])->result(); }
+        else { $result = $this->Balance_model->search($dppa,$cat,$type,$year)->result(); }
         
         if ($result){
 	foreach($result as $res)
 	{
-	   $output[] = array ($res->id, $this->acategory->get_name($res->parent_id), $this->acategory->type($res->type), $res->code, $res->name, $this->dppa->get_name($res->dppa_id),
-                              $res->description, $res->orders, $res->created, $res->updated, $res->deleted);
+	   $output[] = array ($res->id, $this->category->type($res->type), 
+                              $this->account->get_name($res->account_id),
+                              $this->category->get_name($res->category_id), 
+                              strtoupper($this->dppa->get_name($res->dppa_id)), $res->priority,
+                              $res->source, idr_format($res->amount), $res->year,
+                              $res->created, $res->updated, $res->deleted);
 	}
             $this->output
             ->set_status_header(200)
@@ -45,13 +52,17 @@ class Acategory extends MX_Controller
     
     public function getdatatable_dppa($dppa)
     {
-        $result = $this->Acategory_model->get_last_dppa($dppa)->result(); 
+        $result = $this->Balance_model->get_last_dppa($dppa)->result(); 
         
         if ($result){
 	foreach($result as $res)
 	{
-	   $output[] = array ($res->id, ucfirst($this->acategory->get_name($res->parent_id)), $this->acategory->type($res->type), $res->code, ucfirst($res->name), ucfirst($this->dppa->get_name($res->dppa_id)),
-                              $res->description, $res->orders, $res->created, $res->updated, $res->deleted);
+	   $output[] = array ($res->id, $this->category->type($res->type), 
+                              $this->account->get_name($res->account_id),
+                              $this->category->get_name($res->category_id), 
+                              strtoupper($this->dppa->get_name($res->dppa_id)), $res->priority,
+                              $res->source, idr_format($res->amount), $res->year,
+                              $res->created, $res->updated, $res->deleted);
 	}
             $this->output
             ->set_status_header(200)
@@ -69,7 +80,7 @@ class Acategory extends MX_Controller
 
         $data['title'] = $this->properti['name'].' | Administrator  '.ucwords($this->modul['title']);
         $data['h2title'] = $this->modul['title'].' : '.ucfirst($this->dppa->get_name($dppa));
-        $data['main_view'] = 'acategory_dppa_view';
+        $data['main_view'] = 'balance_dppa_view';
 	$data['form_action'] = site_url($this->title.'/add_process/'.$dppa);
         $data['form_action_update'] = site_url($this->title.'/update_process/'.$dppa);
         $data['form_action_del'] = site_url($this->title.'/delete_all');
@@ -77,8 +88,8 @@ class Acategory extends MX_Controller
         $this->session->set_userdata('dppa',$dppa);
 	// ---------------------------------------- //
         
-        $data['parent'] = $this->acategory->combo_dppa($dppa);
-        $data['parent_update'] = $this->acategory->combo_update($dppa,$this->session->userdata('langid'));
+        $data['account'] = $this->account->combo_child();
+        $data['category'] = $this->category->combo_child_based_dppa($this->session->userdata('dppa'));
  
         $config['first_tag_open'] = $config['last_tag_open']= $config['next_tag_open']= $config['prev_tag_open'] = $config['num_tag_open'] = '<li>';
         $config['first_tag_close'] = $config['last_tag_close']= $config['next_tag_close']= $config['prev_tag_close'] = $config['num_tag_close'] = '</li>';
@@ -93,10 +104,10 @@ class Acategory extends MX_Controller
         $this->table->set_empty("&nbsp;");
 
         //Set heading untuk table
-        $this->table->set_heading('#','No', 'DPPA', 'Jenis', 'Parent', 'Urutan', 'Code', 'Nama', 'Action');
+        $this->table->set_heading('#','No', 'DPPA', 'Jenis', 'Rekening', 'Sumber', 'Nilai', 'Periode', 'Action');
 
         $data['table'] = $this->table->generate();
-        $data['source'] = site_url('acategory/getdatatable_dppa/'.$dppa);
+        $data['source'] = site_url('balance/getdatatable_dppa/'.$dppa);
             
         // Load absen view dengan melewatkan var $data sbgai parameter
 	$this->load->view('template', $data);
@@ -108,15 +119,16 @@ class Acategory extends MX_Controller
 
         $data['title'] = $this->properti['name'].' | Administrator  '.ucwords($this->modul['title']);
         $data['h2title'] = $this->modul['title'];
-        $data['main_view'] = 'acategory_view';
+        $data['main_view'] = 'balance_view';
 	$data['form_action'] = site_url($this->title.'/add_process');
         $data['form_action_update'] = site_url($this->title.'/update_process');
         $data['form_action_del'] = site_url($this->title.'/delete_all');
         $data['link'] = array('link_back' => anchor('main/','Back', array('class' => 'btn btn-danger')));
 	// ---------------------------------------- //
         
-        $data['parent'] = $this->acategory->combo();
-        $data['parent_update'] = $this->acategory->combo_update($this->session->userdata('langid'));
+        $data['account'] = $this->account->combo_child();
+        $data['category'] = $this->category->combo_child();
+        $data['dppa'] = $this->dppa->combo_child();
  
         $config['first_tag_open'] = $config['last_tag_open']= $config['next_tag_open']= $config['prev_tag_open'] = $config['num_tag_open'] = '<li>';
         $config['first_tag_close'] = $config['last_tag_close']= $config['next_tag_close']= $config['prev_tag_close'] = $config['num_tag_close'] = '</li>';
@@ -131,10 +143,10 @@ class Acategory extends MX_Controller
         $this->table->set_empty("&nbsp;");
 
         //Set heading untuk table
-        $this->table->set_heading('#','No', 'DPPA', 'Jenis', 'Parent', 'Urutan', 'Code', 'Nama', 'Action');
+        $this->table->set_heading('#','No', 'DPPA', 'Jenis', 'Parent', 'Urutan', 'Code', 'Nama');
 
         $data['table'] = $this->table->generate();
-        $data['source'] = site_url('acategory/getdatatable');
+        $data['source'] = site_url('balance/getdatatable');
             
         // Load absen view dengan melewatkan var $data sbgai parameter
 	$this->load->view('template', $data);
@@ -143,9 +155,9 @@ class Acategory extends MX_Controller
     function publish($uid = null)
     {
        if ($this->acl->otentikasi2($this->title,'ajax') == TRUE){ 
-       $val = $this->Acategory_model->get_by_id($uid)->row();
+       $val = $this->Balance_model->get_by_id($uid)->row();
        if ($val->publish == 0){ $lng = array('publish' => 1); }else { $lng = array('publish' => 0); }
-       $this->Acategory_model->update($uid,$lng);
+       $this->Balance_model->update($uid,$lng);
        echo 'true|Status Changed...!';
        }else{ echo "error|Sorry, you do not have the right to change publish status..!"; }
     }
@@ -165,7 +177,7 @@ class Acategory extends MX_Controller
         {
            if ( $this->cek_relation($cek[$i]) == TRUE ) 
            {
-              $this->Acategory_model->delete($cek[$i]); 
+              $this->Balance_model->force_delete($cek[$i]); 
            }
            else { $x=$x+1; }
            
@@ -183,20 +195,20 @@ class Acategory extends MX_Controller
       }else { echo "error|Sorry, you do not have the right to edit $this->title component..!"; }
     }
 
-    function delete($uid,$type='soft')
+    function delete($uid,$type='hard')
     {
         if ($this->acl->otentikasi_admin($this->title,'ajax') == TRUE){
         if ($type == 'soft'){
-           $this->Acategory_model->delete($uid);
+           $this->Balance_model->delete($uid);
            $this->session->set_flashdata('message', "1 $this->title successfully removed..!");
            
-           echo "true|1 $this->title successfully soft removed..!";
+           echo "true|1 $this->title successfully removed..!";
        }
        else
        {
         if ( $this->cek_relation($uid) == TRUE )
         {
-           $this->Acategory_model->force_delete($uid);
+           $this->Balance_model->force_delete($uid);
            $this->session->set_flashdata('message', "1 $this->title successfully removed..!");
            
            echo "true|1 $this->title successfully removed..!";
@@ -215,41 +227,53 @@ class Acategory extends MX_Controller
 
         $data['title'] = $this->properti['name'].' | Administrator  '.ucwords($this->modul['title']);
         $data['h2title'] = $this->modul['title'];
-        $data['main_view'] = 'acategory_view';
 	$data['form_action'] = site_url($this->title.'/add_process');
-	$data['link'] = array('link_back' => anchor('acategory/','<span>back</span>', array('class' => 'back')));
+	$data['link'] = array('link_back' => anchor('balance/','<span>back</span>', array('class' => 'back')));
 
-	// Form validation
-        $this->form_validation->set_rules('tcode', 'Kode Rekening', 'required|callback_valid_code');
-        $this->form_validation->set_rules('tname', 'Nama Rekening', 'required|callback_valid_acategory');
-        $this->form_validation->set_rules('tdesc', 'Keterangan', '');
-        $this->form_validation->set_rules('cparent', 'Parent', 'numeric');
-        $this->form_validation->set_rules('torder', 'Order', 'numeric|required');
-        $this->form_validation->set_rules('ctype', 'Jenis Kategory', 'callback_valid_type['.$this->input->post('cparent').']');
-
+	// Form validation 
         
-//        protected $field = array('id', 'parent_id', 'type', 'code', 'name', 'dppa_id', 'description', 'created', 'updated', 'deleted');
-        
-        if ($this->form_validation->run($this) == TRUE)
+        if ($this->input->post('type')=='priority')
         {
-            if ($this->input->post('cparent')=='0'){ $type = $this->input->post('ctype'); }
-            else{ $type = $this->acategory->get_type($this->input->post('cparent')); }
-            
-            $acategory = array('name' => strtolower($this->input->post('tname')),
-                             'code' => strtolower($this->input->post('tcode')),
-                             'parent_id' => $this->input->post('cparent'),
-                             'type' => $type,
-                             'dppa_id' => $dppa,
-                             'orders' => $this->input->post('torder'),
-                             'description' => $this->input->post('tdesc'),
-                             'created' => date('Y-m-d H:i:s'));
-
-            $this->Acategory_model->add($acategory);
-//            $this->session->set_flashdata('message', "One $this->title data successfully saved!");
-            
-            echo 'true|Data successfully saved..!';
+           $this->form_validation->set_rules('csource', 'Sumber Anggaran', 'required'); 
+           $this->form_validation->set_rules('tamount', 'Nilai Anggaran', 'required|numeric|callback_valid_child_balance'); 
+           $this->form_validation->set_rules('tyear', 'Tahun Anggaran', 'required|numeric|callback_valid_priority'); 
+           
+           if ($this->form_validation->run($this) == TRUE)
+           {
+                $balance = array('source' => $this->input->post('csource'),
+                                 'dppa_id' => $dppa,
+                                 'priority' => 1,
+                                 'amount' => $this->input->post('tamount'),
+                                 'year' => $this->input->post('tyear'),
+                                 'created' => date('Y-m-d H:i:s'));
+                $this->Balance_model->add($balance);
+                echo 'true|Data successfully saved..!';
+           }
+           else { echo 'error|'.validation_errors();  }
         }
-        else{ echo 'error|'.validation_errors(); }
+        else
+        {
+            $this->form_validation->set_rules('caccount', 'Rekening', 'required|callback_valid_balance['.$this->input->post('tyear').']'); 
+            $this->form_validation->set_rules('ccategory', 'Jenis Program', 'required'); 
+            $this->form_validation->set_rules('tamount', 'Nilai Anggaran', 'required|numeric|callback_valid_amount_balance'); 
+            $this->form_validation->set_rules('tyear', 'Tahun Anggaran', 'required|numeric'); 
+
+            if ($this->form_validation->run($this) == TRUE)
+            {
+                 $balance = array('account_id' => $this->input->post('caccount'),
+                                  'category_id' => $this->input->post('ccategory'),
+                                  'type' => $this->account->get_type($this->input->post('caccount')),
+                                  'amount' => $this->input->post('tamount'),
+                                  'year' => $this->input->post('tyear'),
+                                  'dppa_id' => $dppa,
+                                  'priority' => 0,
+                                  'created' => date('Y-m-d H:i:s'));
+                 $this->Balance_model->add($balance);
+                 echo 'true|Data successfully saved..!';
+            }
+            else { echo 'error|'.validation_errors();  }
+        }
+        
         }else { echo "error|Sorry, you do not have the right to edit $this->title component..!"; }
 
     }
@@ -257,21 +281,22 @@ class Acategory extends MX_Controller
     // Fungsi update untuk menset texfield dengan nilai dari database
     function update($uid=null,$type='get')
     {        
-        $acategory = $this->Acategory_model->get_by_id($uid)->row();
+        $balance = $this->Balance_model->get_by_id($uid)->row();
         if ($type=='update'){
             $this->session->unset_userdata('langid');
-	    $this->session->set_userdata('langid', $acategory->id);    
+	    $this->session->set_userdata('langid', $balance->id);    
         }
         
-        $field = array($acategory->id, $acategory->parent_id, $acategory->code, $acategory->name, $acategory->description, 
-                       $acategory->orders);
+        $field = array($balance->id, $balance->type, $balance->account_id, $balance->category_id, $balance->dppa_id, 
+                       $balance->priority, $balance->source, $balance->amount, $balance->month, $balance->year);
+        
         echo implode('|', $field);
     }
     
     
     public function valid_code($code)
     {
-        if ($this->Acategory_model->valid('code',$code) == FALSE)
+        if ($this->Balance_model->valid('code',$code) == FALSE)
         {
             $this->form_validation->set_message('valid_code', "This $this->title code is already registered.!");
             return FALSE;
@@ -282,7 +307,7 @@ class Acategory extends MX_Controller
     function validation_code($name)
     {
 	$id = $this->session->userdata('langid');
-	if ($this->Acategory_model->validating('code',$name,$id) == FALSE)
+	if ($this->Balance_model->validating('code',$name,$id) == FALSE)
         {
             $this->form_validation->set_message('validation_code', 'This '.$this->title.' code is already registered!');
             return FALSE;
@@ -297,23 +322,57 @@ class Acategory extends MX_Controller
         }
         else { return TRUE; }
     }
-
-    public function valid_acategory($name)
+    
+    public function valid_priority($year)
     {
-        if ($this->Acategory_model->valid('name',$name) == FALSE)
+        if ($this->Balance_model->valid('year',$year) == FALSE)
         {
-            $this->form_validation->set_message('valid_acategory', "This $this->title is already registered.!");
+            $this->form_validation->set_message('valid_priority', "This $this->title priority balance is already registered.!");
+            return FALSE;
+        }
+        else{ return TRUE; } 
+    }
+    
+    public function valid_amount_balance($amount)
+    {
+        $priority_balance = $this->Balance_model->total_priority($this->input->post('tyear'));
+        $child_balance = $this->Balance_model->total_child($this->input->post('tyear'));
+        
+        if ($amount+$child_balance > $priority_balance){ 
+           $this->form_validation->set_message('valid_amount_balance', "Invalid Child Balance..!");
+           return FALSE; 
+        }
+        else{ return TRUE; }
+    }
+    
+    // validasi add priority balance tidak boleh < child balance
+    public function valid_child_balance($amount)
+    {
+        $p_balance = $this->Balance_model->total_child($this->input->post('tyear'));
+        if ($p_balance > $amount){ 
+           $this->form_validation->set_message('valid_child_balance', "Invalid Balance..!");
+           return FALSE; 
+        }
+        else{ return TRUE; }
+    }
+    
+
+    public function valid_balance($account,$year)
+    {
+        if ($this->Balance_model->valid_balance($account,$year) == FALSE)
+        {
+            $this->form_validation->set_message('valid_balance', "This account $this->title is already registered.!");
             return FALSE;
         }
         else{ return TRUE; }
     }
 
-    function validation_acategory($name)
+    function validation_balance($name)
     {
 	$id = $this->session->userdata('langid');
-	if ($this->Acategory_model->validating('name',$name,$id) == FALSE)
+	if ($this->Balance_model->validating('name',$name,$id) == FALSE)
         {
-            $this->form_validation->set_message('validation_acategory', 'This acategory is already registered!');
+            $this->form_validation->set_message('validation_balance', 'This balance is already registered!');
             return FALSE;
         }
         else { return TRUE; }
@@ -326,45 +385,40 @@ class Acategory extends MX_Controller
 
         $data['title'] = $this->properti['name'].' | Administrator  '.ucwords($this->modul['title']);
         $data['h2title'] = $this->modul['title'];
-        $data['main_view'] = 'acategory_update';
+        $data['main_view'] = 'balance_update';
 	$data['form_action'] = site_url($this->title.'/update_process');
-	$data['link'] = array('link_back' => anchor('acategory/','<span>back</span>', array('class' => 'back')));
+	$data['link'] = array('link_back' => anchor('balance/','<span>back</span>', array('class' => 'back')));
 
-	// Form validation
-        $this->form_validation->set_rules('tcode', 'Kode Rekening', 'required|callback_validation_code');
-        $this->form_validation->set_rules('tname', 'Nama Rekening', 'required|callback_validation_acategory');        
-        $this->form_validation->set_rules('tdesc', 'Keterangan', '');
-        $this->form_validation->set_rules('cparent', 'Parent', 'numeric');
-        $this->form_validation->set_rules('torder', 'Order', 'numeric|required');
-        $this->form_validation->set_rules('ctype', 'Jenis Kategory', 'callback_valid_type['.$this->input->post('cparent').']');
-
-        if ($this->form_validation->run($this) == TRUE)
+        
+        if ($this->input->post('type')=='priority')
         {
-            if ($this->input->post('cparent')=='0'){ $type = $this->input->post('ctype'); }
-            else{ $type = $this->acategory->get_type($this->input->post('cparent')); }
-            
-            $acategory = array('name' => strtolower($this->input->post('tname')),
-                             'code' => strtolower($this->input->post('tcode')),
-                             'parent_id' => $this->input->post('cparent'),
-                             'type' => $type,
-                             'dppa_id' => $dppa,
-                             'orders' => $this->input->post('torder'),
-                             'description' => $this->input->post('tdesc'));
-            
-	    $this->Acategory_model->update($this->session->userdata('langid'), $acategory);
-            $this->session->set_flashdata('message', "One $this->title has successfully updated!");
-            
-            echo 'true|Data successfully saved..!';
+           $this->form_validation->set_rules('csource', 'Sumber Anggaran', 'required'); 
+           $this->form_validation->set_rules('tamount', 'Nilai Anggaran', 'required|numeric|callback_valid_child_balance'); 
+           $this->form_validation->set_rules('tyear', 'Tahun Anggaran', 'required|numeric'); 
+           
+           if ($this->form_validation->run($this) == TRUE)
+           {
+                $balance = array('source' => $this->input->post('csource'),
+                                 'dppa_id' => $dppa,
+                                 'priority' => 1,
+                                 'amount' => $this->input->post('tamount'),
+                                 'year' => $this->input->post('tyear'),
+                                 'created' => date('Y-m-d H:i:s'));
+                
+                $this->Balance_model->update($this->session->userdata('langid'), $balance);
+                echo 'true|Data successfully saved..!';
+           }
+           else { echo 'error|'.validation_errors();  }
         }
-        else{ echo 'error|'.validation_errors(); }
+        
         }else { echo "error|Sorry, you do not have the right to edit $this->title component..!"; }
     }
     
     function remove_image($uid)
     {
-       $img = $this->Acategory_model->get_acategory_by_id($uid)->row();
+       $img = $this->Balance_model->get_balance_by_id($uid)->row();
        $img = $img->image;
-       if ($img){ $img = "./images/acategory/".$img; unlink("$img"); } 
+       if ($img){ $img = "./images/balance/".$img; unlink("$img"); } 
     }
 
 }

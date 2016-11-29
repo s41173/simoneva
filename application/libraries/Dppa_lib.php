@@ -20,6 +20,17 @@ class Dppa_lib extends Main_Model {
         return $data;
     }
     
+    function combo_child()
+    {
+        $this->db->select('id, code, name');
+        $this->db->where('deleted', NULL);
+        $this->db->where('publish',1);
+        $this->db->order_by('name', 'asc');
+        $val = $this->db->get($this->tableName)->result();
+        foreach($val as $row){ $data['options'][$row->id] = ucfirst($row->name); }
+        return $data;
+    }
+    
 
     function combo_all()
     {
