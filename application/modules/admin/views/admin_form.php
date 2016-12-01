@@ -82,6 +82,14 @@
 <textarea name="taddress" id="taddress" class="form-control" rows="3" placeholder="Address"><?php echo set_value('taddress', isset($default['address']) ? $default['address'] : ''); ?></textarea>
                     </div>
                   </div>
+    
+                  <div class="form-group">
+                    <label class="control-label col-md-3 col-sm-3 col-xs-12"> DPPA </label>
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                      <?php $js = "class='select2_single form-control' id='cdppa' tabindex='-1' style='width:100%;' "; 
+			           echo form_dropdown('cdppa', $dppa, isset($default['dppa']) ? $default['dppa'] : '', $js); ?>
+                    </div>
+                  </div>
                   
                   
                   <div class="ln_solid"></div>

@@ -19,6 +19,7 @@
 	var sites_get  = "<?php echo site_url('acategory/update/');?>";
 	var sites_primary  = "<?php echo site_url('acategory/publish/');?>";
 	var source = "<?php echo $source;?>";
+    var type = 'dppa';
 	
 </script>
 

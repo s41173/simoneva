@@ -42,9 +42,12 @@
                 <div class="x_content">
                   
           <form class="form-inline" id="cekallform" method="post" action="<?php echo ! empty($form_action_del) ? $form_action_del : ''; ?>">
+                  
+                  <div class="table-responsive">
                   <!-- table -->
                   <?php echo ! empty($table) ? $table : ''; ?>
                   <!-- table -->
+                  </div>
                   
                   <!-- Check All Function -->
                   <div class="form-group" id="chkbox">

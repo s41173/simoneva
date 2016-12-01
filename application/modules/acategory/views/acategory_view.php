@@ -19,6 +19,7 @@
 	var sites_get  = "<?php echo site_url('acategory/update/');?>";
 	var sites_primary  = "<?php echo site_url('acategory/publish/');?>";
 	var source = "<?php echo $source;?>";
+    var type = 'null';
 	
 </script>
 
@@ -39,26 +40,48 @@
               <!-- xtitle -->
                 
                 <div class="x_content">
+        
+           <!-- searching form -->
+           
+           <form id="searchform" class="form-inline">
+               
+              <div class="form-group">
+           <?php $js = "class='select2_single form-control' id='cdppa_search' tabindex='-1' style='min-width:150px;' "; 
+    	   echo form_dropdown('cdppa', $dppa, isset($default['dppa']) ? $default['dppa'] : '', $js); ?>
+              </div>   
+               
+              <div class="form-group">
+               <button type="submit" class="btn btn-primary button_inline"> Filter </button>
+               <button type="reset" onClick="" class="btn btn-success button_inline"> Clear </button>
+               <button type="button" onClick="load_data(null);" class="btn btn-danger button_inline"> Reset </button>
+              </div>
+          </form> <br>
+           
+           <!-- searching form -->        
                   
           <form class="form-inline" id="cekallform" method="post" action="<?php echo ! empty($form_action_del) ? $form_action_del : ''; ?>">
+                 
+                  <div class="table-responsive">
                   <!-- table -->
                   <?php echo ! empty($table) ? $table : ''; ?>
                   <!-- table -->
+                  </div>
                   
                   <!-- Check All Function -->
+<!--
                   <div class="form-group" id="chkbox">
                     Check All : 
                     <button type="submit" id="cekallbutton" class="btn btn-danger btn-xs">
                        <span class="glyphicon glyphicon-trash"></span>
                     </button>
                   </div>
+-->
                   <!-- Check All Function -->    
           </form>       
              </div>
 
-               <!-- Trigger the modal with a button --> 
- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal"> <i class="fa fa-plus"></i>&nbsp;Add New </button>
-               <!--<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal3"> Report  </button>-->
+               <!-- Trigger the modal with a button -->
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal3"> Report  </button>
                
                <!-- links -->
 	           <?php if (!empty($link)){foreach($link as $links){echo $links . '';}} ?>
@@ -82,7 +105,7 @@
       
       <!-- Modal - Report Form -->
       <div class="modal fade" id="myModal3" role="dialog">
-         <?php /*$this->load->view('category_report');*/ ?>    
+         <?php $this->load->view('acategory_report_panel'); ?>    
       </div>
       <!-- Modal - Report Form -->
       

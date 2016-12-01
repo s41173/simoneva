@@ -10,7 +10,7 @@ class Account_lib extends Main_Model {
     
     protected $field = array('id', 'parent_id', 'category', 'code', 'name', 'description', 'publish', 'created', 'updated', 'deleted');
 
-    function combo()
+    function combo($vals=null)
     {
         $this->db->select($this->field);
         $this->db->where('deleted', NULL);
@@ -18,20 +18,22 @@ class Account_lib extends Main_Model {
         $this->db->where('parent_id',0);
         $this->db->order_by('name', 'asc');
         $val = $this->db->get($this->tableName)->result();
-        $data['options'][0] = 'Top';
+        if ($vals=null){ $data['options'][0] = 'Top'; }
         foreach($val as $row){ $data['options'][$row->id] = ucfirst($row->name); }
         return $data;
     }
     
     function combo_child()
     {
+        $data = null;
         $this->db->select($this->field);
         $this->db->where('deleted', NULL);
         $this->db->where('publish',1);
         $this->db->where('parent_id >',0);
         $this->db->order_by('name', 'asc');
         $val = $this->db->get($this->tableName)->result();
-        foreach($val as $row){ $data['options'][$row->id] = ucfirst($row->code.' : '.$row->name); }
+        if ($val){ foreach($val as $row){ $data['options'][$row->id] = ucfirst($row->code.' : '.$row->name); } }
+        else { $data['options']['null'] = ' -- Select --'; }
         return $data;
     }
 
@@ -107,17 +109,17 @@ class Account_lib extends Main_Model {
     function top_category($val,$type=0)
     {
         switch ($val) {
-        case 511:$res = '1|Belanja Langsung';break;
-        case 512:$res = '1|Belanja Langsung';break;
-        case 513:$res = '1|Belanja Langsung';break;
-        case 514:$res = '1|Belanja Langsung';break;
-        case 515:$res = '1|Belanja Langsung';break;
-        case 516:$res = '1|Belanja Langsung';break;
-        case 517:$res = '1|Belanja Langsung';break;
-        case 518:$res = '1|Belanja Langsung';break;
-        case 521:$res = '2|Belanja Tidak Langsung';break;
-        case 522:$res = '2|Belanja Tidak Langsung';break;
-        case 523:$res = '2|Belanja Tidak Langsung';break;
+        case 511:$res = '1|Belanja Tidak Langsung';break;
+        case 512:$res = '1|Belanja Tidak Langsung';break;
+        case 513:$res = '1|Belanja Tidak Langsung';break;
+        case 514:$res = '1|Belanja Tidak Langsung';break;
+        case 515:$res = '1|Belanja Tidak Langsung';break;
+        case 516:$res = '1|Belanja Tidak Langsung';break;
+        case 517:$res = '1|Belanja Tidak Langsung';break;
+        case 518:$res = '1|Belanja Tidak Langsung';break;
+        case 521:$res = '2|Belanja Langsung';break;
+        case 522:$res = '2|Belanja Langsung';break;
+        case 523:$res = '2|Belanja Langsung';break;
        }
        
        $val = explode('|', $res);

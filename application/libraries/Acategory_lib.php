@@ -21,16 +21,18 @@ class Acategory_lib extends Main_Model {
     
     function combo_child()
     {
+        $data = null;
         $this->db->select('id, code, name');
         $this->db->where('deleted', NULL);
         $this->db->where('parent_id >', 0);
         $this->db->order_by('name', 'asc');
         $val = $this->db->get($this->tableName)->result();
-        foreach($val as $row){ $data['options'][$row->id] = ucfirst($row->code.' : '.$row->name); }
+        if ($val){ foreach($val as $row){ $data['options'][$row->id] = ucfirst($row->code.' : '.$row->name); } }
+        else { $data['options'][''] = '-- Select Category --'; }
         return $data;
     }
     
-    function combo_child_based_dppa($dppa)
+    function combo_child_based_dppa($dppa,$type=null)
     {
         $this->db->select('id, code, name');
         $this->db->where('deleted', NULL);
@@ -38,6 +40,7 @@ class Acategory_lib extends Main_Model {
         $this->db->where('dppa_id', $dppa);
         $this->db->order_by('name', 'asc');
         $val = $this->db->get($this->tableName)->result();
+        if ($type){ $data['options'][''] = '-- Select Category --'; }
         foreach($val as $row){ $data['options'][$row->id] = ucfirst($row->code.' : '.$row->name); }
         return $data;
     }
@@ -105,8 +108,8 @@ class Acategory_lib extends Main_Model {
     function type($val)
     {
 	switch ($val) {
-            case "1":return 'BIAYA LANGSUNG'; break;
-            case "2":return 'BIAYA TIDAK LANGSUNG'; break;
+            case "1":return 'BIAYA TIDAK LANGSUNG'; break;
+            case "2":return 'BIAYA LANGSUNG'; break;
             case "3":return 'PEMBIAYAAN DAERAH';
         }
     }

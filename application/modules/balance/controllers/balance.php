@@ -26,7 +26,7 @@ class Balance extends MX_Controller
        $this->get_last(); 
     }
     
-    public function getdatatable($search=null,$dppa=null,$cat='null',$type='null',$year='null')
+    public function getdatatable($search=null,$dppa='null',$cat='null',$type='null',$year='null')
     {
         if(!$search){ $result = $this->Balance_model->get_last($this->modul['limit'])->result(); }
         else { $result = $this->Balance_model->search($dppa,$cat,$type,$year)->result(); }
@@ -122,13 +122,14 @@ class Balance extends MX_Controller
         $data['main_view'] = 'balance_view';
 	$data['form_action'] = site_url($this->title.'/add_process');
         $data['form_action_update'] = site_url($this->title.'/update_process');
+        $data['form_action_report'] = site_url($this->title.'/report_process');
         $data['form_action_del'] = site_url($this->title.'/delete_all');
         $data['link'] = array('link_back' => anchor('main/','Back', array('class' => 'btn btn-danger')));
 	// ---------------------------------------- //
         
         $data['account'] = $this->account->combo_child();
         $data['category'] = $this->category->combo_child();
-        $data['dppa'] = $this->dppa->combo_child();
+        $data['dppa'] = $this->dppa->combo_child($this->session->userdata('dppa'));
  
         $config['first_tag_open'] = $config['last_tag_open']= $config['next_tag_open']= $config['prev_tag_open'] = $config['num_tag_open'] = '<li>';
         $config['first_tag_close'] = $config['last_tag_close']= $config['next_tag_close']= $config['prev_tag_close'] = $config['num_tag_close'] = '</li>';
@@ -143,7 +144,7 @@ class Balance extends MX_Controller
         $this->table->set_empty("&nbsp;");
 
         //Set heading untuk table
-        $this->table->set_heading('#','No', 'DPPA', 'Jenis', 'Parent', 'Urutan', 'Code', 'Nama');
+        $this->table->set_heading('No', 'DPPA', 'Jenis', 'Rekening', 'Sumber', 'Nilai', 'Periode');
 
         $data['table'] = $this->table->generate();
         $data['source'] = site_url('balance/getdatatable');
@@ -419,6 +420,24 @@ class Balance extends MX_Controller
        $img = $this->Balance_model->get_balance_by_id($uid)->row();
        $img = $img->image;
        if ($img){ $img = "./images/balance/".$img; unlink("$img"); } 
+    }
+    
+    function report_process()
+    {
+        $this->acl->otentikasi2($this->title);
+        $data['title'] = $this->properti['name'].' | Report '.ucwords($this->modul['title']);
+
+        $data['rundate'] = tglin(date('Y-m-d'));
+        $data['log'] = $this->session->userdata('log');
+        $data['dppa'] = $this->dppa->get_name($this->input->post('cdppa'));
+        $data['year'] = $this->input->post('tyear');
+
+//        Property Details
+        $data['company'] = $this->properti['name'];
+        $data['reports'] = $this->Balance_model->report($this->input->post('cdppa'),$this->input->post('tyear'))->result();
+        
+        if ($this->input->post('ctype') == 0){ $this->load->view('balance_report', $data); }
+        else { $this->load->view('balance_pivot', $data); }
     }
 
 }

@@ -32,6 +32,17 @@ class Balance_model extends Custom_Model
         return $this->db->get(); 
     }
     
+    function report($dppa='null',$year='null')
+    {
+        $this->db->select($this->field);
+        $this->db->from($this->tableName); 
+        $this->db->where('deleted', $this->deleted);
+        $this->db->order_by('priority', 'desc'); 
+        $this->cek_null_string($dppa, 'dppa_id');
+        $this->cek_null_string($year, 'year');
+        return $this->db->get(); 
+    }
+    
     function search($dppa,$cat,$type,$year)
     {
         $this->db->select($this->field);

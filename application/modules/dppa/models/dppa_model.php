@@ -21,6 +21,7 @@ class Dppa_model extends Custom_Model
         $this->db->select($this->field);
         $this->db->from($this->tableName); 
         $this->db->where('deleted', $this->deleted);
+        if ($this->session->userdata('dppa')){ $this->db->where('id', $this->session->userdata('dppa')); }
         $this->db->order_by('name', 'asc'); 
         $this->db->limit($limit, $offset);
         return $this->db->get(); 

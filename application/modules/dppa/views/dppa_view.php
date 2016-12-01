@@ -44,9 +44,12 @@
                 <div class="x_content">
                   
           <form class="form-inline" id="cekallform" method="post" action="<?php echo ! empty($form_action_del) ? $form_action_del : ''; ?>">
+              
+                  <div class="table-responsive">
                   <!-- table -->
                   <?php echo ! empty($table) ? $table : ''; ?>
                   <!-- table -->
+                  </div>
                   
                   <!-- Check All Function -->
                   <div class="form-group" id="chkbox">
@@ -61,7 +64,8 @@
 
                <!-- Trigger the modal with a button --> 
  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal"> <i class="fa fa-plus"></i>&nbsp;Add New </button>
-               <!--<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal3"> Report  </button>-->
+                  
+ <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal3"> Progress Report  </button>
                
                <!-- links -->
 	           <?php if (!empty($link)){foreach($link as $links){echo $links . '';}} ?>
@@ -85,7 +89,7 @@
       
       <!-- Modal - Report Form -->
       <div class="modal fade" id="myModal3" role="dialog">
-         <?php /*$this->load->view('category_report');*/ ?>    
+         <?php $this->load->view('progress_report_panel'); ?>    
       </div>
       <!-- Modal - Report Form -->
       

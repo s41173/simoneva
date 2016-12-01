@@ -44,20 +44,26 @@
           <!-- searching form -->
            
            <form id="searchform" class="form-inline">
+               
+              <div class="form-group">
+           <?php $js = "class='select2_single form-control' id='cdppa_search' tabindex='-1' style='min-width:150px;' "; 
+    	   echo form_dropdown('cdppa', $dppa, isset($default['dppa']) ? $default['dppa'] : '', $js); ?>
+              </div>   
+               
               <div class="form-group">
                 <?php $js = "class='select2_single form-control' id='ccategory_search' tabindex='-1' style='min-width:150px;' "; 
 			     echo form_dropdown('ccategory', $category, isset($default['category']) ? $default['category'] : '', $js); ?>
               </div>
                
   <div class="form-group">
-   <select name="ctype" id="ctype_search" class="select2_single form-control">
-     <option value="0"> Anggaran Utama </option>
-     <option value="1"> Anggaran Rekening </option>
-   </select>
+   <?php $js = "class='select2_single form-control' id='cmonth_search' tabindex='-1' style='min-width:100px;' "; 
+   echo form_dropdown('cmonth', $month, isset($default['month']) ? $default['month'] : '', $js); ?>
   </div>               
               
   <div class="form-group">
-   <input id="tyear_search" maxlength="4" class="form-control col-md-2 col-xs-12" type="number" name="tyear" value="<?php echo date('Y'); ?>" required placeholder="Tahun Periode">
+         
+   <input id="tyear_search" maxlength="4" class="form-control col-md-2 col-xs-12" type="number" name="tyear" 
+          value="<?php echo date('Y'); ?>" required style="width:80px;" placeholder="Tahun Periode">
   </div>
 
               <div class="form-group">
@@ -70,9 +76,12 @@
            <!-- searching form -->        
                   
           <form class="form-inline" id="cekallform" method="post" action="<?php echo ! empty($form_action_del) ? $form_action_del : ''; ?>">
+                  
+                  <div class="table-responsive">
                   <!-- table -->
                   <?php echo ! empty($table) ? $table : ''; ?>
                   <!-- table -->
+                  </div>
                   
                   <!-- Check All Function -->
                   <div class="form-group" id="chkbox">
@@ -87,7 +96,7 @@
 
                <!-- Trigger the modal with a button --> 
                
-              <!--<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal3"> Report  </button>-->
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal3"> Report  </button>
                
                <!-- links -->
 	           <?php if (!empty($link)){foreach($link as $links){echo $links . '';}} ?>
@@ -117,7 +126,7 @@
       
       <!-- Modal - Report Form -->
       <div class="modal fade" id="myModal3" role="dialog">
-         <?php /*$this->load->view('category_report');*/ ?>    
+         <?php $this->load->view('transaction_report_panel'); ?>    
       </div>
       <!-- Modal - Report Form -->
       

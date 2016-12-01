@@ -13,33 +13,34 @@ class Transaction extends MX_Controller
 
         $this->modul = $this->components->get(strtolower(get_class($this)));
         $this->title = strtolower(get_class($this));
-//        $this->transaction = new Transaction_lib();
         $this->dppa = new Dppa_lib();
         $this->account = new Account_lib();
         $this->category = new Acategory_lib();
+        $this->balance = new Balance_lib();
+        $this->transaction = new Transaction_lib();
     }
 
-    private $properti, $modul, $title, $transaction, $dppa, $account, $category;
+    private $properti, $modul, $title, $transaction, $dppa, $account, $category, $balance;
 
     function index()
     {
        $this->get_last(); 
     }
     
-    public function getdatatable($search=null,$cat='null',$type='null',$year='null')
+    public function getdatatable($search=null,$dppa='null',$cat='null',$month='null',$year='null')
     {
         if(!$search){ $result = $this->Transaction_model->get_last($this->modul['limit'])->result(); }
-        else { $result = $this->Transaction_model->search($cat,$type,$year)->result(); }
+        else { $result = $this->Transaction_model->search($dppa,$cat,$month,$year)->result(); }
         
         if ($result){
 	foreach($result as $res)
 	{
-	   $output[] = array ($res->id, $this->category->type($res->type), 
-                              $this->account->get_name($res->account_id),
-                              $this->category->get_name($res->category_id), 
-                              strtoupper($this->dppa->get_name($res->dppa_id)),
-                              idr_format($res->amount), $res->month, $res->year,
-                              $res->created, $res->updated, $res->deleted);
+            $output[] = array ($res->id, $this->category->type($res->type), 
+                       $this->account->get_code($res->account_id).' : '.$this->account->get_name($res->account_id),
+                       $this->category->get_name($res->category_id), 
+                       strtoupper($this->dppa->get_name($res->dppa_id)),
+                       idr_format($res->amount), $res->month, $res->year,
+                       $res->created, $res->updated, $res->deleted);
 	}
             $this->output
             ->set_status_header(200)
@@ -56,9 +57,9 @@ class Transaction extends MX_Controller
         
         if ($result){
 	foreach($result as $res)
-	{
+	{   
 	   $output[] = array ($res->id, $this->category->type($res->type), 
-                              $this->account->get_name($res->account_id),
+                              $this->account->get_code($res->account_id).' : '.$this->account->get_name($res->account_id),
                               $this->category->get_name($res->category_id), 
                               strtoupper($this->dppa->get_name($res->dppa_id)),
                               idr_format($res->amount), $res->month, $res->year,
@@ -89,7 +90,8 @@ class Transaction extends MX_Controller
 	// ---------------------------------------- //
         
         $data['account'] = $this->account->combo_child();
-        $data['category'] = $this->category->combo_child_based_dppa($this->session->userdata('dppa'));
+        $data['category'] = $this->category->combo_child_based_dppa($this->session->userdata('dppa'),'null');
+        $data['month'] = combo_month();
  
         $config['first_tag_open'] = $config['last_tag_open']= $config['next_tag_open']= $config['prev_tag_open'] = $config['num_tag_open'] = '<li>';
         $config['first_tag_close'] = $config['last_tag_close']= $config['next_tag_close']= $config['prev_tag_close'] = $config['num_tag_close'] = '</li>';
@@ -104,7 +106,7 @@ class Transaction extends MX_Controller
         $this->table->set_empty("&nbsp;");
 
         //Set heading untuk table
-        $this->table->set_heading('#','No', 'DPPA', 'Jenis', 'Rekening', 'Sumber', 'Nilai', 'Periode', 'Action');
+        $this->table->set_heading('#','No', 'DPPA', 'Program', 'Rekening', 'Nilai', 'Periode', 'Action');
 
         $data['table'] = $this->table->generate();
         $data['source'] = site_url('transaction/getdatatable_dppa/'.$dppa);
@@ -123,11 +125,14 @@ class Transaction extends MX_Controller
 	$data['form_action'] = site_url($this->title.'/add_process');
         $data['form_action_update'] = site_url($this->title.'/update_process');
         $data['form_action_del'] = site_url($this->title.'/delete_all');
+        $data['form_action_report'] = site_url($this->title.'/report_process');
         $data['link'] = array('link_back' => anchor('main/','Back', array('class' => 'btn btn-danger')));
 	// ---------------------------------------- //
         
         $data['account'] = $this->account->combo_child();
         $data['category'] = $this->category->combo_child();
+        $data['month'] = combo_month();
+        $data['dppa'] = $this->dppa->combo_child();
  
         $config['first_tag_open'] = $config['last_tag_open']= $config['next_tag_open']= $config['prev_tag_open'] = $config['num_tag_open'] = '<li>';
         $config['first_tag_close'] = $config['last_tag_close']= $config['next_tag_close']= $config['prev_tag_close'] = $config['num_tag_close'] = '</li>';
@@ -142,7 +147,7 @@ class Transaction extends MX_Controller
         $this->table->set_empty("&nbsp;");
 
         //Set heading untuk table
-        $this->table->set_heading('#','No', 'DPPA', 'Jenis', 'Parent', 'Urutan', 'Code', 'Nama');
+        $this->table->set_heading('No', 'DPPA', 'Program', 'Rekening', 'Nilai', 'Periode');
 
         $data['table'] = $this->table->generate();
         $data['source'] = site_url('transaction/getdatatable');
@@ -231,47 +236,27 @@ class Transaction extends MX_Controller
 
 	// Form validation 
         
-        if ($this->input->post('type')=='priority')
-        {
-           $this->form_validation->set_rules('csource', 'Sumber Anggaran', 'required'); 
-           $this->form_validation->set_rules('tamount', 'Nilai Anggaran', 'required|numeric|callback_valid_child_transaction'); 
-           $this->form_validation->set_rules('tyear', 'Tahun Anggaran', 'required|numeric|callback_valid_priority'); 
-           
-           if ($this->form_validation->run($this) == TRUE)
-           {
-                $transaction = array('source' => $this->input->post('csource'),
-                                 'dppa_id' => $dppa,
-                                 'priority' => 1,
-                                 'amount' => $this->input->post('tamount'),
-                                 'year' => $this->input->post('tyear'),
-                                 'created' => date('Y-m-d H:i:s'));
-                $this->Transaction_model->add($transaction);
-                echo 'true|Data successfully saved..!';
-           }
-           else { echo 'error|'.validation_errors();  }
-        }
-        else
-        {
-            $this->form_validation->set_rules('caccount', 'Rekening', 'required|callback_valid_transaction['.$this->input->post('tyear').']'); 
-            $this->form_validation->set_rules('ccategory', 'Jenis Program', 'required'); 
-            $this->form_validation->set_rules('tamount', 'Nilai Anggaran', 'required|numeric|callback_valid_amount_transaction'); 
-            $this->form_validation->set_rules('tyear', 'Tahun Anggaran', 'required|numeric'); 
+        $this->form_validation->set_rules('ccategory', 'Program Anggaran', 'required|callback_valid_transaction'); 
+        $this->form_validation->set_rules('caccount', 'Rekening Anggaran', 'required'); 
+        $this->form_validation->set_rules('tamount', 'Nilai Anggaran', 'required|numeric|callback_valid_amount_transaction['.$this->input->post('tbudget').']'); 
+        $this->form_validation->set_rules('cmonth', 'Bulan Anggaran', 'required|numeric'); 
+        $this->form_validation->set_rules('tyear', 'Tahun Anggaran', 'required|numeric'); 
 
-            if ($this->form_validation->run($this) == TRUE)
-            {
-                 $transaction = array('account_id' => $this->input->post('caccount'),
-                                  'category_id' => $this->input->post('ccategory'),
-                                  'type' => $this->account->get_type($this->input->post('caccount')),
-                                  'amount' => $this->input->post('tamount'),
-                                  'year' => $this->input->post('tyear'),
-                                  'dppa_id' => $dppa,
-                                  'priority' => 0,
-                                  'created' => date('Y-m-d H:i:s'));
-                 $this->Transaction_model->add($transaction);
-                 echo 'true|Data successfully saved..!';
-            }
-            else { echo 'error|'.validation_errors();  }
+        if ($this->form_validation->run($this) == TRUE)
+        {
+             $transaction = array('category_id' => $this->input->post('ccategory'),
+                              'dppa_id' => $dppa,
+                              'type' => $this->account->get_type($this->input->post('caccount')),
+                              'account_id' => $this->input->post('caccount'),
+                              'amount' => $this->input->post('tamount'),
+                              'month' => $this->input->post('cmonth'),             
+                              'year' => $this->input->post('tyear'),
+                              'created' => date('Y-m-d H:i:s'));
+             $this->Transaction_model->add($transaction);
+             echo 'true|Data successfully saved..!';
         }
+        else { echo 'error|'.validation_errors();  }
+
         
         }else { echo "error|Sorry, you do not have the right to edit $this->title component..!"; }
 
@@ -292,73 +277,40 @@ class Transaction extends MX_Controller
         echo implode('|', $field);
     }
     
-    
-    public function valid_code($code)
+    // menampilkan kode rekening berdasarkan category
+    function ajaxcombo($category=null,$year=null)
     {
-        if ($this->Transaction_model->valid('code',$code) == FALSE)
-        {
-            $this->form_validation->set_message('valid_code', "This $this->title code is already registered.!");
-            return FALSE;
+        if ($category != null && $year != null){
+            $category_account = $this->balance->combo_sp2d($this->session->userdata('dppa'), $category, $year);
+            $js = "class='select2_single form-control' id='caccount_balance' tabindex='-1' style='width:100%;' "; 
+            echo form_dropdown('caccount', $category_account, isset($default['category']) ? $default['category'] : '', $js);
         }
-        else{ return TRUE; }
     }
     
-    function validation_code($name)
+    //menampilkan budget masing2 category
+    function get_budget($cat,$acc,$year)
     {
-	$id = $this->session->userdata('langid');
-	if ($this->Transaction_model->validating('code',$name,$id) == FALSE)
-        {
-            $this->form_validation->set_message('validation_code', 'This '.$this->title.' code is already registered!');
-            return FALSE;
-        }
-        else { return TRUE; }
+        $budget = $this->balance->get_budet($cat, $acc, $year);
+        $realisasi = $this->transaction->get_realisasi($cat, $acc, $year);
+        echo $budget-$realisasi;
     }
     
-    public function valid_type($type,$parent)
-    {
-        if ($parent == 0){
-            if (!$type){ $this->form_validation->set_message('valid_type', "Type required..!"); }else{ return TRUE; }
-        }
-        else { return TRUE; }
-    }
-    
-    public function valid_priority($year)
-    {
-        if ($this->Transaction_model->valid('year',$year) == FALSE)
-        {
-            $this->form_validation->set_message('valid_priority', "This $this->title priority transaction is already registered.!");
-            return FALSE;
-        }
-        else{ return TRUE; } 
-    }
-    
-    public function valid_amount_transaction($amount)
-    {
-        $priority_transaction = $this->Transaction_model->total_priority($this->input->post('tyear'));
-        $child_transaction = $this->Transaction_model->total_child($this->input->post('tyear'));
-        
-        if ($amount+$child_transaction > $priority_transaction){ 
-           $this->form_validation->set_message('valid_amount_transaction', "Invalid Child Transaction..!");
+    public function valid_amount_transaction($amount,$budget)
+    {   
+        if ($amount > $budget){ 
+           $this->form_validation->set_message('valid_amount_transaction', "Invalid Amount Transaction..!");
            return FALSE; 
         }
         else{ return TRUE; }
     }
-    
-    // validasi add priority transaction tidak boleh < child transaction
-    public function valid_child_transaction($amount)
-    {
-        $p_transaction = $this->Transaction_model->total_child($this->input->post('tyear'));
-        if ($p_transaction > $amount){ 
-           $this->form_validation->set_message('valid_child_transaction', "Invalid Transaction..!");
-           return FALSE; 
-        }
-        else{ return TRUE; }
-    }
-    
 
-    public function valid_transaction($account,$year)
+    public function valid_transaction($category)
     {
-        if ($this->Transaction_model->valid_transaction($account,$year) == FALSE)
+        $account = $this->input->post('caccount');
+        $month = $this->input->post('cmonth');
+        $year = $this->input->post('tyear');
+        
+        if ($this->Transaction_model->valid_transaction($category,$account,$month,$year) == FALSE)
         {
             $this->form_validation->set_message('valid_transaction', "This account $this->title is already registered.!");
             return FALSE;
@@ -366,8 +318,9 @@ class Transaction extends MX_Controller
         else{ return TRUE; }
     }
 
-    function validation_transaction($name)
+    function validation_transaction($category)
     {
+        
 	$id = $this->session->userdata('langid');
 	if ($this->Transaction_model->validating('name',$name,$id) == FALSE)
         {
@@ -418,6 +371,24 @@ class Transaction extends MX_Controller
        $img = $this->Transaction_model->get_transaction_by_id($uid)->row();
        $img = $img->image;
        if ($img){ $img = "./images/transaction/".$img; unlink("$img"); } 
+    }
+    
+    function report_process()
+    {
+        $this->acl->otentikasi2($this->title);
+        $data['title'] = $this->properti['name'].' | Report '.ucwords($this->modul['title']);
+
+        $data['rundate'] = tglin(date('Y-m-d'));
+        $data['log'] = $this->session->userdata('log');
+        $data['dppa'] = $this->dppa->get_name($this->input->post('cdppa'));
+        $data['year'] = $this->input->post('tyear');
+
+//        Property Details
+        $data['company'] = $this->properti['name'];
+        $data['reports'] = $this->Transaction_model->report($this->input->post('cdppa'),$this->input->post('tyear'))->result();
+        
+        if ($this->input->post('ctype') == 0){ $this->load->view('transaction_report', $data); }
+        else { $this->load->view('transaction_pivot', $data); }
     }
 
 }

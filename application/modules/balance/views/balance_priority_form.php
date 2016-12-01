@@ -44,7 +44,7 @@ action="<?php echo $form_action; ?>" enctype="multipart/form-data">
     
     <div class="form-group">
       <label for="middle-name" class="control-label col-md-3 col-sm-3 col-xs-12"> Tahun Periode </label>
-      <div class="col-md-2 col-sm-2 col-xs-12">
+      <div class="col-md-3 col-sm-3 col-xs-12">
         <input id="tyear" maxlength="4" class="form-control col-md-7 col-xs-12" type="number" name="tyear" value="<?php echo date('Y'); ?>" required placeholder="Tahun Periode">
       </div>
     </div>

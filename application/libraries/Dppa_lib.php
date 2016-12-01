@@ -26,12 +26,13 @@ class Dppa_lib extends Main_Model {
         $this->db->where('deleted', NULL);
         $this->db->where('publish',1);
         $this->db->order_by('name', 'asc');
+        if ($this->session->userdata('dppa')){ $this->db->where('id', $this->session->userdata('dppa')); }
         $val = $this->db->get($this->tableName)->result();
-        foreach($val as $row){ $data['options'][$row->id] = ucfirst($row->name); }
+        if ($val){ foreach($val as $row){ $data['options'][$row->id] = ucfirst($row->name); } }
+        else { $data['options'][''] = '-- Select Category --'; }
         return $data;
     }
     
-
     function combo_all()
     {
         $this->db->select('id, code, name');

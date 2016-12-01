@@ -32,6 +32,26 @@ class Account_model extends Custom_Model
         return $this->db->get(); 
     }
     
+    function report()
+    {
+        $this->db->select($this->field);
+        $this->db->from($this->tableName); 
+        $this->db->where('deleted', $this->deleted);
+        $this->db->order_by('code', 'asc'); 
+        return $this->db->get(); 
+    }
+    
+    function search($category, $parent)
+    {
+        $this->db->select($this->field);
+        $this->db->from($this->tableName); 
+        $this->db->where('deleted', $this->deleted);
+        $this->db->order_by('code', 'asc'); 
+        $this->cek_null_string($category, 'category');
+        $this->cek_null_string($parent, 'parent_id');
+        return $this->db->get(); 
+    }
+    
     function valid_code($code,$category)
     {
        $this->db->where('code', $code);

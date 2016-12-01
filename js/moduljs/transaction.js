@@ -43,14 +43,58 @@ $(document).ready(function (e) {
 		return false;	
 	});
 	
+	// fungsi ajax combo
+	$(document).on('change','#ccategory_account',function(e)
+	{	
+		e.preventDefault();
+		var value = $(this).val();
+		var year = $('#tyear').val();
+		var url = sites_ajax+'/ajaxcombo/'+value+'/'+year;
+		
+		// batas
+		$.ajax({
+			type: 'POST',
+			url: url,
+    	    cache: false,
+			headers: { "cache-control": "no-cache" },
+			success: function(result) {
+				$("#select_box").html(result);
+			}
+		})
+		return false;	
+	});
+	
+	// fungsi caccount get budget
+	$(document).on('change','#caccount_balance',function(e)
+	{	
+		console.log('budget');
+		e.preventDefault();
+		var acc = $(this).val();
+		var year = $('#tyear').val();
+		var cat = $('#ccategory_account').val();
+		var url = sites_ajax+'/get_budget/'+cat+'/'+acc+'/'+year;
+		
+		// batas
+		$.ajax({
+			type: 'POST',
+			url: url,
+    	    cache: false,
+			headers: { "cache-control": "no-cache" },
+			success: function(result) {
+				$("#tbudget").val(result);
+			}
+		})
+		return false;	
+	});
+	
 	// search form
 	$('#searchform').submit(function() {
 		
 		var category = $("#ccategory_search").val();
-		var type = $("#ctype_search").val();
+		var month = $("#cmonth_search").val();
 		var year = $("#tyear_search").val();
 		var dppa = $("#cdppa_search").val();
-		var param = ['searching',dppa,category,type,year];
+		var param = ['searching',dppa,category,month,year];
 		
 		$.ajax({
 			type: 'POST',
@@ -100,14 +144,13 @@ $(document).ready(function (e) {
 							
 							for(var i = 0; i < s.length; i++) {
 						  oTable.fnAddData([
-'<input type="checkbox" name="cek[]" value="'+s[i][0]+'" id="cek'+i+'" style="margin:0px"  />',
+// '<input type="checkbox" name="cek[]" value="'+s[i][0]+'" id="cek'+i+'" style="margin:0px"  />',
 										i+1,
 										s[i][4],
 										s[i][3],
 										s[i][2],
-										s[i][6],
-										s[i][7],
-										s[i][8]
+										s[i][5],
+										s[i][6]+' - '+s[i][7],
 										    ]);										
 											} // End For 
 											
@@ -126,8 +169,7 @@ $(document).ready(function (e) {
     {
 	  $(document).ready(function (e) {
 		  
-		 $("#tname,#tcode,#cparent,#cparent,#torder,#ctype,#tdesc").val("");
-		 $("#csources_update,#tamount_update").val("");
+		 $("#tamount,#tbudget").val("");
 	  });
     }
 	
@@ -163,9 +205,8 @@ if (type=='dppa')
 										s[i][4],
 										s[i][3],
 										s[i][2],
-										s[i][6],
-										s[i][7],
-										s[i][8],
+										s[i][5],
+										s[i][6]+' - '+s[i][7],
 '<a href="" class="text-primary" id="' +s[i][0]+ '" title=""> <i class="'+atr+'"> </i> </a>'+
 '<a href="#" class="text-danger" id="'+s[i][0]+'" title="delete"> <i class="fa fas-2x fa-trash"> </i> </a>'
 											   ]);										
@@ -177,14 +218,13 @@ else{
 							for(var i = 0; i < s.length; i++) {
 							 if (s[i][3] == 'Top'){ atr = "fa fas-2x fa-edit"; }else{ atr = ""; }
 							 oTable.fnAddData([
-'<input type="checkbox" name="cek[]" value="'+s[i][0]+'" id="cek'+i+'" style="margin:0px"  />',
+// '<input type="checkbox" name="cek[]" value="'+s[i][0]+'" id="cek'+i+'" style="margin:0px"  />',
 										i+1,
 										s[i][4],
 										s[i][3],
 										s[i][2],
-										s[i][6],
-										s[i][7],
-										s[i][8]
+										s[i][5],
+										s[i][6]+' - '+s[i][7],
 											   ]);										
 											} // End For
 }

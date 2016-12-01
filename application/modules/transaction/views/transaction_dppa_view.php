@@ -13,15 +13,21 @@
 
 <script type="text/javascript">
 
-	var sites_add  = "<?php echo site_url('balance/add_process/');?>";
-	var sites_edit = "<?php echo site_url('balance/update_process/');?>";
-	var sites_del  = "<?php echo site_url('balance/delete/');?>";
-	var sites_get  = "<?php echo site_url('balance/update/');?>";
-	var sites_primary  = "<?php echo site_url('balance/publish/');?>";
+	var sites_add  = "<?php echo site_url('transaction/add_process/');?>";
+	var sites_edit = "<?php echo site_url('transaction/update_process/');?>";
+	var sites_del  = "<?php echo site_url('transaction/delete/');?>";
+	var sites_get  = "<?php echo site_url('transaction/update/');?>";
+	var sites_ajax  = "<?php echo site_url('transaction/');?>";
 	var source = "<?php echo $source;?>";
     var type = 'dppa';
 	
 </script>
+
+<style type="text/css">
+    #tyear{ width: 80px; float: left;}
+    #cmonth{ float: left; margin-right: 10px;}
+</style>
+
 
           <div class="row"> 
             <div class="col-md-12 col-sm-12 col-xs-12">
@@ -40,11 +46,84 @@
               <!-- xtitle -->
                 
                 <div class="x_content">
+                    
+<!-- Smart Wizard -->
+<div id="wizard" class="form_wizard wizard_horizontal">
+  <ul class="wizard_steps">
+    <li>
+      <a href="#step-1">
+        <span class="step_no">1</span>
+        <span class="step_descr">
+          <small> Primary Details </small>
+        </span>
+      </a>
+    </li>
+  </ul>
+
+
+  <div id="step-1">
+    <!-- form -->
+    <form class="form-horizontal form-label-left" id="ajaxformdata" method="post" action="<?php echo $form_action; ?>">
+      
+      <div class="form-group">
+        <label for="middle-name" class="control-label col-md-3 col-sm-3 col-xs-12"> Kategori Rekening </label>
+        <div class="col-md-9 col-sm-9 col-xs-12">
+          <?php $js = "class='select2_single form-control' id='ccategory_account' tabindex='-1' style='width:70%;' "; 
+	      echo form_dropdown('ccategory', $category, isset($default['category']) ? $default['category'] : '', $js); ?>
+       </div>
+      </div>
+      
+      <div class="form-group">
+        <label class="control-label col-md-3 col-sm-3 col-xs-12"> Rekening </label>
+        <div class="col-md-6 col-sm-6 col-xs-12" id="select_box"> </div>
+      </div>
+      
+      <div class="form-group">
+        <label class="control-label col-md-3 col-sm-3 col-xs-12"> Anggaran </label>
+        <div class="col-md-3 col-sm-3 col-xs-12">
+			<input type="number" class="form-control" name="tbudget" id="tbudget" title="Budget" readonly />
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label class="control-label col-md-3 col-sm-3 col-xs-12"> Jumlah SP2D </label>
+        <div class="col-md-3 col-sm-3 col-xs-12">
+			<input type="number" class="form-control" name="tamount" id="tamount" title="Amount" />
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label class="control-label col-md-3 col-sm-3 col-xs-6"> Periode </label>
+        <div class="col-md-5 col-sm-5 col-xs-12">
+			<?php $js = "class='form-control' id='cmonth' tabindex='-1' style='width:150px;' "; 
+	        echo form_dropdown('cmonth', $month, isset($default['month']) ? $default['month'] : '', $js); ?>
+            <input type="number" class="form-control" name="tyear" id="tyear" title="Year" maxlength="4" value="<?php echo date('Y'); ?>" />
+        </div>
+      </div>
+      <br>
+      
+      <div class="ln_solid"></div>
+      <div class="form-group">
+        <div class="col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
+          <button type="submit" class="btn btn-primary" id="button">Save</button>
+          <button type="button" class="btn btn-success" onClick="resets();" id="breset">Reset</button>
+        </div>
+      </div>
+      
+	</form>
+    <!-- end div layer 1 -->
+  </div>
+  
+</div>
+<!-- End SmartWizard Content -->             
                   
           <form class="form-inline" id="cekallform" method="post" action="<?php echo ! empty($form_action_del) ? $form_action_del : ''; ?>">
+                  
+                  <div class="table-responsive">
                   <!-- table -->
                   <?php echo ! empty($table) ? $table : ''; ?>
                   <!-- table -->
+                  </div>
                   
                   <!-- Check All Function -->
                   <div class="form-group" id="chkbox">
@@ -110,4 +189,23 @@
         <script src="<?php echo base_url(); ?>js/datatables/responsive.bootstrap.min.js"></script>
         <script src="<?php echo base_url(); ?>js/datatables/dataTables.scroller.min.js"></script>
         <script src="<?php echo base_url(); ?>js/datatables/dataTables.tableTools.js"></script>
+              
+ <!-- jQuery Smart Wizard -->
+    <script src="<?php echo base_url(); ?>js/wizard/jquery.smartWizard.js"></script>
+        
+        <!-- jQuery Smart Wizard -->
+    <script>
+      $(document).ready(function() {
+        $('#wizard').smartWizard();
+
+        $('#wizard_verticle').smartWizard({
+          transitionEffect: 'slide'
+        });
+
+/*        $('.buttonNext').addClass('btn btn-success');
+        $('.buttonPrevious').addClass('btn btn-primary');
+        $('.buttonFinish').addClass('btn btn-default');*/
+      });
+    </script>
+    <!-- /jQuery Smart Wizard -->
         

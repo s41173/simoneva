@@ -70,10 +70,14 @@ class Dppa extends MX_Controller
 	$data['form_action'] = site_url($this->title.'/add_process');
         $data['form_action_update'] = site_url($this->title.'/update_process');
         $data['form_action_del'] = site_url($this->title.'/delete_all');
+        $data['form_action_report'] = site_url($this->title.'/report_process');
         $data['link'] = array('link_back' => anchor('main/','Back', array('class' => 'btn btn-danger')));
 
         $data['parent'] = $this->dppa->combo();
         $data['parent_update'] = $this->dppa->combo_update($this->session->userdata('langid'));
+        $data['month'] = combo_month();
+        $data['dppa'] = $this->dppa->combo_child();
+        
 	// ---------------------------------------- //
  
         $config['first_tag_open'] = $config['last_tag_open']= $config['next_tag_open']= $config['prev_tag_open'] = $config['num_tag_open'] = '<li>';
@@ -369,6 +373,34 @@ class Dppa extends MX_Controller
        $img = $this->Dppa_model->get_by_id($uid)->row();
        $img = $img->image;
        if ($img){ $img = "./images/dppa/".$img; @unlink("$img"); } 
+    }
+    
+    function report_process()
+    {
+        $this->acl->otentikasi2($this->title);
+        $data['title'] = $this->properti['name'].' | Report '.ucwords($this->modul['title']);
+
+        $data['rundate'] = tglin(date('Y-m-d'));
+        $data['log'] = $this->session->userdata('log');
+        $data['dppa'] = strtoupper($this->dppa->get_name($this->input->post('cdppa')));
+        $data['month'] = $this->input->post('cmonth');
+        $data['year'] = $this->input->post('tyear');
+        
+        $dppa = $this->Dppa_model->get_by_id($this->input->post('cdppa'))->row();
+        $data['bendahara'] = $dppa->bendahara;
+        $data['bendahara_nip'] = $dppa->nip_bendahara;
+        $data['kadis'] = $dppa->kadis;
+        $data['kadis_nip'] = $dppa->nip_kadis;
+
+//        Property Details
+        $data['company'] = $this->properti['name'];
+        $data['logo'] = $this->properti['logo'];
+                
+//        $data['reports'] = $this->Dppa_model->report($this->input->post('cdppa'),$this->input->post('tyear'))->result();
+        
+        if ($this->input->post('ctype') == 0){ $this->load->view('progress_report', $data); }
+        elseif ($this->input->post('ctype') == 1) { $this->load->view('procurement_report', $data); }
+        elseif ($this->input->post('ctype') == 2) { $this->load->view('dppa_progress_report', $data); }
     }
 
 }

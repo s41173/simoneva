@@ -14,12 +14,11 @@ class Admin_model extends Custom_Model
     }
     
     protected $field = array('id', 'username', 'password', 'name', 'address', 'phone1', 'phone2',
-                             'city', 'email', 'yahooid', 'role', 'status', 'lastlogin', 
+                             'city', 'email', 'yahooid', 'role', 'status', 'lastlogin', 'dppa',
                              'created', 'updated', 'deleted'
                             );
     protected $com;
             
-   
     function get_last_user($limit, $offset=null)
     {
         $this->db->select($this->field);

@@ -26,20 +26,29 @@ class Transaction_model extends Custom_Model
     {
         $this->db->select($this->field);
         $this->db->from($this->tableName); 
-        $this->db->where('deleted', $this->deleted);
-        $this->db->order_by('priority', 'desc'); 
+        $this->db->where('deleted', $this->deleted); 
         $this->db->limit($limit, $offset);
         return $this->db->get(); 
     }
     
-    function search($cat,$type,$year)
+    function search($dppa,$cat,$month,$year)
     {
         $this->db->select($this->field);
         $this->db->from($this->tableName); 
         $this->db->where('deleted', $this->deleted);
-        $this->db->order_by('priority', 'desc'); 
+        $this->cek_null_string($dppa, 'dppa_id');
         $this->cek_null_string($cat, 'category_id');
-        $this->cek_null_string($type, 'priority');
+        $this->cek_null_string($month, 'month');
+        $this->cek_null_string($year, 'year');
+        return $this->db->get(); 
+    }
+    
+    function report($dppa,$year)
+    {
+        $this->db->select($this->field);
+        $this->db->from($this->tableName); 
+        $this->db->where('deleted', $this->deleted);
+        $this->cek_null_string($dppa, 'dppa_id');
         $this->cek_null_string($year, 'year');
         return $this->db->get(); 
     }
@@ -50,7 +59,8 @@ class Transaction_model extends Custom_Model
         $this->db->from($this->tableName); 
         $this->db->where('deleted', $this->deleted);
         $this->db->where('dppa_id', $dppa);
-        $this->db->order_by('priority', 'desc'); 
+        $this->db->where('year', date('Y'));
+        $this->db->order_by('month', 'desc'); 
         return $this->db->get(); 
     }
     
@@ -69,6 +79,18 @@ class Transaction_model extends Custom_Model
         $this->db->where('month', $month);
         $val = $this->db->get($this->tableName)->row_array();
         return $val['amount'];
+    }
+    
+    function valid_transaction($category,$account,$month,$year)
+    {
+        $this->db->where('category_id', $category);
+        $this->db->where('account_id', $account);
+        $this->db->where('month', $month);
+        $this->db->where('year', $year);
+        $query = $this->db->get($this->tableName)->num_rows();
+
+        if($query > 0){ return FALSE; }
+        else{ return TRUE; }
     }
     
 }

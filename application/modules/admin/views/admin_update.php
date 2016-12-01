@@ -75,22 +75,30 @@
 							FALSE <input name="rstatus" class="required" id="rstatus0" type="radio" value="0" />  
                     </div>
                   </div>
+     
                   <div class="form-group">
                     <label class="control-label col-md-3 col-sm-3 col-xs-12"> Address </label>
                     <div class="col-md-9 col-sm-9 col-xs-12">
 <textarea name="taddress" id="taddress_update" class="form-control" rows="3" placeholder="Address"><?php echo set_value('taddress', isset($default['address']) ? $default['address'] : ''); ?></textarea>
                     </div>
                   </div>
-                  
-                  
-                  <div class="ln_solid"></div>
-                  <div class="form-group">
-                    <div class="col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
-                      <button type="submit" class="btn btn-primary" id="button">Save</button>
-                      <button type="button" id="bclose" class="btn btn-danger" data-dismiss="modal">Close</button>
-                      <button type="button" id="breset" class="btn btn-warning" onClick="reset();">Reset</button>
-                    </div>
-                  </div>
+     
+              <div class="form-group">
+                <label class="control-label col-md-3 col-sm-3 col-xs-12"> DPPA </label>
+                <div class="col-md-9 col-sm-9 col-xs-12">
+            <?php $js = "class='select2_single form-control' id='cdppa_update' tabindex='-1' style='width:100%;' "; 
+            echo form_dropdown('cdppa', $dppa, isset($default['dppa']) ? $default['dppa'] : '', $js); ?>
+                </div>
+              </div>
+                      
+              <div class="ln_solid"></div>
+              <div class="form-group">
+                <div class="col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
+                  <button type="submit" class="btn btn-primary" id="button">Save</button>
+                  <button type="button" id="bclose" class="btn btn-danger" data-dismiss="modal">Close</button>
+                  <button type="button" id="breset" class="btn btn-warning" onClick="reset();">Reset</button>
+                </div>
+              </div>
 </form> 
 
 </div>

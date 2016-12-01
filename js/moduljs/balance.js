@@ -177,7 +177,7 @@ else{
 							for(var i = 0; i < s.length; i++) {
 							 if (s[i][3] == 'Top'){ atr = "fa fas-2x fa-edit"; }else{ atr = ""; }
 							 oTable.fnAddData([
-'<input type="checkbox" name="cek[]" value="'+s[i][0]+'" id="cek'+i+'" style="margin:0px"  />',
+// '<input type="checkbox" name="cek[]" value="'+s[i][0]+'" id="cek'+i+'" style="margin:0px"  />',
 										i+1,
 										s[i][4],
 										s[i][3],

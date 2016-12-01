@@ -24,9 +24,10 @@ class Acategory extends MX_Controller
        $this->get_last(); 
     }
     
-    public function getdatatable($search=null)
+    public function getdatatable($search=null,$dppa='null')
     {
         if(!$search){ $result = $this->Acategory_model->get_last($this->modul['limit'])->result(); }
+        else { $result = $this->Acategory_model->search($dppa)->result(); }
         
         if ($result){
 	foreach($result as $res)
@@ -111,10 +112,12 @@ class Acategory extends MX_Controller
         $data['main_view'] = 'acategory_view';
 	$data['form_action'] = site_url($this->title.'/add_process');
         $data['form_action_update'] = site_url($this->title.'/update_process');
+        $data['form_action_report'] = site_url($this->title.'/report_process');
         $data['form_action_del'] = site_url($this->title.'/delete_all');
         $data['link'] = array('link_back' => anchor('main/','Back', array('class' => 'btn btn-danger')));
 	// ---------------------------------------- //
         
+        $data['dppa'] = $this->dppa->combo_child();
         $data['parent'] = $this->acategory->combo();
         $data['parent_update'] = $this->acategory->combo_update($this->session->userdata('langid'));
  
@@ -131,7 +134,7 @@ class Acategory extends MX_Controller
         $this->table->set_empty("&nbsp;");
 
         //Set heading untuk table
-        $this->table->set_heading('#','No', 'DPPA', 'Jenis', 'Parent', 'Urutan', 'Code', 'Nama', 'Action');
+        $this->table->set_heading('No', 'DPPA', 'Jenis', 'Parent', 'Urutan', 'Code', 'Nama');
 
         $data['table'] = $this->table->generate();
         $data['source'] = site_url('acategory/getdatatable');
@@ -365,6 +368,22 @@ class Acategory extends MX_Controller
        $img = $this->Acategory_model->get_acategory_by_id($uid)->row();
        $img = $img->image;
        if ($img){ $img = "./images/acategory/".$img; unlink("$img"); } 
+    }
+    
+    function report_process()
+    {
+        $this->acl->otentikasi2($this->title);
+        $data['title'] = $this->properti['name'].' | Report '.ucwords($this->modul['title']);
+
+        $data['rundate'] = tglin(date('Y-m-d'));
+        $data['log'] = $this->session->userdata('log');
+        $data['dppa'] = $this->dppa->get_name($this->input->post('cdppa'));
+
+//        Property Details
+        $data['company'] = $this->properti['name'];
+        $data['reports'] = $this->Acategory_model->report($this->input->post('cdppa'))->result();
+        
+        $this->load->view('acategory_report', $data);
     }
 
 }

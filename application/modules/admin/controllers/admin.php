@@ -15,11 +15,11 @@ class Admin extends MX_Controller
         $this->title = strtolower(get_class($this));
         $this->city = new City_lib();
         $this->role = new Role_lib();
-
+        $this->dppa = new Dppa_lib();
     }
 
     private $properti, $modul, $title;
-    private $city,$role;
+    private $city,$role,$dppa;
 
     function index()
     {
@@ -37,7 +37,7 @@ class Admin extends MX_Controller
 	 {
            if ($res->status == 1){ $stts = 'TRUE'; }else { $stts = 'FALSE'; }
 	   $output[] = array ($res->id, $res->username, $res->name, $res->address, $res->phone1, $res->phone2,
-                              $res->city, $res->email, $res->yahooid, $res->role, $stts, $res->lastlogin,
+                              $res->city, $res->email, $res->yahooid, $res->role, $stts, $res->lastlogin, $this->dppa->get_name($res->dppa),
                               $res->created, $res->updated, $res->deleted
                              );
 	 } 
@@ -65,6 +65,7 @@ class Admin extends MX_Controller
 
         $data['city'] = $this->city->combo_province();
         $data['roles'] = $this->role->combo();
+        $data['dppa'] = $this->dppa->combo_child();
 	// ---------------------------------------- //
  
         $config['first_tag_open'] = $config['last_tag_open']= $config['next_tag_open']= $config['prev_tag_open'] = $config['num_tag_open'] = '<li>';
@@ -80,7 +81,7 @@ class Admin extends MX_Controller
         $this->table->set_empty("&nbsp;");
 
         //Set heading untuk table
-        $this->table->set_heading('#','No', 'Username', 'E-mail', 'Role', 'Status', 'Action');
+        $this->table->set_heading('#','No', 'Username', 'E-mail', 'Role', 'Status', 'DPPA', 'Action');
 
         $data['table'] = $this->table->generate();
         $data['source'] = site_url($this->title.'/getdatatable');
@@ -157,7 +158,8 @@ class Admin extends MX_Controller
                 $users = array('username' => $this->input->post('tusername'),'password' => $this->input->post('tpassword'),'name' => $this->input->post('tname'),
                                'address' => $this->input->post('taddress'), 'phone1' => $this->input->post('tphone'), 'city' => $this->input->post('ccity'),
                                'email' => $this->input->post('tmail'), 'yahooid' => setnull($this->input->post('tid')), 'role' => $this->input->post('crole'), 
-                               'status' => $this->input->post('rstatus'), 'created' => date('Y-m-d H:i:s'));
+                               'status' => $this->input->post('rstatus'), 'dppa' => $this->input->post('cdppa'),
+                               'created' => date('Y-m-d H:i:s'));
 
                 $this->Admin_model->add($users);
                 $this->session->set_flashdata('message', "One $this->title data successfully saved!");
@@ -182,7 +184,7 @@ class Admin extends MX_Controller
 	$this->session->set_userdata('langid', $admin->id);
         
         echo $uid.'|'.$admin->username.'|'.$admin->name.'|'.$admin->address.'|'.$admin->phone1.
-             '|'.$admin->city.'|'.$admin->email.'|'.$admin->role.'|'.$admin->status;
+             '|'.$admin->city.'|'.$admin->email.'|'.$admin->role.'|'.$admin->status.'|'.$admin->dppa;
     }
 
 
@@ -238,13 +240,13 @@ class Admin extends MX_Controller
               $users = array('username' => $this->input->post('tusername'),'password' => $this->input->post('tpassword'),'name' => $this->input->post('tname'),
                            'address' => $this->input->post('taddress'), 'phone1' => $this->input->post('tphone'), 'city' => $this->input->post('ccity'),
                            'email' => $this->input->post('tmail'), 'yahooid' => setnull($this->input->post('tid')), 'role' => $this->input->post('crole'), 
-                           'status' => $this->input->post('rstatus'));     
+                           'dppa' => $this->input->post('cdppa'), 'status' => $this->input->post('rstatus'));     
             }
             else {
               $users = array('username' => $this->input->post('tusername'),'name' => $this->input->post('tname'),
                            'address' => $this->input->post('taddress'), 'phone1' => $this->input->post('tphone'), 'city' => $this->input->post('ccity'),
                            'email' => $this->input->post('tmail'), 'yahooid' => setnull($this->input->post('tid')), 'role' => $this->input->post('crole'), 
-                           'status' => $this->input->post('rstatus'));
+                           'dppa' => $this->input->post('cdppa'), 'status' => $this->input->post('rstatus'));
             }
 
 	    $this->Admin_model->update($this->session->userdata('langid'), $users);

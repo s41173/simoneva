@@ -54,6 +54,9 @@ class Login extends MX_Controller {
 
                 $this->log->insert($userid, $this->date, $this->time, 'login');
                 $this->login->add($userid, $logid);
+                
+                $dppa = $this->Login_model->get_dppa($username);
+                if ($dppa){ $this->session->set_userdata('dppa',$dppa); }
 
                 $data = array('username' => $username, 'userid' => $userid, 'role' => $role, 'rules' => $rules, 'log' => $logid, 'login' => TRUE, 'waktu' => $waktu);
                 $this->session->set_userdata($data);

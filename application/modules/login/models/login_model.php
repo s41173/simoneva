@@ -33,6 +33,12 @@ class Login_model extends CI_Model {
         $query = $this->db->get_where($this->table, array('username' => $username), 1, 0)->row();
         return $query->role;
     }
+    
+    function get_dppa($username)
+    {
+        $query = $this->db->get_where($this->table, array('username' => $username), 1, 0)->row();
+        return $query->dppa;
+    }
 
     function get_rules($role)
     {

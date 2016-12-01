@@ -23,9 +23,10 @@ class Account extends MX_Controller
        $this->get_last(); 
     }
     
-    public function getdatatable($search=null)
+    public function getdatatable($search=null,$category='null',$parent='null')
     {
         if(!$search){ $result = $this->Account_model->get_last($this->modul['limit'])->result(); }
+        else { $result = $this->Account_model->search($category,$parent)->result(); }
         
         if ($result){
 	foreach($result as $res)
@@ -54,7 +55,7 @@ class Account extends MX_Controller
         $data['link'] = array('link_back' => anchor('main/','Back', array('class' => 'btn btn-danger')));
 	// ---------------------------------------- //
         
-        $data['parent'] = $this->account->combo();
+        $data['parent'] = $this->account->combo('nulls');
         $data['category'] = $this->account->combo_belanja();
         $data['parent_update'] = $this->account->combo_update($this->session->userdata('langid'));
  
@@ -313,6 +314,21 @@ class Account extends MX_Controller
        $img = $this->Account_model->get_account_by_id($uid)->row();
        $img = $img->image;
        if ($img){ $img = "./images/account/".$img; unlink("$img"); } 
+    }
+    
+    function report()
+    {
+        $this->acl->otentikasi2($this->title);
+        $data['title'] = $this->properti['name'].' | Report '.ucwords($this->modul['title']);
+
+        $data['rundate'] = tglin(date('Y-m-d'));
+        $data['log'] = $this->session->userdata('log');
+
+//        Property Details
+        $data['company'] = $this->properti['name'];
+        $data['reports'] = $this->Account_model->report()->result();
+        
+        $this->load->view('account_report', $data);
     }
 
 }

@@ -27,8 +27,30 @@ class Acategory_model extends Custom_Model
         $this->db->select($this->field);
         $this->db->from($this->tableName); 
         $this->db->where('deleted', $this->deleted);
+        if ($this->session->userdata('dppa')){ $this->db->where('dppa_id', $this->session->userdata('dppa')); }
         $this->db->order_by('code', 'asc'); 
         $this->db->limit($limit, $offset);
+        return $this->db->get(); 
+    }
+    
+    function report($dppa='null')
+    {
+        $this->db->select($this->field);
+        $this->db->from($this->tableName); 
+        $this->db->where('deleted', $this->deleted);
+        $this->cek_null_string($dppa, 'dppa_id');
+        $this->db->order_by('code', 'asc'); 
+        return $this->db->get(); 
+    }
+    
+    function search($dppa)
+    {
+        $this->db->select($this->field);
+        $this->db->from($this->tableName); 
+        $this->db->where('deleted', $this->deleted);
+        if ($this->session->userdata('dppa')){ $this->db->where('dppa_id', $this->session->userdata('dppa')); }
+        else { $this->cek_null_string($dppa, 'dppa_id'); }
+        $this->db->order_by('code', 'asc'); 
         return $this->db->get(); 
     }
     

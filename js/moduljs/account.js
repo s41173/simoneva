@@ -114,8 +114,31 @@ $(document).ready(function (e) {
 			}
 		})
 		return false;	
+	});
+	
+	// search form
+	$('#searchform').submit(function() {
 		
+		var category = $("#ccategory_search").val();
+		var parents = $("#cparent_search").val();
+		var param = ['searching',category,parents];
 		
+		$.ajax({
+			type: 'POST',
+			url: $(this).attr('action'),
+			data:  new FormData(this),
+			contentType: false,
+    	    cache: false,
+			processData:false,
+			success: function(data) {
+				
+				if (!param[1]){ param[1] = 'null'; }
+				if (!param[2]){ param[2] = 'null'; }
+				load_data_search(param);
+			}
+		})
+		return false;
+		swal('Error Load Data...!', "", "error");
 		
 	});
 		
@@ -128,6 +151,51 @@ $(document).ready(function (e) {
 		 $("#cparent,#ccategory,#tcode,#tname,#tdesc").val("");
 	  });
     }
+	
+	function load_data_search(search=null)
+	{
+		$(document).ready(function (e) {
+			
+			var oTable = $('#datatable-buttons').dataTable();
+			
+		    $.ajax({
+				type : 'GET',
+				url: source+"/"+search[0]+"/"+search[1]+"/"+search[2],
+				//force to handle it as text
+				contentType: "application/json",
+				dataType: "json",
+				success: function(s) 
+				{   
+				       console.log(s);
+					  
+						oTable.fnClearTable();
+						$(".chkselect").remove()
+	
+		$("#chkbox").append('<input type="checkbox" name="newsletter" value="accept1" onclick="cekall('+s.length+')" id="chkselect" class="chkselect">');
+							
+							for(var i = 0; i < s.length; i++) {
+							if (s[i][6] == 1){ stts = 'btn btn-success'; }else { stts = 'btn btn-danger'; }	
+							 oTable.fnAddData([
+'<input type="checkbox" name="cek[]" value="'+s[i][0]+'" id="cek'+i+'" style="margin:0px"  />',
+										i+1,
+										s[i][2],
+										s[i][1],
+										s[i][3],
+										s[i][4],
+'<a href="" class="'+stts+' btn-xs primary_status" id="' +s[i][0]+ '" title="Primary Status"> <i class="fa fa-wrench"> </i> </a> <a href="" class="text-primary" id="' +s[i][0]+ '" title=""> <i class="fa fas-2x fa-edit"> </i> </a> <a href="#" class="text-danger" id="'+s[i][0]+'" title="delete"> <i class="fa fas-2x fa-trash"> </i> </a>'
+											   ]);										
+											} // End For
+											
+				},
+				error: function(e){
+				   oTable.fnClearTable();  
+				   //console.log(e.responseText);	
+				}
+				
+			});  // end document ready	
+			
+        });
+	}
 
 // fungsi load data
 	function load_data()

@@ -1,16 +1,16 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Balance_lib extends Main_Model {
+class Transaction_lib extends Main_Model {
 
     public function __construct($deleted=NULL)
     {
         $this->deleted = $deleted;
-        $this->tableName = 'balance';
+        $this->tableName = 'transaction';
         $this->account = new Account_lib();
     }
 
     protected $account;
-    protected $field = array('id', 'type', 'account_id', 'category_id', 'dppa_id', 'priority', 'source', 'amount', 'year', 'created', 'updated', 'deleted');
+    protected $field = array('id', 'type', 'account_id', 'category_id', 'dppa_id', 'amount',    'month', 'year', 'created', 'updated', 'deleted');
 
     function combo()
     {
@@ -23,16 +23,6 @@ class Balance_lib extends Main_Model {
         return $data;
     }
     
-    function combo_child()
-    {
-        $this->db->select($this->field);
-        $this->db->where('deleted', NULL);
-        $this->db->where('parent_id >', 0);
-        $this->db->order_by('name', 'asc');
-        $val = $this->db->get($this->tableName)->result();
-        foreach($val as $row){ $data['options'][$row->id] = ucfirst($row->code.' : '.$row->name); }
-        return $data;
-    }
     
     function combo_child_based_dppa($dppa)
     {
@@ -95,7 +85,7 @@ class Balance_lib extends Main_Model {
         return $data;
     }
     
-    function get_budet($cat,$acc,$year)
+    function get_realisasi($cat,$acc,$year)
     {
         $this->db->select_sum('amount');
         $this->db->where('year', $year);
@@ -128,15 +118,6 @@ class Balance_lib extends Main_Model {
             if ($val){ return $val->type; }
         }
         else { return ''; }
-    }
-
-    function type($val)
-    {
-	switch ($val) {
-            case "1":return 'BIAYA TIDAK LANGSUNG'; break;
-            case "2":return 'BIAYA LANGSUNG'; break;
-            case "3":return 'PEMBIAYAAN DAERAH';
-        }
     }
 
 }
