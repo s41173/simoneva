@@ -44,6 +44,19 @@
         <input id="torder_update" class="form-control col-md-7 col-xs-12" type="number" name="torder" required placeholder="Order">
       </div>
     </div>
+     
+    <div class="form-group">
+       <label class="control-label col-md-3 col-sm-3 col-xs-12" for="ctype"> Jenis Kategori <span class="required">*</span></label>
+       <div class="col-md-6 col-sm-6 col-xs-12">
+           
+    <select name="ctype" id="ctype_update" class="form-control col-md-7 col-xs-12" style="width:100%;">
+       <option value="1"> BIAYA TIDAK LANGSUNG </option>
+       <option value="2"> BIAYA LANGSUNG </option>
+       <option value="3"> PEMBIAYAAN DAERAH </option>
+    </select>
+           
+       </div>
+    </div> 
     
     <div class="form-group">
       <label for="middle-name" class="control-label col-md-3 col-sm-3 col-xs-12"> Keterangan </label>

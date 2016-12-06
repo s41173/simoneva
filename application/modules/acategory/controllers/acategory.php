@@ -267,7 +267,7 @@ class Acategory extends MX_Controller
         }
         
         $field = array($acategory->id, $acategory->parent_id, $acategory->code, $acategory->name, $acategory->description, 
-                       $acategory->orders);
+                       $acategory->orders, $acategory->type);
         echo implode('|', $field);
     }
     

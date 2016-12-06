@@ -178,90 +178,10 @@ BULAN : <?php echo strtoupper(get_month($month)).'  '.$year; ?> </h1>
     $acc = new Account_lib();
     $bl = new Balance_lib();       
     $tr = new Transaction_lib();
+    $rpt = new Report_lib();
             
-    // get trans account based parent account code ex:511 0101       
-    function get_trans_parent_acc($code,$dppa_id,$month,$year)
-    {
-        $acc = new Account_lib();
-        $bl = new Balance_lib();       
-        $tr = new Transaction_lib();
-        
-        $accounts = $acc->get_account_parent($code)->result();
-        foreach($accounts as $res)
-        {
-           $pagu = $bl->get_account_parent_balance($dppa_id,$year,$res->id);
-           $sp2d = $tr->get_total_monthly_parent_balance($dppa_id,$res->id,$month,$year,0);
-           $prev = $tr->get_total_monthly_parent_balance($dppa_id,$res->id,$month,$year,2);
-           $progress = $tr->get_total_monthly_parent_balance($dppa_id,$res->id,$month,$year,1);
-           $tot_progress = $prev + $progress;
-           $rest = $pagu-$tot_progress;     
-            
-           ?>
-            <tr>
-            <td></td>
-            <td align="right"> <nobr> <?php echo $res->code; ?> </nobr></td>
-            <td> <?php echo $res->name ?> </td> 
-            <td> </td>
-            <td> <?php echo idr_format($pagu); ?> </td>
-            <td> <?php echo idr_format($sp2d); ?> </td>
-            <td> <?php echo idr_format($pagu-$sp2d); ?> </td>
-            <td>100</td>
-            <td> <?php echo @floatval($sp2d/$pagu*100); ?> </td>
-            <td> <?php echo idr_format($prev); ?> </td>
-            <td> <?php echo idr_format($progress); ?> </td>
-            <td> <?php echo @floatval($progress/$pagu*100); ?> </td>
-            <td> <?php echo idr_format($tot_progress); ?> </td>
-            <td> <?php echo @floatval($tot_progress/$pagu*100); ?> </td>
-            <td> <?php echo idr_format($rest); ?> </td>
-            <td> <?php echo @floatval($rest/$pagu*100); ?> </td>
-           </tr> 
-           <?php get_trans_acc($res->id,$dppa_id,$month,$year);
-        }
-        
-    }
-            
-     // get trans account based parent account code ex:511 0101       
-    function get_trans_acc($parent,$dppa_id,$month,$year)
-    {
-        $acc = new Account_lib();
-        $bl = new Balance_lib();       
-        $tr = new Transaction_lib();
-        
-        $accounts = $acc->get_account_based_parent($parent)->result();
-        foreach($accounts as $res)
-        {
-           $pagu = $bl->get_budet($dppa_id,'null',$res->id,$year);
-           $sp2d = $tr->get_total_monthly($dppa_id,'null',$res->id,$month,$year,0);
-           $prev = $tr->get_total_monthly($dppa_id,'null',$res->id,$month,$year,2);
-           $progress = $tr->get_total_monthly($dppa_id,'null',$res->id,$month,$year,1);
-           $tot_progress = $prev + $progress;
-           $rest = $pagu-$tot_progress;     
-            
-           ?>
-            <tr>
-            <td> </td>
-            <td align="right"> <nobr> <?php echo $res->code; ?> </nobr></td>
-            <td> <?php echo $res->name ?> </td> 
-            <td> </td>
-            <td> <?php echo idr_format($pagu); ?> </td>
-            <td> <?php echo idr_format($sp2d); ?> </td>
-            <td> <?php echo idr_format($pagu-$sp2d); ?> </td>
-            <td>100</td>
-            <td> <?php echo @floatval($sp2d/$pagu*100); ?> </td>
-            <td> <?php echo idr_format($prev); ?> </td>
-            <td> <?php echo idr_format($progress); ?> </td>
-            <td> <?php echo @floatval($progress/$pagu*100); ?> </td>
-            <td> <?php echo idr_format($tot_progress); ?> </td>
-            <td> <?php echo @floatval($tot_progress/$pagu*100); ?> </td>
-            <td> <?php echo idr_format($rest); ?> </td>
-            <td> <?php echo @floatval($rest/$pagu*100); ?> </td>
-           </tr> 
-           <?php
-        }
-        
-    }
-            
-    // fungsi mendapatkan belanja pegawai ex: 511        
+     
+    // fungsi mendapatkan belanja pegawai ex: 511  belanja :1     
     if ($account_category_1)
     {
         foreach ($account_category_1 as $res)
@@ -292,53 +212,33 @@ BULAN : <?php echo strtoupper(get_month($month)).'  '.$year; ?> </h1>
             <td> <?php echo idr_format($rest); ?> </td>
             <td> <?php echo $rest/$pagu*100; ?> </td>
            </tr>  
-           <?php get_trans_parent_acc($res->category,$dppa_id,$month,$year);
+           <?php $rpt->get_trans_parent_acc($res->category,$dppa_id,$month,$year);
         }
     }
 
 ?>
+ 
+<!--belanja langsung-->
+
+ <tr>
+    <td></td>
+    <td align="right"> <nobr> <?php echo $code_dppa; ?> 00 00 5 2</nobr></td>
+    <td> Belanja langsung </td> 
+    <td> </td> <!-- sumber -->
+    <td> <?php echo idr_format($pagu_2) ?> </td> <!-- pagu dpa -->
+    <td> <?php echo idr_format($transaction_amount_2); ?> </td> <!-- jumlah SP2D -->
+    <td> <?php echo idr_format($pagu_2-$transaction_amount_2); ?> </td> <!-- Sisa Dana DPA -->
+    <td>100</td>
+    <td> <?php echo @floatval($transaction_amount_2/$pagu_2*100); ?> </td>
+    <td> <?php echo idr_format($previous_progress_2); ?> </td> <!-- Opening Saldo -->
+    <td> <?php echo idr_format($now_progress_2); ?> </td> <!-- Progress Bulan Ini -->
+    <td> <?php echo @floatval($now_progress_2/$pagu_2*100); ?> </td>
+    <td> <?php echo idr_format($total_progress_2); ?> </td>
+    <td> <?php echo @floatval($total_progress_2/$pagu_2*100); ?> </td>
+    <td> <?php echo idr_format($rest_balance_2); ?> </td>
+    <td> <?php echo @floatval($rest_balance_2/$pagu_2*100); ?> </td>
+</tr>             
             
-<!--
-			<tr>
-				<td></td>
-				<td align="right"> <nobr> 1 02 1 02 02 00 00 5</nobr></td>
-				<td>Belanja</td> 
-				<td>DAU</td> 
-				<td>32.627.856.188</td>
-				<td>1.467.139.774</td>
-				<td>31.160.716.414</td>
-				<td>100</td>
-				<td>4</td>
-				<td>0</td>
-				<td>1.467.139.774</td>
-				<td>4</td>
-				<td>1.467.139.774</td>
-				<td>4</td>
-				<td>0</td>
-				<td>0</td>
-			</tr>
--->
-<!--
-			<tr>
-				<td></td>
-				<td align="right"> <nobr>1</nobr></td>
-				<td>Belanja</td> 
-				<td>DAU</td> 
-				<td>32.627.856.188</td>
-				<td>1.467.139.774</td>
-				<td>31.160.716.414</td>
-				<td>100</td>
-				<td>4</td>
-				<td>0</td>
-				<td>1.467.139.774</td>
-				<td>4</td>
-				<td>1.467.139.774</td>
-				<td>4</td>
-				<td>0</td>
-				<td>0</td>
-			</tr>
--->
-			
 
 		</tbody>
 	</table>

@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Nov 27, 2016 at 06:12 
+-- Generation Time: Dec 06, 2016 at 12:16 
 -- Server version: 10.1.19-MariaDB
 -- PHP Version: 5.6.24
 
@@ -44,8 +44,10 @@ CREATE TABLE `account` (
 --
 
 INSERT INTO `account` (`id`, `category`, `parent_id`, `code`, `name`, `description`, `publish`, `created`, `deleted`, `updated`) VALUES
-(8, 511, 0, '51101', 'gaji dan tunjangan', 'desc', 1, '2016-11-27 10:43:44', NULL, '2016-11-27 10:43:53'),
-(9, 511, 8, '5110101', 'gaji pokok pns / uang representasi', 'desc', 0, '2016-11-27 11:34:07', NULL, NULL);
+(14, 511, 0, '51102', 'tambahan penghasilan pns', 'Tambahan Penghasilan PNS', 1, '2016-11-30 19:31:40', NULL, NULL),
+(13, 511, 0, '51101', 'gaji dan tunjangan', 'Gaji Dan Tunjangan', 1, '2016-11-30 19:30:41', NULL, NULL),
+(15, 511, 13, '5110101', 'gaji pokok pns / uang representasi', 'Gaji Pokok PNS / Uang Representasi', 1, '2016-11-30 19:32:34', NULL, NULL),
+(16, 511, 14, '5110201', 'tambahan penghasilan berdasarkan beban kerja', 'Tambahan Penghasilan Berdasarkan Beban Kerja', 1, '2016-11-30 19:33:24', NULL, '2016-11-30 19:58:46');
 
 -- --------------------------------------------------------
 
@@ -61,10 +63,19 @@ CREATE TABLE `account_category` (
   `name` varchar(100) NOT NULL,
   `dppa_id` int(4) NOT NULL,
   `description` text,
+  `orders` int(2) NOT NULL,
   `created` datetime DEFAULT NULL,
   `deleted` datetime DEFAULT NULL,
   `updated` datetime DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `account_category`
+--
+
+INSERT INTO `account_category` (`id`, `parent_id`, `type`, `code`, `name`, `dppa_id`, `description`, `orders`, `created`, `deleted`, `updated`) VALUES
+(8, 0, '1', '01', 'program pelayanan administrasi perkantoran', 5, 'Program Pelayanan Administrasi Perkantoran', 1, '2016-12-01 00:28:02', NULL, '2016-12-06 16:32:38'),
+(9, 8, '1', '0101', 'penyediaan jasa surat menyurat', 5, 'Penyediaan Jasa Surat Menyurat', 1, '2016-12-01 00:29:06', NULL, '2016-12-06 16:32:52');
 
 -- --------------------------------------------------------
 
@@ -97,7 +108,7 @@ INSERT INTO `admin_menu` (`id`, `icon`, `parent_id`, `name`, `modul`, `url`, `me
 (41, NULL, 0, 'Home', 'main', 'main/', 0, 'fa fa-home', '', '_parent', 1, NULL, '2016-11-24 15:42:01', NULL),
 (42, NULL, 0, 'Dashboard', 'main', 'main/', 1, 'fa fa-home', '', '_parent', 1, NULL, '2016-11-24 15:42:45', NULL),
 (106, NULL, 54, 'Language', 'language', 'language/', 4, '', '', '_parent', 0, NULL, NULL, NULL),
-(54, NULL, 0, 'Article', 'main', 'main/', 5, 'fa fa-book', '', '_parent', 1, NULL, '2016-11-24 15:45:29', NULL),
+(54, NULL, 0, 'Article', 'main', 'main/', 5, 'fa fa-book', '', '_parent', 1, NULL, '2016-11-24 15:45:29', '2016-11-30 19:09:31'),
 (55, NULL, 54, 'New Article', 'article', 'article/add', 0, '', '', '_parent', 0, NULL, NULL, NULL),
 (56, NULL, 54, 'Article List', 'article', 'article/', 1, '', '', '_parent', 0, NULL, NULL, NULL),
 (72, NULL, 54, 'News Category', 'newscategory', 'newscategory/', 2, '', '', '_parent', 0, NULL, NULL, NULL),
@@ -111,9 +122,41 @@ INSERT INTO `admin_menu` (`id`, `icon`, `parent_id`, `name`, `modul`, `url`, `me
 (171, NULL, 54, 'Newsbox', 'newsbox', 'newsbox/', 4, '', '', '_parent', 0, NULL, NULL, NULL),
 (172, NULL, 165, 'Testimonial', 'testimonial', 'testimonial/', 5, '', '', '_parent', 0, NULL, NULL, '2016-11-24 19:57:03'),
 (173, NULL, 165, 'Manufactures', 'manufacture', 'manufacture/', 1, '', '', '_parent', 0, '2016-11-24 17:01:03', NULL, '2016-11-24 19:57:03'),
-(174, NULL, 165, 'Daftar DPPA', 'dppa', 'dppa/', 0, '', '', '_parent', 0, '2016-11-24 20:02:33', NULL, NULL),
+(174, NULL, 165, 'Daftar SKPD', 'dppa', 'dppa/', 0, '', '', '_parent', 0, '2016-11-24 20:02:33', '2016-12-01 14:13:59', NULL),
 (175, NULL, 165, 'Kode Rekening', 'account', 'account/', 2, '', '', '_parent', 0, '2016-11-25 10:46:09', '2016-11-25 21:03:09', NULL),
-(176, NULL, 165, 'Kategori Rekening', 'acategory', 'acategory/', 1, '', '', '_parent', 0, '2016-11-25 21:02:53', '2016-11-25 21:03:52', NULL);
+(176, NULL, 165, 'Program Kegiatan', 'acategory', 'acategory/', 1, '', '', '_parent', 0, '2016-11-25 21:02:53', '2016-11-30 17:13:46', NULL),
+(179, NULL, 165, 'Periode', 'period', 'period/', 0, '', '', '_parent', 0, '2016-12-02 15:33:26', NULL, '2016-12-02 16:04:56'),
+(177, NULL, 165, 'Pagu Anggaran', 'balance', 'balance/', 3, '', '', '_parent', 0, '2016-11-28 08:36:46', NULL, NULL),
+(178, NULL, 165, 'Transaksi SP2D', 'transaction', 'transaction/', 4, '', '', '_parent', 0, '2016-11-29 11:58:18', '2016-11-29 12:42:18', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `balance`
+--
+
+CREATE TABLE `balance` (
+  `id` int(11) NOT NULL,
+  `type` enum('1','2','3') DEFAULT NULL,
+  `account_id` int(4) NOT NULL,
+  `category_id` int(5) NOT NULL,
+  `dppa_id` int(4) NOT NULL,
+  `priority` tinyint(1) NOT NULL DEFAULT '0',
+  `source` enum('DAU','DAK') DEFAULT NULL,
+  `amount` decimal(15,0) NOT NULL,
+  `year` smallint(4) NOT NULL,
+  `created` datetime DEFAULT NULL,
+  `deleted` datetime DEFAULT NULL,
+  `updated` datetime DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `balance`
+--
+
+INSERT INTO `balance` (`id`, `type`, `account_id`, `category_id`, `dppa_id`, `priority`, `source`, `amount`, `year`, `created`, `deleted`, `updated`) VALUES
+(10, '1', 15, 9, 5, 0, NULL, '250000', 2016, '2016-12-01 07:21:25', NULL, NULL),
+(9, NULL, 0, 0, 5, 1, 'DAU', '1000000', 2016, '2016-12-01 07:20:57', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -190,9 +233,17 @@ CREATE TABLE `dppa` (
 --
 
 INSERT INTO `dppa` (`id`, `parent_id`, `code`, `name`, `bendahara`, `nip_bendahara`, `kadis`, `nip_kadis`, `publish`, `image`, `created`, `deleted`, `updated`) VALUES
-(1, 0, 'SD', 'PRSU', 'jonathan', '001831979', 'tukiyem', '18361638', 1, NULL, NULL, NULL, '2016-11-25 09:30:31'),
-(2, 1, 'dfr41s', 'rsu', 'Julfanss', '1098130', 'Sukinos', 's1231313', 0, 'rsu.png', '2016-11-25 09:30:42', '2016-11-25 09:30:56', '2016-11-25 09:30:42'),
-(3, 0, '1535713', 'perpustakaan', 'wer', '123', 'des', '1234', 1, NULL, '2016-11-26 12:01:51', NULL, '2016-11-26 12:01:56');
+(7, 0, '0101009', 'dinas bina marga dan pengairan', 'test', '008', 'test', '008', 0, NULL, '2016-12-06 08:14:48', NULL, '2016-12-06 08:15:47'),
+(6, 0, '10210230', 'dinas kesehatan', 'test', '080', 'test', '080', 0, NULL, '2016-12-06 08:13:27', NULL, '2016-12-06 08:15:45'),
+(5, 0, '10210202', 'rsud dr. djasemen saragih', 'Drs. L. PARDAMEAN MANURUNG', '19701019 199803 1 003', 'SAKTI SIMATUPANG, SE, MT', '19790917 200604 1 006', 1, NULL, '2016-12-06 09:38:30', NULL, '2016-12-06 09:38:30'),
+(8, 0, '01010091', 'dinas tata ruang dan permukiman', 'test', '008', 'test', '008', 0, NULL, '2016-12-06 08:14:26', NULL, '2016-12-06 08:15:48'),
+(11, 0, '0190121', 'dinas kependudukan dan capil', 'test', '008', 'test', '008', 0, NULL, '2016-12-06 08:43:04', NULL, NULL),
+(9, 0, '010100912', 'dinas perhubungan', 'test', '008', 'test', '008', 0, NULL, '2016-12-06 08:15:22', NULL, NULL),
+(10, 0, '0101009123', 'dinas kebersihan', 'test', '008', 'test', '008', 0, NULL, '2016-12-06 08:15:39', NULL, NULL),
+(12, 0, '0190122', 'dinas sosial dan tenaga kerja', 'test', '008', 'test', '008', 0, NULL, '2016-12-06 08:43:30', NULL, NULL),
+(13, 0, '0190123', 'dinas koperasi dan ukm', 'test', '008', 'test', '008', 0, NULL, '2016-12-06 08:43:55', NULL, NULL),
+(14, 0, '0190124', 'dinas pemuda dan olahraga', 'test', '008', 'test', '008', 0, NULL, '2016-12-06 08:44:10', NULL, NULL),
+(15, 0, '0190125', 'dinas perindag', 'test', '008', 'test', '008', 0, NULL, '2016-12-06 08:44:24', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -556,7 +607,185 @@ INSERT INTO `log` (`id`, `userid`, `date`, `time`, `component_id`, `activity`, `
 (359, 1, '2016-11-27', '12:06:07', 40, 'update', '', NULL, NULL, NULL),
 (360, 1, '2016-11-27', '12:06:17', 0, 'logout', '', NULL, NULL, NULL),
 (361, 1, '2016-11-27', '12:11:01', 0, 'login', '', NULL, NULL, NULL),
-(362, 1, '2016-11-27', '12:11:07', 0, 'logout', '', NULL, NULL, NULL);
+(362, 1, '2016-11-27', '12:11:07', 0, 'logout', '', NULL, NULL, NULL),
+(363, 1, '2016-11-27', '12:27:37', 0, 'login', '', NULL, NULL, NULL),
+(364, 1, '2016-11-27', '12:55:40', 0, 'logout', '', NULL, NULL, NULL),
+(365, 1, '2016-11-27', '12:55:48', 0, 'login', '', NULL, NULL, NULL),
+(366, 1, '2016-11-27', '12:55:48', 0, 'login', '', NULL, NULL, NULL),
+(367, 1, '2016-11-27', '12:56:02', 0, 'login', '', NULL, NULL, NULL),
+(368, 1, '2016-11-27', '13:09:11', 149, 'create', '', NULL, NULL, NULL),
+(369, 1, '2016-11-27', '13:11:32', 149, 'create', '', NULL, NULL, NULL),
+(370, 1, '2016-11-27', '13:12:02', 149, 'create', '', NULL, NULL, NULL),
+(371, 1, '2016-11-27', '13:13:46', 149, 'update', '', NULL, NULL, NULL),
+(372, 1, '2016-11-27', '13:40:18', 149, 'update', '', NULL, NULL, NULL),
+(373, 1, '2016-11-27', '13:44:45', 149, 'update', '', NULL, NULL, NULL),
+(374, 1, '2016-11-27', '13:45:47', 149, 'update', '', NULL, NULL, NULL),
+(375, 1, '2016-11-27', '14:13:42', 149, 'update', '', NULL, NULL, NULL),
+(376, 1, '2016-11-27', '14:13:57', 149, 'update', '', NULL, NULL, NULL),
+(377, 1, '2016-11-27', '14:13:58', 149, 'update', '', NULL, NULL, NULL),
+(378, 1, '2016-11-27', '14:14:05', 149, 'delete', '', NULL, NULL, NULL),
+(379, 1, '2016-11-27', '15:38:15', 0, 'logout', '', NULL, NULL, NULL),
+(380, 1, '2016-11-27', '21:02:33', 0, 'login', '', NULL, NULL, NULL),
+(381, 1, '2016-11-27', '21:36:14', 150, 'delete', '', NULL, NULL, NULL),
+(382, 1, '2016-11-27', '21:40:14', 150, 'create', '', NULL, NULL, NULL),
+(383, 1, '2016-11-27', '21:44:06', 150, 'create', '', NULL, NULL, NULL),
+(384, 1, '2016-11-27', '21:54:41', 150, 'update', '', NULL, NULL, NULL),
+(385, 1, '2016-11-27', '21:54:49', 150, 'update', '', NULL, NULL, NULL),
+(386, 1, '2016-11-27', '21:56:24', 150, 'delete', '', NULL, NULL, NULL),
+(387, 1, '2016-11-27', '21:58:33', 148, 'update', '', NULL, NULL, NULL),
+(388, 1, '2016-11-28', '07:16:14', 0, 'login', '', NULL, NULL, NULL),
+(389, 1, '2016-11-28', '08:35:32', 0, 'create', '', NULL, NULL, NULL),
+(390, 1, '2016-11-28', '08:36:46', 132, 'create', '', NULL, NULL, NULL),
+(391, 1, '2016-11-28', '14:10:59', 0, 'login', '', NULL, NULL, NULL),
+(392, 1, '2016-11-28', '20:49:33', 0, 'login', '', NULL, NULL, NULL),
+(393, 1, '2016-11-28', '22:49:45', 0, 'login', '', NULL, NULL, NULL),
+(394, 1, '2016-11-28', '23:01:21', 150, 'delete', '', NULL, NULL, NULL),
+(395, 1, '2016-11-28', '23:01:36', 150, 'delete', '', NULL, NULL, NULL),
+(396, 1, '2016-11-28', '23:02:29', 150, 'delete', '', NULL, NULL, NULL),
+(397, 1, '2016-11-28', '23:04:43', 151, 'forced_delete', '', NULL, NULL, NULL),
+(398, 1, '2016-11-28', '23:15:25', 151, 'create', '', NULL, NULL, NULL),
+(399, 1, '2016-11-28', '23:32:14', 151, 'forced_delete', '', NULL, NULL, NULL),
+(400, 1, '2016-11-28', '23:33:25', 151, 'create', '', NULL, NULL, NULL),
+(401, 1, '2016-11-28', '23:41:32', 0, 'logout', '', NULL, NULL, NULL),
+(402, 1, '2016-11-29', '06:40:02', 0, 'login', '', NULL, NULL, NULL),
+(403, 1, '2016-11-29', '07:12:00', 151, 'create', '', NULL, NULL, NULL),
+(404, 1, '2016-11-29', '07:28:22', 151, 'create', '', NULL, NULL, NULL),
+(405, 1, '2016-11-29', '07:57:06', 151, 'create', '', NULL, NULL, NULL),
+(406, 1, '2016-11-29', '08:09:08', 151, 'update', '', NULL, NULL, NULL),
+(407, 1, '2016-11-29', '09:24:29', 0, 'login', '', NULL, NULL, NULL),
+(408, 1, '2016-11-29', '11:37:22', 0, 'login', '', NULL, NULL, NULL),
+(409, 1, '2016-11-29', '11:57:37', 0, 'create', '', NULL, NULL, NULL),
+(410, 1, '2016-11-29', '11:58:18', 132, 'create', '', NULL, NULL, NULL),
+(411, 1, '2016-11-29', '12:42:18', 132, 'update', '', NULL, NULL, NULL),
+(412, 1, '2016-11-29', '12:55:00', 0, 'login', '', NULL, NULL, NULL),
+(413, 1, '2016-11-29', '12:56:10', 0, 'logout', '', NULL, NULL, NULL),
+(414, 1, '2016-11-29', '13:19:18', 0, 'login', '', NULL, NULL, NULL),
+(415, 1, '2016-11-30', '07:08:17', 0, 'login', '', NULL, NULL, NULL),
+(416, 1, '2016-11-30', '10:01:50', 0, 'login', '', NULL, NULL, NULL),
+(417, 1, '2016-11-30', '10:03:19', 148, 'update', '', NULL, NULL, NULL),
+(418, 1, '2016-11-30', '10:03:20', 148, 'update', '', NULL, NULL, NULL),
+(419, 1, '2016-11-30', '10:53:51', 152, 'create', '', NULL, NULL, NULL),
+(420, 1, '2016-11-30', '10:56:28', 152, 'create', '', NULL, NULL, NULL),
+(421, 1, '2016-11-30', '10:59:42', 152, 'create', '', NULL, NULL, NULL),
+(422, 1, '2016-11-30', '11:01:51', 152, 'forced_delete', '', NULL, NULL, NULL),
+(423, 1, '2016-11-30', '11:13:58', 152, 'create', '', NULL, NULL, NULL),
+(424, 1, '2016-11-30', '11:18:55', 152, 'create', '', NULL, NULL, NULL),
+(425, 1, '2016-11-30', '13:38:31', 0, 'login', '', NULL, NULL, NULL),
+(426, 1, '2016-11-30', '15:34:48', 0, 'login', '', NULL, NULL, NULL),
+(427, 1, '2016-11-30', '16:40:24', 148, 'create', '', NULL, NULL, NULL),
+(428, 1, '2016-11-30', '16:42:37', 148, 'create', '', NULL, NULL, NULL),
+(429, 1, '2016-11-30', '16:42:46', 148, 'update', '', NULL, NULL, NULL),
+(430, 1, '2016-11-30', '16:45:29', 40, 'update', '', NULL, NULL, NULL),
+(431, 1, '2016-11-30', '16:48:06', 148, 'create', '', NULL, NULL, NULL),
+(432, 1, '2016-11-30', '16:48:12', 148, 'update', '', NULL, NULL, NULL),
+(433, 1, '2016-11-30', '17:08:43', 0, 'logout', '', NULL, NULL, NULL),
+(434, 1, '2016-11-30', '17:08:51', 0, 'login', '', NULL, NULL, NULL),
+(435, 1, '2016-11-30', '17:13:46', 132, 'update', '', NULL, NULL, NULL),
+(436, 1, '2016-11-30', '19:08:36', 0, 'login', '', NULL, NULL, NULL),
+(437, 1, '2016-11-30', '19:09:31', 132, 'delete', '', NULL, NULL, NULL),
+(438, 1, '2016-11-30', '19:30:41', 149, 'create', '', NULL, NULL, NULL),
+(439, 1, '2016-11-30', '19:31:40', 149, 'create', '', NULL, NULL, NULL),
+(440, 1, '2016-11-30', '19:32:34', 149, 'create', '', NULL, NULL, NULL),
+(441, 1, '2016-11-30', '19:33:24', 149, 'create', '', NULL, NULL, NULL),
+(442, 1, '2016-11-30', '19:58:44', 149, 'update', '', NULL, NULL, NULL),
+(443, 1, '2016-11-30', '19:58:46', 149, 'update', '', NULL, NULL, NULL),
+(444, 1, '2016-12-01', '00:15:13', 0, 'login', '', NULL, NULL, NULL),
+(445, 1, '2016-12-01', '00:28:02', 150, 'create', '', NULL, NULL, NULL),
+(446, 1, '2016-12-01', '00:29:06', 150, 'create', '', NULL, NULL, NULL),
+(447, 1, '2016-12-01', '06:43:28', 0, 'login', '', NULL, NULL, NULL),
+(448, 1, '2016-12-01', '07:20:57', 151, 'create', '', NULL, NULL, NULL),
+(449, 1, '2016-12-01', '07:21:25', 151, 'create', '', NULL, NULL, NULL),
+(450, 1, '2016-12-01', '08:55:20', 152, 'create', '', NULL, NULL, NULL),
+(451, 1, '2016-12-01', '08:55:51', 152, 'create', '', NULL, NULL, NULL),
+(452, 1, '2016-12-01', '10:01:17', 148, 'update', '', NULL, NULL, NULL),
+(453, 1, '2016-12-01', '12:31:06', 0, 'login', '', NULL, NULL, NULL),
+(454, 1, '2016-12-01', '12:35:58', 152, 'create', '', NULL, NULL, NULL),
+(455, 1, '2016-12-01', '13:28:17', 0, 'logout', '', NULL, NULL, NULL),
+(456, 1, '2016-12-01', '13:28:24', 0, 'login', '', NULL, NULL, NULL),
+(457, 1, '2016-12-01', '14:13:59', 132, 'update', '', NULL, NULL, NULL),
+(458, 1, '2016-12-01', '14:26:33', 0, 'logout', '', NULL, NULL, NULL),
+(459, 1, '2016-12-02', '08:13:13', 0, 'login', '', NULL, NULL, NULL),
+(460, 1, '2016-12-02', '10:14:12', 152, 'forced_delete', '', NULL, NULL, NULL),
+(461, 1, '2016-12-02', '10:15:33', 152, 'create', '', NULL, NULL, NULL),
+(462, 1, '2016-12-02', '12:44:25', 0, 'login', '', NULL, NULL, NULL),
+(463, 1, '2016-12-02', '14:08:15', 0, 'login', '', NULL, NULL, NULL),
+(464, 1, '2016-12-02', '15:32:57', 0, 'create', '', NULL, NULL, NULL),
+(465, 1, '2016-12-02', '15:33:26', 132, 'create', '', NULL, NULL, NULL),
+(466, 1, '2016-12-02', '16:02:58', 153, 'update', '', NULL, NULL, NULL),
+(467, 1, '2016-12-02', '16:03:28', 153, 'update', '', NULL, NULL, NULL),
+(468, 1, '2016-12-02', '16:04:07', 153, 'update', '', NULL, NULL, NULL),
+(469, 1, '2016-12-02', '16:04:10', 153, 'update', '', NULL, NULL, NULL),
+(470, 1, '2016-12-02', '16:04:20', 153, 'update', '', NULL, NULL, NULL),
+(471, 1, '2016-12-02', '16:04:56', 132, 'delete', '', NULL, NULL, NULL),
+(472, 1, '2016-12-02', '21:02:31', 0, 'login', '', NULL, NULL, NULL),
+(473, 1, '2016-12-03', '07:33:53', 0, 'login', '', NULL, NULL, NULL),
+(474, 1, '2016-12-03', '07:40:09', 153, 'update', '', NULL, NULL, NULL),
+(475, 1, '2016-12-03', '07:44:51', 153, 'update', '', NULL, NULL, NULL),
+(476, 1, '2016-12-03', '07:45:03', 153, 'update', '', NULL, NULL, NULL),
+(477, 1, '2016-12-03', '08:01:59', 152, 'forced_delete', '', NULL, NULL, NULL),
+(478, 1, '2016-12-03', '08:02:19', 152, 'forced_delete', '', NULL, NULL, NULL),
+(479, 1, '2016-12-03', '08:06:25', 153, 'update', '', NULL, NULL, NULL),
+(480, 1, '2016-12-03', '08:06:33', 152, 'forced_delete', '', NULL, NULL, NULL),
+(481, 1, '2016-12-03', '08:07:41', 153, 'update', '', NULL, NULL, NULL),
+(482, 1, '2016-12-03', '08:07:45', 152, 'forced_delete', '', NULL, NULL, NULL),
+(483, 1, '2016-12-03', '08:12:23', 153, 'update', '', NULL, NULL, NULL),
+(484, 1, '2016-12-03', '08:12:26', 152, 'create', '', NULL, NULL, NULL),
+(485, 1, '2016-12-04', '08:56:12', 0, 'login', '', NULL, NULL, NULL),
+(486, 1, '2016-12-04', '10:51:41', 152, 'update', '', NULL, NULL, NULL),
+(487, 1, '2016-12-04', '10:52:18', 152, 'update', '', NULL, NULL, NULL),
+(488, 1, '2016-12-05', '08:53:10', 0, 'login', '', NULL, NULL, NULL),
+(489, 1, '2016-12-05', '14:09:51', 0, 'login', '', NULL, NULL, NULL),
+(490, 1, '2016-12-05', '14:16:20', 153, 'update', '', NULL, NULL, NULL),
+(491, 1, '2016-12-05', '14:41:48', 153, 'update', '', NULL, NULL, NULL),
+(492, 1, '2016-12-05', '14:49:33', 153, 'update', '', NULL, NULL, NULL),
+(493, 1, '2016-12-05', '14:56:30', 152, 'create', '', NULL, NULL, NULL),
+(494, 1, '2016-12-05', '15:00:46', 152, 'create', '', NULL, NULL, NULL),
+(495, 1, '2016-12-05', '15:01:11', 152, 'create', '', NULL, NULL, NULL),
+(496, 1, '2016-12-05', '16:03:50', 0, 'login', '', NULL, NULL, NULL),
+(497, 1, '2016-12-05', '16:33:48', 152, 'create', '', NULL, NULL, NULL),
+(498, 1, '2016-12-05', '16:34:34', 152, 'update', '', NULL, NULL, NULL),
+(499, 1, '2016-12-06', '08:11:57', 0, 'login', '', NULL, NULL, NULL),
+(500, 1, '2016-12-06', '08:12:48', 40, 'update', '', NULL, NULL, NULL),
+(501, 1, '2016-12-06', '08:12:53', 0, 'logout', '', NULL, NULL, NULL),
+(502, 1, '2016-12-06', '08:12:58', 0, 'login', '', NULL, NULL, NULL),
+(503, 1, '2016-12-06', '08:13:27', 148, 'update', '', NULL, NULL, NULL),
+(504, 1, '2016-12-06', '08:13:58', 148, 'create', '', NULL, NULL, NULL),
+(505, 1, '2016-12-06', '08:14:26', 148, 'create', '', NULL, NULL, NULL),
+(506, 1, '2016-12-06', '08:14:48', 148, 'update', '', NULL, NULL, NULL),
+(507, 1, '2016-12-06', '08:14:52', 148, 'update', '', NULL, NULL, NULL),
+(508, 1, '2016-12-06', '08:14:53', 148, 'update', '', NULL, NULL, NULL),
+(509, 1, '2016-12-06', '08:15:22', 148, 'create', '', NULL, NULL, NULL),
+(510, 1, '2016-12-06', '08:15:39', 148, 'create', '', NULL, NULL, NULL),
+(511, 1, '2016-12-06', '08:15:44', 148, 'update', '', NULL, NULL, NULL),
+(512, 1, '2016-12-06', '08:15:45', 148, 'update', '', NULL, NULL, NULL),
+(513, 1, '2016-12-06', '08:15:47', 148, 'update', '', NULL, NULL, NULL),
+(514, 1, '2016-12-06', '08:15:48', 148, 'update', '', NULL, NULL, NULL),
+(515, 1, '2016-12-06', '08:42:10', 148, 'update', '', NULL, NULL, NULL),
+(516, 1, '2016-12-06', '08:43:04', 148, 'create', '', NULL, NULL, NULL),
+(517, 1, '2016-12-06', '08:43:30', 148, 'create', '', NULL, NULL, NULL),
+(518, 1, '2016-12-06', '08:43:55', 148, 'create', '', NULL, NULL, NULL),
+(519, 1, '2016-12-06', '08:44:10', 148, 'create', '', NULL, NULL, NULL),
+(520, 1, '2016-12-06', '08:44:24', 148, 'create', '', NULL, NULL, NULL),
+(521, 1, '2016-12-06', '09:02:54', 0, 'logout', '', NULL, NULL, NULL),
+(522, 1, '2016-12-06', '09:03:00', 0, 'login', '', NULL, NULL, NULL),
+(523, 1, '2016-12-06', '09:16:14', 40, 'update', '', NULL, NULL, NULL),
+(524, 1, '2016-12-06', '09:16:18', 0, 'logout', '', NULL, NULL, NULL),
+(525, 1, '2016-12-06', '09:16:30', 0, 'login', '', NULL, NULL, NULL),
+(526, 1, '2016-12-06', '09:38:30', 148, 'update', '', NULL, NULL, NULL),
+(527, 1, '2016-12-06', '09:57:59', 0, 'logout', '', NULL, NULL, NULL),
+(528, 1, '2016-12-06', '10:01:32', 0, 'login', '', NULL, NULL, NULL),
+(529, 1, '2016-12-06', '10:17:16', 0, 'logout', '', NULL, NULL, NULL),
+(530, 1, '2016-12-06', '10:27:04', 0, 'login', '', NULL, NULL, NULL),
+(531, 1, '2016-12-06', '10:53:26', 0, 'logout', '', NULL, NULL, NULL),
+(532, 1, '2016-12-06', '12:30:46', 0, 'login', '', NULL, NULL, NULL),
+(533, 1, '2016-12-06', '12:41:45', 40, 'update', '', NULL, NULL, NULL),
+(534, 1, '2016-12-06', '12:41:49', 0, 'logout', '', NULL, NULL, NULL),
+(535, 1, '2016-12-06', '12:41:57', 0, 'login', '', NULL, NULL, NULL),
+(536, 1, '2016-12-06', '14:18:06', 0, 'login', '', NULL, NULL, NULL),
+(537, 1, '2016-12-06', '16:30:16', 0, 'login', '', NULL, NULL, NULL),
+(538, 1, '2016-12-06', '16:32:26', 150, 'update', '', NULL, NULL, NULL),
+(539, 1, '2016-12-06', '16:32:38', 150, 'update', '', NULL, NULL, NULL),
+(540, 1, '2016-12-06', '16:32:52', 150, 'update', '', NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -574,7 +803,7 @@ CREATE TABLE `login_status` (
 --
 
 INSERT INTO `login_status` (`userid`, `log`) VALUES
-(1, 360);
+(1, 536);
 
 -- --------------------------------------------------------
 
@@ -677,7 +906,30 @@ INSERT INTO `modul` (`id`, `name`, `title`, `limit`, `publish`, `status`, `aktif
 (147, 'manufacture', 'Manufactures', 1000, 'Y', 'admin', 'Y', 'officer,admin', 'default.png', 5, '2016-11-24 17:00:17', '2016-11-24 18:13:57', '2016-11-24 19:31:29'),
 (148, 'dppa', 'Daftar DPPA', 1000, 'Y', 'admin', 'Y', 'admin', 'default.png', 5, '2016-11-24 20:01:49', NULL, NULL),
 (149, 'account', 'Kode Rekening', 1000, 'Y', 'admin', 'Y', 'officer,admin', 'default.png', 1, '2016-11-25 10:45:35', NULL, NULL),
-(150, 'acategory', 'Kategori Rekening', 10000, 'N', 'admin', 'Y', 'officer,admin', 'default.png', 1, '2016-11-25 21:02:21', NULL, NULL);
+(150, 'acategory', 'Kategori Rekening', 10000, 'N', 'admin', 'Y', 'officer,admin', 'default.png', 1, '2016-11-25 21:02:21', NULL, NULL),
+(151, 'balance', 'Pagu Anggaran', 10000, 'N', 'admin', 'Y', 'officer,admin', 'default.png', 1, '2016-11-28 08:35:31', NULL, NULL),
+(152, 'transaction', 'Transaksi SP2D', 15000, 'Y', 'admin', 'Y', 'officer,admin', 'default.png', 1, '2016-11-29 11:57:37', NULL, NULL),
+(153, 'period', 'Periode', 5, 'Y', 'admin', 'Y', 'officer,admin', 'default.png', 1, '2016-12-02 15:32:57', NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `period`
+--
+
+CREATE TABLE `period` (
+  `id` smallint(1) NOT NULL,
+  `month` smallint(2) NOT NULL,
+  `year` smallint(4) NOT NULL,
+  `updated` datetime DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `period`
+--
+
+INSERT INTO `period` (`id`, `month`, `year`, `updated`) VALUES
+(1, 2, 2016, '2016-12-05 14:49:33');
 
 -- --------------------------------------------------------
 
@@ -759,6 +1011,37 @@ CREATE TABLE `settings` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `transaction`
+--
+
+CREATE TABLE `transaction` (
+  `id` int(11) NOT NULL,
+  `type` enum('1','2','3') DEFAULT NULL,
+  `account_id` int(4) NOT NULL,
+  `category_id` int(5) NOT NULL,
+  `dppa_id` int(4) NOT NULL,
+  `amount` decimal(15,0) NOT NULL,
+  `month` int(2) NOT NULL,
+  `opening` decimal(15,0) NOT NULL,
+  `progress_amount` decimal(15,0) NOT NULL,
+  `rest` decimal(15,0) NOT NULL,
+  `year` smallint(4) NOT NULL,
+  `created` datetime DEFAULT NULL,
+  `deleted` datetime DEFAULT NULL,
+  `updated` datetime DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `transaction`
+--
+
+INSERT INTO `transaction` (`id`, `type`, `account_id`, `category_id`, `dppa_id`, `amount`, `month`, `opening`, `progress_amount`, `rest`, `year`, `created`, `deleted`, `updated`) VALUES
+(10, '1', 15, 9, 5, '100000', 1, '0', '50000', '50000', 2016, '2016-12-03 08:12:26', NULL, '2016-12-04 10:52:18'),
+(14, '1', 15, 9, 5, '100000', 2, '50000', '60000', '90000', 2016, '2016-12-05 16:33:48', NULL, '2016-12-05 16:34:34');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `user`
 --
 
@@ -776,6 +1059,7 @@ CREATE TABLE `user` (
   `role` char(20) NOT NULL,
   `status` int(1) NOT NULL DEFAULT '0',
   `lastlogin` varchar(10) NOT NULL,
+  `dppa` int(3) DEFAULT NULL,
   `created` datetime DEFAULT NULL,
   `updated` datetime DEFAULT NULL,
   `deleted` datetime DEFAULT NULL
@@ -785,8 +1069,8 @@ CREATE TABLE `user` (
 -- Dumping data for table `user`
 --
 
-INSERT INTO `user` (`id`, `username`, `password`, `name`, `address`, `phone1`, `phone2`, `city`, `email`, `yahooid`, `role`, `status`, `lastlogin`, `created`, `updated`, `deleted`) VALUES
-(1, 'admin', 'admin', 'Administrator', 'desc', '0618218907', '', '3', 'sanjaya.kiran@gmail.com', '1', 'admin', 1, '', NULL, '2016-11-24 18:14:25', NULL);
+INSERT INTO `user` (`id`, `username`, `password`, `name`, `address`, `phone1`, `phone2`, `city`, `email`, `yahooid`, `role`, `status`, `lastlogin`, `dppa`, `created`, `updated`, `deleted`) VALUES
+(1, 'admin', 'admin', 'Administrator', 'desc', '0618218907', '', '3', 'sanjaya.kiran@gmail.com', '1', 'admin', 1, '', 5, NULL, '2016-12-06 12:41:45', NULL);
 
 -- --------------------------------------------------------
 
@@ -847,6 +1131,12 @@ ALTER TABLE `admin_menu`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `balance`
+--
+ALTER TABLE `balance`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `captcha`
 --
 ALTER TABLE `captcha`
@@ -885,6 +1175,12 @@ ALTER TABLE `modul`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `period`
+--
+ALTER TABLE `period`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `property`
 --
 ALTER TABLE `property`
@@ -894,6 +1190,12 @@ ALTER TABLE `property`
 -- Indexes for table `role`
 --
 ALTER TABLE `role`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `transaction`
+--
+ALTER TABLE `transaction`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -916,17 +1218,22 @@ ALTER TABLE `widget`
 -- AUTO_INCREMENT for table `account`
 --
 ALTER TABLE `account`
-  MODIFY `id` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 --
 -- AUTO_INCREMENT for table `account_category`
 --
 ALTER TABLE `account_category`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 --
 -- AUTO_INCREMENT for table `admin_menu`
 --
 ALTER TABLE `admin_menu`
-  MODIFY `id` tinyint(3) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=177;
+  MODIFY `id` tinyint(3) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=180;
+--
+-- AUTO_INCREMENT for table `balance`
+--
+ALTER TABLE `balance`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 --
 -- AUTO_INCREMENT for table `captcha`
 --
@@ -936,12 +1243,12 @@ ALTER TABLE `captcha`
 -- AUTO_INCREMENT for table `dppa`
 --
 ALTER TABLE `dppa`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 --
 -- AUTO_INCREMENT for table `log`
 --
 ALTER TABLE `log`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=363;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=541;
 --
 -- AUTO_INCREMENT for table `menu`
 --
@@ -951,12 +1258,22 @@ ALTER TABLE `menu`
 -- AUTO_INCREMENT for table `modul`
 --
 ALTER TABLE `modul`
-  MODIFY `id` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=151;
+  MODIFY `id` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=154;
+--
+-- AUTO_INCREMENT for table `period`
+--
+ALTER TABLE `period`
+  MODIFY `id` smallint(1) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 --
 -- AUTO_INCREMENT for table `role`
 --
 ALTER TABLE `role`
   MODIFY `id` int(2) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+--
+-- AUTO_INCREMENT for table `transaction`
+--
+ALTER TABLE `transaction`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 --
 -- AUTO_INCREMENT for table `user`
 --

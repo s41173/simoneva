@@ -33,7 +33,7 @@ $(document).ready(function (e) {
 				
 				res = result.split("|");
 				// $field = array($acategory->id, $acategory->parent_id, $acategory->code, $acategory->name, $acategory->description, 
-                       // $acategory->orders);
+                       // $acategory->orders, $acategory->type);
 				
 				resets();
 				$("#tid_update").val(res[0]);
@@ -42,6 +42,7 @@ $(document).ready(function (e) {
 				$("#tname_update").val(res[3]);
 				$("#tdesc_update").val(res[4]);
 				$("#torder_update").val(res[5]);
+				$("#ctype_update").val(res[6]);
 			}
 		})
 		return false;	
