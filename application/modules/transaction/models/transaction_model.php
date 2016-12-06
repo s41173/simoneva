@@ -11,10 +11,13 @@ class Transaction_model extends Custom_Model
         $this->com = new Components();
         $this->com = $this->com->get_id('transaction');
         $this->tableName = 'transaction';
+        $this->period = new Period_lib();
+        $this->period = $this->period->get();
     }
     
-    protected $field = array('id', 'type', 'account_id', 'category_id', 'dppa_id', 'amount', 'month', 'year', 'created', 'updated', 'deleted');
-    protected $com;
+    protected $field = array('id', 'type', 'account_id', 'category_id', 'dppa_id', 'amount', 'month',
+                             'opening', 'progress_amount', 'rest', 'year', 'created', 'updated', 'deleted');
+    protected $com,$period;
             
     function count_all_num_rows()
     {
@@ -43,6 +46,19 @@ class Transaction_model extends Custom_Model
         return $this->db->get(); 
     }
     
+    function get_by_criteria($dppa,$cat,$acc,$month,$year)
+    {
+        $this->db->select($this->field);
+        $this->db->from($this->tableName); 
+        $this->db->where('deleted', $this->deleted);
+        $this->cek_null_string($dppa, 'dppa_id');
+        $this->cek_null_string($cat, 'category_id');
+        $this->cek_null_string($acc, 'account_id');
+        $this->cek_null_string($month, 'month');
+        $this->cek_null_string($year, 'year');
+        return $this->db->get(); 
+    }
+    
     function report($dppa,$year)
     {
         $this->db->select($this->field);
@@ -59,7 +75,8 @@ class Transaction_model extends Custom_Model
         $this->db->from($this->tableName); 
         $this->db->where('deleted', $this->deleted);
         $this->db->where('dppa_id', $dppa);
-        $this->db->where('year', date('Y'));
+        $this->db->where('month', $this->period->month);
+        $this->db->where('year', $this->period->year);
         $this->db->order_by('month', 'desc'); 
         return $this->db->get(); 
     }
@@ -91,6 +108,14 @@ class Transaction_model extends Custom_Model
 
         if($query > 0){ return FALSE; }
         else{ return TRUE; }
+    }
+    
+    function cleaning($dppa,$month,$year)
+    {
+        $this->db->where('dppa_id', $dppa);
+        $this->db->where('month', $month);
+        $this->db->where('year', $year);
+        $this->db->delete($this->tableName);
     }
     
 }

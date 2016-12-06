@@ -15,9 +15,10 @@ class Configuration extends MX_Controller
         $this->title = strtolower(get_class($this));
         $this->role = new Role_lib();
         $this->city = new City_lib();
+        $this->period = new Period_lib();
     }
 
-    private $properti, $modul, $title;
+    private $properti, $modul, $title, $period;
     private $role,$city;
 
     function index()
@@ -35,7 +36,7 @@ class Configuration extends MX_Controller
         $output[] = array ($result->id, $result->name, $result->address, $result->phone1, $result->phone2, $result->email,
                               $result->billing_email, $result->technical_email, $result->cc_email, $result->zip, $result->account_name,
                               $result->account_no, $result->bank, $result->city, $result->site_name, $result->meta_description,
-                              $result->meta_keyword, $result->logo
+                              $result->meta_keyword, $result->logo, $this->period->get('month'), $this->period->get('year')
                              );
          
         $this->output
@@ -57,10 +58,12 @@ class Configuration extends MX_Controller
         $data['form_action1'] = site_url($this->title.'/update_process/1');
         $data['form_action2'] = site_url($this->title.'/update_process/2');
         $data['form_action3'] = site_url($this->title.'/update_process/3');
+        $data['form_action4'] = site_url($this->title.'/update_process/4');
         $data['link'] = array('link_back' => anchor('main/','Back', array('class' => 'btn btn-danger')));
 
         $data['roles'] = $this->role->combo();
         $data['city'] = $this->city->combo_province_name();
+        $data['month'] = combo_month();
 	// ---------------------------------------- //
  
         $config['first_tag_open'] = $config['last_tag_open']= $config['next_tag_open']= $config['prev_tag_open'] = $config['num_tag_open'] = '<li>';
@@ -96,6 +99,7 @@ class Configuration extends MX_Controller
 	$data['form_action1'] = site_url($this->title.'/update_process/1');
         $data['form_action2'] = site_url($this->title.'/update_process/2');
         $data['form_action3'] = site_url($this->title.'/update_process/3');
+        $data['form_action4'] = site_url($this->title.'/update_process/4');
 	$data['link'] = array('link_back' => anchor('admin/','<span>back</span>', array('class' => 'back')));
 
 	// Form validation
@@ -123,6 +127,11 @@ class Configuration extends MX_Controller
             $this->form_validation->set_rules('tsitename', 'Site Name', 'required');
             $this->form_validation->set_rules('tmetadesc', 'Global Meta Description', '');
             $this->form_validation->set_rules('tmetakey', 'Global Meta Keyword', ''); 
+        }
+        elseif ($param == 4)
+        {
+            $this->form_validation->set_rules('tyear', 'Year Period', 'required');
+            $this->form_validation->set_rules('cmonth', 'Month Period', 'required');
         }
 
 
@@ -170,6 +179,13 @@ class Configuration extends MX_Controller
                if ($this->upload->display_errors()){ echo "warning|".$this->upload->display_errors(); }
                else { echo "true|One $this->title has successfully updated..! "; }
             }
+            elseif ($param == 4){
+            
+               $property = array('month' => $this->input->post('cmonth'), 'year' => $this->input->post('tyear'));
+               $this->period->update(1, $property);
+               echo "true|Period has successfully changed..! ";
+            }
+
             
         } else{ echo 'error|'.validation_errors(); }
       }

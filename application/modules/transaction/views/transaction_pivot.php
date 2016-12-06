@@ -67,7 +67,7 @@
 		  <thead>
            <tr>
  	       <th> No </th> <th> DPPA </th> <th> Jenis </th> <th> Program </th> <th> Rekening </th> <th> Bulan </th>
-           <th> Tahun </th> <th> Jumlah </th>
+           <th> Tahun </th> <th> SP2D </th> <th> Progress </th>
 		   </tr>
            </thead>
 
@@ -113,6 +113,7 @@
    					   <td class=\"strongs\">".$res->month."</td> 
                        <td class=\"strongs\">".$res->year."</td>
                        <td class=\"strongs\">".$res->amount."</td>
+                       <td class=\"strongs\">".$res->progress_amount."</td>
 				   </tr>";
 				   $i++;
 				}

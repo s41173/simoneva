@@ -177,7 +177,7 @@ function get_month_number($val)
     return $res;
 }
 
-function combo_month()
+function combo_month($val=null)
 {
     for($i=1; $i<=12; $i++)
     {$data['options'][$i] = get_month($i);}
@@ -206,9 +206,9 @@ function get_total_days($val)
     return $res; 
 }
 
-function previous_month($month){ if ($month == 1){ return 12;  }else { return $month-1; } }
+function previous_month($month){ if ($month == 1){ return 1;  }else { return $month-1; } }
 
-function previous_year($month,$year){ if ($month == 1){ return $year-1;  }else { return $year; } }
+function previous_year($month,$year){ if ($month == 1){ return $year;  }else { return $year; } }
 
 // date time picker
 
@@ -232,4 +232,20 @@ function idr_format($angka)
 {
   $jadi = number_format($angka,0,',','.');
   return $jadi;
+}
+
+function generate_interval($val=1)
+{
+    $res = array();
+    $j=0;
+    
+    if ($val == 1){ $res = null; }
+    else{
+        for ($i=1; $i<$val; $i++)
+        {
+            $res[$j] = $i;
+            $j++;
+        }
+    }
+    return $res;
 }

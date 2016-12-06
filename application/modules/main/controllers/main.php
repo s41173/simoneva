@@ -11,11 +11,13 @@ class Main extends MX_Controller
         $this->properti = $this->property->get();
 
         $this->acl->otentikasi();
+        $this->period = new Period_lib();
     }
 
     var $title = 'main';
     var $limit = null;
     private $properti;
+    private $period;
 
     function index()
     {       
@@ -41,8 +43,9 @@ class Main extends MX_Controller
        $data['waktu'] = tgleng(date('Y-m-d')).' - '.waktuindo().' WIB';
        $data['user_agent'] = $this->user_agent();
        $data['main_view'] = 'main/main_view';
+       $data['month'] = $this->period->get('month');
+       $data['year'] = $this->period->get('year');
        $this->load->view('template', $data);
-
     }
 
     function article()

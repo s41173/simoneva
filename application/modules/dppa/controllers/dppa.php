@@ -14,9 +14,12 @@ class Dppa extends MX_Controller
         $this->modul = $this->components->get(strtolower(get_class($this)));
         $this->title = strtolower(get_class($this));
         $this->dppa = new Dppa_lib();
+        $this->balance = new Balance_lib();
+        $this->transaction = new Transaction_lib();
+        $this->account = new Account_lib();
     }
 
-    private $properti, $modul, $title, $dppa;
+    private $properti, $modul, $title, $dppa, $balance, $transaction, $account;
     function index()
     {
        $this->get_last(); 
@@ -385,14 +388,56 @@ class Dppa extends MX_Controller
         $data['dppa'] = strtoupper($this->dppa->get_name($this->input->post('cdppa')));
         $data['month'] = $this->input->post('cmonth');
         $data['year'] = $this->input->post('tyear');
+        $data['dppa_id'] = $this->input->post('cdppa');
         
         $dppa = $this->Dppa_model->get_by_id($this->input->post('cdppa'))->row();
         $data['bendahara'] = $dppa->bendahara;
         $data['bendahara_nip'] = $dppa->nip_bendahara;
         $data['kadis'] = $dppa->kadis;
         $data['kadis_nip'] = $dppa->nip_kadis;
-
-//        Property Details
+        $data['code_dppa'] = $dppa->code;
+        
+        // balance
+        $data['source'] = $this->balance->get_priority($this->input->post('cdppa'),$this->input->post('tyear'),0);
+        $data['pagu'] = $this->balance->get_balance($this->input->post('cdppa'), 'null', 'null', $this->input->post('cmonth'), $this->input->post('tyear'));
+        
+        
+        // transaction sp2d
+        $data['transaction_amount'] = $this->transaction->get_total_monthly($this->input->post('cdppa'),'null','null', $this->input->post('cmonth'), $this->input->post('tyear'),0);
+        $data['previous_progress'] = $this->transaction->get_previous_total($this->input->post('cdppa'),'null','null', $this->input->post('cmonth'), $this->input->post('tyear'));
+        
+        
+        $data['now_progress'] = $this->transaction->get_total_monthly($this->input->post('cdppa'),'null','null', $this->input->post('cmonth'), $this->input->post('tyear'),1);
+        $data['total_progress'] =  $data['previous_progress']+$data['now_progress'];      
+        $data['rest_balance'] = $data['pagu']-$data['total_progress'];
+        
+        // ======================== biaya tidak langsung ==============================
+        $data['pagu_1'] = $this->balance->get_child_balance($this->input->post('cdppa'), $this->input->post('tyear'), 1);
+        $data['transaction_amount_1'] = $this->transaction->get_total_monthly_based_belanja($this->input->post('cdppa'),'null','null', $this->input->post('cmonth'), $this->input->post('tyear'),0,1);
+        $data['previous_progress_1'] = $this->transaction->get_previous_total_belanja($this->input->post('cdppa'),'null','null', $this->input->post('cmonth'), $this->input->post('tyear'),1);
+        
+        $data['now_progress_1'] = $this->transaction->get_total_monthly_based_belanja($this->input->post('cdppa'),'null','null', $this->input->post('cmonth'), $this->input->post('tyear'),1,1);
+        $data['total_progress_1'] =  $data['previous_progress_1']+$data['now_progress_1']; 
+        $data['rest_balance_1'] = $data['pagu_1']-$data['total_progress_1'];
+        
+        // ======================== biaya langsung =====================================
+        $data['pagu_2'] = $this->balance->get_child_balance($this->input->post('cdppa'), $this->input->post('tyear'), 2);
+        $data['transaction_amount_2'] = $this->transaction->get_total_monthly_based_belanja($this->input->post('cdppa'),'null','null', $this->input->post('cmonth'), $this->input->post('tyear'),0,2);
+        $data['previous_progress_2'] = $this->transaction->get_previous_total_belanja($this->input->post('cdppa'),'null','null', $this->input->post('cmonth'), $this->input->post('tyear'),2);
+        
+        $data['now_progress_2'] = $this->transaction->get_total_monthly_based_belanja($this->input->post('cdppa'),'null','null', $this->input->post('cmonth'), $this->input->post('tyear'),1,2);
+        $data['total_progress_2'] =  $data['previous_progress_2']+$data['now_progress_2']; 
+        $data['rest_balance_2'] = $data['pagu_2']-$data['total_progress_2'];
+        
+        // get account parent belanja tidak langsung
+        $data['account_category_1'] = $this->account->get_account_category($this->input->post('cdppa'),$this->input->post('tyear'),1)->result();
+        
+//        get account parent belanja langsung
+        $data['account_category_2'] = $this->account->get_account_category($this->input->post('cdppa'),$this->input->post('tyear'),2)->result();
+        
+        
+        
+////        Property Details
         $data['company'] = $this->properti['name'];
         $data['logo'] = $this->properti['logo'];
                 

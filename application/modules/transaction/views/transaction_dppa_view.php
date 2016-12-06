@@ -60,11 +60,24 @@
     </li>
   </ul>
 
-
+  <div id="errors" class="alert alert-danger alert-dismissible fade in" role="alert"> 
+     <?php $flashmessage = $this->session->flashdata('message'); ?> 
+	 <?php echo ! empty($message) ? $message : '' . ! empty($flashmessage) ? $flashmessage : ''; ?> 
+  </div>    
+    
   <div id="step-1">
     <!-- form -->
     <form class="form-horizontal form-label-left" id="ajaxformdata" method="post" action="<?php echo $form_action; ?>">
       
+      <div class="form-group">
+        <label class="control-label col-md-3 col-sm-3 col-xs-6"> Periode </label>
+        <div class="col-md-5 col-sm-5 col-xs-12">
+			<?php $js = "class='form-control' id='cmonth' tabindex='-1' style='width:150px;' "; 
+	        echo form_dropdown('cmonth', $month, isset($default['month']) ? $default['month'] : '', $js); ?>
+            <input type="number" class="form-control" name="tyear" id="tyear" title="Year" maxlength="4" value="<?php echo date('Y'); ?>" />
+        </div>
+      </div>    
+        
       <div class="form-group">
         <label for="middle-name" class="control-label col-md-3 col-sm-3 col-xs-12"> Kategori Rekening </label>
         <div class="col-md-9 col-sm-9 col-xs-12">
@@ -75,7 +88,7 @@
       
       <div class="form-group">
         <label class="control-label col-md-3 col-sm-3 col-xs-12"> Rekening </label>
-        <div class="col-md-6 col-sm-6 col-xs-12" id="select_box"> </div>
+        <div class="col-md-6 col-sm-6 col-xs-12 select_box"> </div>
       </div>
       
       <div class="form-group">
@@ -84,6 +97,13 @@
 			<input type="number" class="form-control" name="tbudget" id="tbudget" title="Budget" readonly />
         </div>
       </div>
+        
+      <div class="form-group">
+        <label class="control-label col-md-3 col-sm-3 col-xs-12"> Jumlah Saldo Bulan Lalu </label>
+        <div class="col-md-3 col-sm-3 col-xs-12">
+<input type="number" class="form-control" name="topening" id="topening" readonly title="Opening" />
+        </div>
+      </div>    
       
       <div class="form-group">
         <label class="control-label col-md-3 col-sm-3 col-xs-12"> Jumlah SP2D </label>
@@ -91,15 +111,21 @@
 			<input type="number" class="form-control" name="tamount" id="tamount" title="Amount" />
         </div>
       </div>
+     
+      <div class="form-group">
+      <label class="control-label col-md-3 col-sm-3 col-xs-12"> Progress Keuangan  </label>
+          <div class="col-md-3 col-sm-3 col-xs-12">
+            <input id="tprogress" class="form-control col-md-7 col-xs-12" type="number" name="tprogress" required placeholder="Jumlah Nominal Kemajuan Bulan Ini" onkeyup="calculate_rest_balance()">
+          </div>
+      </div>
       
       <div class="form-group">
-        <label class="control-label col-md-3 col-sm-3 col-xs-6"> Periode </label>
-        <div class="col-md-5 col-sm-5 col-xs-12">
-			<?php $js = "class='form-control' id='cmonth' tabindex='-1' style='width:150px;' "; 
-	        echo form_dropdown('cmonth', $month, isset($default['month']) ? $default['month'] : '', $js); ?>
-            <input type="number" class="form-control" name="tyear" id="tyear" title="Year" maxlength="4" value="<?php echo date('Y'); ?>" />
+        <label class="control-label col-md-3 col-sm-3 col-xs-12"> Jumlah Saldo Akhir Bulan </label>
+        <div class="col-md-3 col-sm-3 col-xs-12">
+<input type="number" class="form-control" name="trest" id="trest" readonly title="Opening" />
         </div>
-      </div>
+      </div>    
+      
       <br>
       
       <div class="ln_solid"></div>
@@ -137,8 +163,8 @@
              </div>
 
               <!-- Trigger the modal with a button --> 
-              <!--<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal3"> Report  </button>-->
-               
+<!--<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal3">   </button>-->
+<a class="btn btn-primary" href="<?php echo site_url('transaction/closing'); ?>"> Generate Begin Saldo </a>
                <!-- links -->
 	           <?php if (!empty($link)){foreach($link as $links){echo $links . '';}} ?>
                <!-- links -->
@@ -161,7 +187,7 @@
       
       <!-- Modal Edit Form -->
       <div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-	     <?php //$this->load->view('balance_update'); ?> 
+	     <?php $this->load->view('transaction_update'); ?> 
       </div>
       <!-- Modal Edit Form -->
       

@@ -18,9 +18,10 @@ class Transaction extends MX_Controller
         $this->category = new Acategory_lib();
         $this->balance = new Balance_lib();
         $this->transaction = new Transaction_lib();
+        $this->period = new Period_lib();
     }
 
-    private $properti, $modul, $title, $transaction, $dppa, $account, $category, $balance;
+    private $properti, $modul, $title, $transaction, $dppa, $account, $category, $balance, $period;
 
     function index()
     {
@@ -92,6 +93,7 @@ class Transaction extends MX_Controller
         $data['account'] = $this->account->combo_child();
         $data['category'] = $this->category->combo_child_based_dppa($this->session->userdata('dppa'),'null');
         $data['month'] = combo_month();
+        $data['default']['month'] = $this->period->get('month');
  
         $config['first_tag_open'] = $config['last_tag_open']= $config['next_tag_open']= $config['prev_tag_open'] = $config['num_tag_open'] = '<li>';
         $config['first_tag_close'] = $config['last_tag_close']= $config['next_tag_close']= $config['prev_tag_close'] = $config['num_tag_close'] = '</li>';
@@ -201,7 +203,9 @@ class Transaction extends MX_Controller
 
     function delete($uid,$type='hard')
     {
-        if ($this->acl->otentikasi_admin($this->title,'ajax') == TRUE){
+        $transaction = $this->Transaction_model->get_by_id($uid)->row();
+        
+        if ($this->acl->otentikasi_admin($this->title,'ajax') == TRUE && $this->valid_period($transaction->month, $transaction->year) == TRUE){
         if ($type == 'soft'){
            $this->Transaction_model->delete($uid);
            $this->session->set_flashdata('message', "1 $this->title successfully removed..!");
@@ -220,11 +224,13 @@ class Transaction extends MX_Controller
         else { $this->session->set_flashdata('message', "$this->title related to another component..!"); 
         echo  "invalid|$this->title related to another component..!";} 
        }
-       }else { echo "error|Sorry, you do not have the right to edit $this->title component..!"; }
+       }else { 
+           echo "error|Sorry, you do not have the right to edit $this->title component..!"; 
+       }
     }
 
     private function cek_relation($id){ return TRUE; }
-
+    
     function add_process($dppa=null)
     {
         if ($this->acl->otentikasi2($this->title,'ajax') == TRUE){
@@ -239,8 +245,11 @@ class Transaction extends MX_Controller
         $this->form_validation->set_rules('ccategory', 'Program Anggaran', 'required|callback_valid_transaction'); 
         $this->form_validation->set_rules('caccount', 'Rekening Anggaran', 'required'); 
         $this->form_validation->set_rules('tamount', 'Nilai Anggaran', 'required|numeric|callback_valid_amount_transaction['.$this->input->post('tbudget').']'); 
-        $this->form_validation->set_rules('cmonth', 'Bulan Anggaran', 'required|numeric'); 
+        $this->form_validation->set_rules('cmonth', 'Bulan Anggaran', 'required|numeric|callback_valid_period['.$this->input->post('tyear').']'); 
         $this->form_validation->set_rules('tyear', 'Tahun Anggaran', 'required|numeric'); 
+        $this->form_validation->set_rules('tprogress', 'Nilai Progress', 'required|numeric|callback_valid_progress['.$this->input->post('tamount').']'); 
+        $this->form_validation->set_rules('topening', 'Saldo Awal', 'required|numeric'); 
+        $this->form_validation->set_rules('trest', 'Sisa Saldo', 'required|numeric'); 
 
         if ($this->form_validation->run($this) == TRUE)
         {
@@ -248,10 +257,14 @@ class Transaction extends MX_Controller
                               'dppa_id' => $dppa,
                               'type' => $this->account->get_type($this->input->post('caccount')),
                               'account_id' => $this->input->post('caccount'),
+                              'opening' => $this->input->post('topening'),
                               'amount' => $this->input->post('tamount'),
+                              'progress_amount' => $this->input->post('tprogress'),
+                              'rest' => $this->input->post('trest'),
                               'month' => $this->input->post('cmonth'),             
                               'year' => $this->input->post('tyear'),
                               'created' => date('Y-m-d H:i:s'));
+             
              $this->Transaction_model->add($transaction);
              echo 'true|Data successfully saved..!';
         }
@@ -269,10 +282,20 @@ class Transaction extends MX_Controller
         if ($type=='update'){
             $this->session->unset_userdata('langid');
 	    $this->session->set_userdata('langid', $transaction->id);    
+            
+            $field = array($transaction->id, $transaction->type, $this->account->get_code($transaction->account_id).' : '.$this->account->get_name($transaction->account_id),
+                           $this->category->get_name($transaction->category_id), $transaction->dppa_id, 
+                           $transaction->amount, get_month($transaction->month), $transaction->opening, $transaction->progress_amount,
+                           $transaction->rest, $transaction->year,
+                           $this->get_budget($transaction->category_id, $transaction->account_id, $transaction->year, 'non'),
+                           $transaction->month);
         }
+        else{
         
         $field = array($transaction->id, $transaction->type, $transaction->account_id, $transaction->category_id, $transaction->dppa_id, 
-                       $transaction->priority, $transaction->source, $transaction->amount, $transaction->month, $transaction->year);
+                       $transaction->amount, $transaction->month, $transaction->opening, $transaction->progress_amount,
+                       $transaction->rest, $transaction->year);
+        }
         
         echo implode('|', $field);
     }
@@ -288,11 +311,46 @@ class Transaction extends MX_Controller
     }
     
     //menampilkan budget masing2 category
-    function get_budget($cat,$acc,$year)
+    function get_budget($cat=null,$acc=null,$year=null,$type='ajax')
     {
-        $budget = $this->balance->get_budet($cat, $acc, $year);
-        $realisasi = $this->transaction->get_realisasi($cat, $acc, $year);
-        echo $budget-$realisasi;
+        $res = 0;
+        if ($cat != null && $acc != null){ 
+            $budget = $this->balance->get_budet($this->session->userdata('dppa'), $cat, $acc, $year);
+//            $realisasi = $this->transaction->get_realisasi($this->session->userdata('dppa'),$cat, $acc, $year);
+            $realisasi = 0;
+            $res = $budget-$realisasi; 
+        }
+        else {$res = 0;}
+        if ($type=='ajax'){ echo $res; }else{ return $res; }
+    }
+    
+    function get_opening($cat=null,$acc=null,$month=null,$year=null)
+    {
+        if ($cat != null && $acc != null){ 
+            $res = $this->Transaction_model->get_by_criteria($this->session->userdata('dppa'),$cat,$acc,$month,$year)->row();
+            if ($res){ echo @$res->opening; }else { echo 0; }
+        }
+        else { echo 0; }
+    }
+    
+    public function valid_progress($progress,$amount)
+    {
+        if ($progress > $amount)
+        {
+           $this->form_validation->set_message('valid_progress', "Invalid Progress Amount Transaction..!");
+           return FALSE; 
+        }
+        else { return TRUE; }
+    }
+    
+    public function valid_period($month,$year)
+    {
+        if ($this->Transaction_model->valid_period($month,$year) == FALSE)
+        {
+           $this->form_validation->set_message('valid_period', "Invalid Period Transaction..!");
+           return FALSE; 
+        }
+        else { return TRUE; }
     }
     
     public function valid_amount_transaction($amount,$budget)
@@ -342,26 +400,25 @@ class Transaction extends MX_Controller
 	$data['link'] = array('link_back' => anchor('transaction/','<span>back</span>', array('class' => 'back')));
 
         
-        if ($this->input->post('type')=='priority')
+        $this->form_validation->set_rules('tamount', 'Nilai Anggaran', 'required|numeric|callback_valid_amount_transaction['.$this->input->post('tbudget').']'); 
+        $this->form_validation->set_rules('cmonth', 'Bulan Anggaran', 'required|numeric|callback_valid_period['.$this->input->post('tyear').']'); 
+        $this->form_validation->set_rules('tyear', 'Tahun Anggaran', 'required|numeric'); 
+        $this->form_validation->set_rules('tprogress', 'Nilai Progress', 'required|numeric|callback_valid_progress['.$this->input->post('tamount').']'); 
+        $this->form_validation->set_rules('topening', 'Saldo Awal', 'required|numeric'); 
+        $this->form_validation->set_rules('trest', 'Sisa Saldo', 'required|numeric');            
+
+        if ($this->form_validation->run($this) == TRUE)
         {
-           $this->form_validation->set_rules('csource', 'Sumber Anggaran', 'required'); 
-           $this->form_validation->set_rules('tamount', 'Nilai Anggaran', 'required|numeric|callback_valid_child_transaction'); 
-           $this->form_validation->set_rules('tyear', 'Tahun Anggaran', 'required|numeric'); 
-           
-           if ($this->form_validation->run($this) == TRUE)
-           {
-                $transaction = array('source' => $this->input->post('csource'),
-                                 'dppa_id' => $dppa,
-                                 'priority' => 1,
-                                 'amount' => $this->input->post('tamount'),
-                                 'year' => $this->input->post('tyear'),
-                                 'created' => date('Y-m-d H:i:s'));
-                
-                $this->Transaction_model->update($this->session->userdata('langid'), $transaction);
-                echo 'true|Data successfully saved..!';
-           }
-           else { echo 'error|'.validation_errors();  }
+             $transaction = array(
+                           'amount' => $this->input->post('tamount'),
+                           'progress_amount' => $this->input->post('tprogress'),
+                           'rest' => $this->input->post('trest'),
+                           );
+
+             $this->Transaction_model->update($this->session->userdata('langid'), $transaction);
+             echo 'true|Data successfully saved..!';
         }
+        else { echo 'error|'.validation_errors();  }
         
         }else { echo "error|Sorry, you do not have the right to edit $this->title component..!"; }
     }
@@ -389,6 +446,35 @@ class Transaction extends MX_Controller
         
         if ($this->input->post('ctype') == 0){ $this->load->view('transaction_report', $data); }
         else { $this->load->view('transaction_pivot', $data); }
+    }
+    
+    function closing()
+    {
+        $dppa = $this->session->userdata('dppa');
+        $month = $this->period->get('month');
+        $year = $this->period->get('year');
+        
+        $prev = $month-1;
+        if ($prev != 0)
+        {
+            $previous = $this->Transaction_model->search($dppa,'null',$prev,$year)->result();
+            $this->db->trans_start();
+            $this->Transaction_model->cleaning($dppa,$month,$year);
+            foreach ($previous as $res)
+            {
+               $trans = array('category_id' => $res->category_id, 'dppa_id' => $dppa,
+                              'type' => $this->account->get_type($res->account_id),'account_id' => $res->account_id,
+                              'opening' => $res->rest, 'amount' => $res->amount, 'month' => $month, 'year' => $year,
+                              'created' => date('Y-m-d H:i:s')); 
+               $this->Transaction_model->add($trans);
+            }
+            $this->db->trans_complete();
+            
+            if ($this->db->trans_status() === FALSE){ $this->db->trans_rollback(); $this->session->set_flashdata('message', "Transaction Error..!!");    }
+            else { $this->db->trans_commit(); $this->session->set_flashdata('message', "Transaction Successfull..!!");    }
+        }
+        else{ $this->session->set_flashdata('message', "Generate Data Can't Realize..!!");   }        
+        redirect($this->title.'/get_dppa/'.$dppa); 
     }
 
 }

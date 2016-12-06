@@ -74,6 +74,8 @@ $(document).ready(function (e) {
 					$("#tmetakey").val(data[0][16]);
 					$("#catimg_update").attr("src","");
 					$("#catimg_update").attr("src",base_url+"images/property/"+data[0][17]);
+					$("#cmonth").val(data[0][18]);
+					$("#tyear").val(data[0][19]);
 			   
 				},
 				error: function(e){

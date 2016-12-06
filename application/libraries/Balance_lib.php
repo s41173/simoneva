@@ -7,9 +7,10 @@ class Balance_lib extends Main_Model {
         $this->deleted = $deleted;
         $this->tableName = 'balance';
         $this->account = new Account_lib();
+        $this->transaction = new Transaction_lib();
     }
 
-    protected $account;
+    protected $account,$transaction;
     protected $field = array('id', 'type', 'account_id', 'category_id', 'dppa_id', 'priority', 'source', 'amount', 'year', 'created', 'updated', 'deleted');
 
     function combo()
@@ -95,15 +96,78 @@ class Balance_lib extends Main_Model {
         return $data;
     }
     
-    function get_budet($cat,$acc,$year)
+    function get_budet($dppa,$cat='null',$acc,$year)
     {
         $this->db->select_sum('amount');
         $this->db->where('year', $year);
-        $this->db->where('category_id', $cat);
         $this->db->where('account_id', $acc);
+        $this->db->where('dppa_id', $dppa);
+        $this->cek_null_string($cat, 'category_id');
         $val = $this->db->get($this->tableName)->row_array();
         return $val['amount'];
     }
+    
+    function get_priority($dppa,$year,$type=0)
+    {
+        $this->db->select('source, amount');
+        $this->db->where('year', $year);
+        $this->db->where('dppa_id', $dppa);
+        $this->db->where('priority', 1);
+        $val = $this->db->get($this->tableName)->row();
+        if ($type == 0){ return $val->source; }
+        elseif ($type == 1){ return $val->amount; }
+    }
+    
+    // get jenis balance belanja langsung / tidak langsung
+    function get_child_balance($dppa,$year,$type=1)
+    {
+        $this->db->select('amount');
+        $this->db->where('year', $year);
+        $this->db->where('dppa_id', $dppa);
+        $this->db->where('priority', 0);
+        $this->db->where('type', $type);
+        $val = $this->db->get($this->tableName)->row();
+        if ($val){ return $val->amount;  }else { return 0; }
+        
+    }
+    
+    // get jenis balance berdasarkan jenis category parent ex:511
+    function get_account_category_balance($dppa,$year,$category)
+    {
+        $this->db->select_sum('balance.amount');
+        $this->db->from('balance, account');
+        $this->db->where('account.id = balance.account_id');
+        $this->db->where('balance.year', $year);
+        $this->db->where('balance.dppa_id', $dppa);
+        $this->db->where('balance.priority', 0);
+        $this->db->where('balance.type', $this->account->top_category($category,1));
+        $this->db->where('account.category', $category);
+        $val = $this->db->get()->row_array();
+        return $val['amount']; 
+    }
+    
+    // get jenis balance berdasarkan jenis category parent ex:511
+    function get_account_parent_balance($dppa,$year,$parent)
+    {
+        $this->db->select_sum('balance.amount');
+        $this->db->from('balance, account');
+        $this->db->where('account.id = balance.account_id');
+        $this->db->where('balance.year', $year);
+        $this->db->where('balance.dppa_id', $dppa);
+        $this->db->where('balance.priority', 0);
+        $this->db->where('account.parent_id', $parent);
+        $val = $this->db->get()->row_array();
+        return $val['amount']; 
+    }
+    
+    function get_balance($dppa,$cat='null',$acc='null',$month,$year)
+    {
+        $res1 = $this->get_priority($dppa, $year,1);
+        $res2 = $this->transaction->get_interval_balance($dppa, $cat, $acc, $month, $year);
+//        return $res1-$res2;
+        return $res1;
+    }
+    
 
     function get_name($id=null)
     {

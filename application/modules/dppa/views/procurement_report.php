@@ -166,7 +166,6 @@ BULAN : <?php echo strtoupper(get_month($month)).'  '.$year; ?> </h1>
 		.xx,
 		.xx td{
 			border: 0 !important;
-			font
 		}
 	</style>
 

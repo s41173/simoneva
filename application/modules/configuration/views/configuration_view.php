@@ -66,9 +66,13 @@
     <li>
       <a href="#step-3">
         <span class="step_no">3</span>
-        <span class="step_descr">
-                          <small> Site Configuration </small>
-                      </span>
+        <span class="step_descr"> <small> Site Configuration </small> </span>
+      </a>
+    </li>
+    <li>
+      <a href="#step-4">
+        <span class="step_no">4</span>
+        <span class="step_descr"> <small> Period </small> </span>
       </a>
     </li>
   </ul>
@@ -204,6 +208,39 @@
             <input type="file" id="uploadImage" accept="image/*" class="input-medium" title="Upload" name="userfile" /> <br>
             <img id="catimg_update" style="width:100%; height:auto;">
       </div>
+    </div>
+    
+    <div class="ln_solid"></div>
+      <div class="form-group">
+        <div class="col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
+          <button type="submit" class="btn btn-primary" id="button">Save</button>
+        </div>
+    </div>
+    
+    </form>
+    
+	<!-- end form -->
+    
+  </div>
+    
+    <div id="step-4">
+     
+    <form class="form-horizontal form-label-left" id="ajaxform4" method="post" action="<?php echo $form_action4; ?>" 
+    enctype="multipart/form-data">
+   
+    <div class="form-group">
+        <label for="middle-name" class="control-label col-md-3 col-sm-3 col-xs-12"> Month </label>
+        <div class="col-md-3 col-sm-3 col-xs-12">
+          <?php $js = "class='form-control' id='cmonth' tabindex='-1' style='width:100%;' "; 
+	   echo form_dropdown('cmonth', $month, isset($default['month']) ? $default['month'] : '', $js); ?>
+        </div>     
+    </div>
+    
+    <div class="form-group">
+    <label class="control-label col-md-3 col-sm-3 col-xs-12"> Year </label>
+     <div class="col-md-2 col-sm-2 col-xs-12">
+        <input type="number" maxlength="4" class="form-control" name="tyear" id="tyear" title="Year" />
+     </div>
     </div>
     
     <div class="ln_solid"></div>

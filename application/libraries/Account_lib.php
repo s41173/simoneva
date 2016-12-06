@@ -12,6 +12,7 @@ class Account_lib extends Main_Model {
 
     function combo($vals=null)
     {
+        $data = null;
         $this->db->select($this->field);
         $this->db->where('deleted', NULL);
         $this->db->where('publish',1);
@@ -19,7 +20,9 @@ class Account_lib extends Main_Model {
         $this->db->order_by('name', 'asc');
         $val = $this->db->get($this->tableName)->result();
         if ($vals=null){ $data['options'][0] = 'Top'; }
-        foreach($val as $row){ $data['options'][$row->id] = ucfirst($row->name); }
+        if ($val){ foreach($val as $row){ $data['options'][$row->id] = ucfirst($row->name); } }
+        else { $data['options'][''] = ' -- '; }
+        
         return $data;
     }
     
@@ -193,6 +196,50 @@ class Account_lib extends Main_Model {
            $data['options'][523] = strtoupper('Belanja Modal');
         }
         return $data;
+    }
+    
+    // balance integrasi account
+    function get_account_category($dppa,$year,$belanja=1)
+    {
+        $this->db->select('account.category');
+        $this->db->from('balance, account');
+        $this->db->where('account.id = balance.account_id');
+        $this->db->where('account.publish', 1);
+        $this->db->where('balance.priority', 0);
+        $this->db->where('balance.type', $belanja);
+        $this->db->where('balance.year', $year);
+        $this->db->where('balance.dppa_id', $dppa);
+        $this->db->order_by('account.category', 'asc');
+        $this->db->distinct();
+        
+        return $this->db->get(); 
+    }
+    
+    // balance integrasi account parent ex:5110101
+    function get_account_parent($category)
+    {
+        $this->db->select('account.code,account.id,account.name');
+        $this->db->from('account');
+        $this->db->where('account.publish', 1);
+        $this->db->where('account.parent_id', 0);
+        $this->db->where('account.category', $category);
+        $this->db->order_by('account.code', 'asc');
+        $this->db->distinct();
+        
+        return $this->db->get(); 
+    }
+    
+    // get account based parent
+    function get_account_based_parent($parent)
+    {
+        $this->db->select('account.code,account.id,account.name');
+        $this->db->from('account');
+        $this->db->where('account.publish', 1);
+        $this->db->where('account.parent_id', $parent);
+        $this->db->order_by('account.code', 'asc');
+        $this->db->distinct();
+        
+        return $this->db->get(); 
     }
 
 }

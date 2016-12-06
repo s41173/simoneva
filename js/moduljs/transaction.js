@@ -31,20 +31,31 @@ $(document).ready(function (e) {
 			headers: { "cache-control": "no-cache" },
 			success: function(result) {
 				
-				// protected $field = array('id', 'type', 'account_id', 'category_id', 'dppa_id', 'priority', 'source', 'amount', 'year', 'created', 'updated', 'deleted');
+				// $field = array($transaction->id, 
+				                  // $transaction->type, $transaction->account_id, $transaction->category_id, $transaction->dppa_id, 
+                       // $transaction->amount, $transaction->month, $transaction->opening, $transaction->progress_amount,
+                       // $transaction->rest, $transaction->year);
+					   
 				res = result.split("|");
 				resets();
 				$("#tid_update").val(res[0]);
-				$('#csources_update').val(res[6]).change();
-				$("#tamount_update").val(res[7]);
-				$("#tyear_update").val(res[9]);
+				$('#tmonth').val(res[6]);
+				$('#tyear_update').val(res[10]);
+				$('#tcategory').val(res[3]);
+				$('#taccount').val(res[2]);
+				$('#tbudget_update').val(res[11]);
+				$('#topening_update').val(res[7]);
+				$("#tamount_update").val(res[5]);
+				$("#tprogress_update").val(res[8]);
+				$("#trest_update").val(res[9]);
+				$('#cmonth_update').val(res[12]);
 			}
 		})
 		return false;	
 	});
 	
 	// fungsi ajax combo
-	$(document).on('change','#ccategory_account',function(e)
+	$(document).on('change','#ccategory_account,#ccategory_account_update',function(e)
 	{	
 		e.preventDefault();
 		var value = $(this).val();
@@ -58,7 +69,7 @@ $(document).ready(function (e) {
     	    cache: false,
 			headers: { "cache-control": "no-cache" },
 			success: function(result) {
-				$("#select_box").html(result);
+				$(".select_box").html(result);
 			}
 		})
 		return false;	
@@ -67,7 +78,6 @@ $(document).ready(function (e) {
 	// fungsi caccount get budget
 	$(document).on('change','#caccount_balance',function(e)
 	{	
-		console.log('budget');
 		e.preventDefault();
 		var acc = $(this).val();
 		var year = $('#tyear').val();
@@ -82,6 +92,29 @@ $(document).ready(function (e) {
 			headers: { "cache-control": "no-cache" },
 			success: function(result) {
 				$("#tbudget").val(result);
+			}
+		})
+		return false;	
+	});
+	
+	// get opening saldo
+	$(document).on('change','#caccount_balance',function(e)
+	{	
+		e.preventDefault();
+		var acc = $(this).val();
+		var month = $('#cmonth').val();
+		var year = $('#tyear').val();
+		var cat = $('#ccategory_account').val();
+		var url = sites_ajax+'/get_opening/'+cat+'/'+acc+'/'+month+'/'+year;
+		
+		// batas
+		$.ajax({
+			type: 'POST',
+			url: url,
+    	    cache: false,
+			headers: { "cache-control": "no-cache" },
+			success: function(result) {
+				$("#topening").val(result);
 			}
 		})
 		return false;	
@@ -169,9 +202,31 @@ $(document).ready(function (e) {
     {
 	  $(document).ready(function (e) {
 		  
-		 $("#tamount,#tbudget").val("");
+		 $("#tamount,#tbudget,#tprogress,#trest,#topening").val("");
 	  });
     }
+	
+	function calculate_rest_balance(val)
+	{
+	  $(document).ready(function (e) {	
+		  if (val != 'update')		
+		  {			  
+			 var opening = parseFloat($("#topening").val());
+			 var amount = parseFloat($("#tamount").val());
+			 var progress = parseFloat($("#tprogress").val());
+			 var res = opening+amount-progress;
+			 $("#trest").val(res);			  
+		  }
+		  else{
+			 var opening = parseFloat($("#topening_update").val());
+			 var amount = parseFloat($("#tamount_update").val());
+			 var progress = parseFloat($("#tprogress_update").val());
+			 var res = opening+amount-progress;
+			 $("#trest_update").val(res);			  
+		  }
+	  });
+	  
+	}
 	
 // fungsi load data
 	function load_data(type='dppa')
@@ -198,7 +253,7 @@ if (type=='dppa')
 
 			$("#chkbox").append('<input type="checkbox" name="newsletter" value="accept1" onclick="cekall('+s.length+')" id="chkselect" class="chkselect">');							
 							for(var i = 0; i < s.length; i++) {
-							 if (s[i][3] == 'Top'){ atr = "fa fas-2x fa-edit"; }else{ atr = ""; }
+							 if (s[i][3] == 'Top'){ atr = "fa fas-2x fa-edit"; }else{ atr = "fa fas-2x fa-edit"; }
 							 oTable.fnAddData([
 '<input type="checkbox" name="cek[]" value="'+s[i][0]+'" id="cek'+i+'" style="margin:0px"  />',
 										i+1,
