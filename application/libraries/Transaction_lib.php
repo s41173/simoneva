@@ -259,6 +259,112 @@ class Transaction_lib extends Main_Model {
         elseif ($type == 2) { return $val['opening']; }
         elseif ($type == 3) { return $val['rest']; }
     }
+    
+    // fungsi untuk mendapatkan summary berdasarkan program
+    function get_total_monthly_based_program($dppa,$cat='null',$acc='null',$month,$year,$type=0)
+    {        
+        $this->db->select_sum('transaction.amount');
+        $this->db->select_sum('transaction.progress_amount');
+        $this->db->select_sum('transaction.opening');
+        $this->db->select_sum('transaction.rest');
+        
+        $this->db->from('transaction, account, account_category');
+        $this->db->where('account.id = transaction.account_id');
+        $this->db->where('account_category.id = transaction.category_id');
+        $this->db->where('account_category.parent_id', $cat);
+        
+        $this->db->where('transaction.year', $year);
+        $this->db->where('transaction.month', $month);
+        $this->db->where('transaction.dppa_id', $dppa);
+        $this->cek_null_string($acc, 'account_id');
+        $val = $this->db->get()->row_array();
+        
+        if ($type == 0){ return $val['amount']; }
+        elseif ($type == 1) { return $val['progress_amount']; }
+        elseif ($type == 2) { return $val['opening']; }
+        elseif ($type == 3) { return $val['rest']; }
+    }
+    
+    // fungsi untuk mendapatkan summary berdasarkan kegiatan
+    function get_total_monthly_based_kegiatan($dppa,$cat='null',$acc='null',$month,$year,$type=0)
+    {        
+        $this->db->select_sum('transaction.amount');
+        $this->db->select_sum('transaction.progress_amount');
+        $this->db->select_sum('transaction.opening');
+        $this->db->select_sum('transaction.rest');
+        
+        $this->db->from('transaction, account, account_category');
+        $this->db->where('account.id = transaction.account_id');
+        $this->db->where('account_category.id = transaction.category_id');
+        $this->db->where('account_category.id', $cat);
+        
+        $this->db->where('transaction.year', $year);
+        $this->db->where('transaction.month', $month);
+        $this->db->where('transaction.dppa_id', $dppa);
+        $this->cek_null_string($acc, 'account_id');
+        $val = $this->db->get()->row_array();
+        
+        if ($type == 0){ return $val['amount']; }
+        elseif ($type == 1) { return $val['progress_amount']; }
+        elseif ($type == 2) { return $val['opening']; }
+        elseif ($type == 3) { return $val['rest']; }
+    }
+    
+    // mendapatkan balance berdasarkan category account : 522
+    function get_total_based_program_category_acc($category,$acategory,$dppa,$month,$year,$type=0)
+    {
+        $this->db->select_sum('transaction.amount');
+        $this->db->select_sum('transaction.progress_amount');
+        $this->db->select_sum('transaction.opening');
+        $this->db->select_sum('transaction.rest');
+        
+        $this->db->from('transaction, account, account_category');
+        $this->db->where('account.id = transaction.account_id');
+        $this->db->where('account_category.id = transaction.category_id');
+        
+        $this->db->where('transaction.month', $month);
+        $this->db->where('transaction.year', $year);
+        $this->db->where('transaction.dppa_id', $dppa);
+        $this->db->where('transaction.category_id', $acategory);
+        $this->db->where('account.category', $category);
+        $val = $this->db->get()->row_array();
+        
+        if ($type == 0){ return $val['amount']; }
+        elseif ($type == 1) { return $val['progress_amount']; }
+        elseif ($type == 2) { return $val['opening']; }
+        elseif ($type == 3) { return $val['rest']; }
+        
+    }
+    
+    // mendapatkan balance berdasarkan top rekening kegiatan
+    function get_total_based_program_top_acc($category,$acategory,$parentacc,$dppa,$month,$year,$type=0)
+    {
+        $this->db->select_sum('transaction.amount');
+        $this->db->select_sum('transaction.progress_amount');
+        $this->db->select_sum('transaction.opening');
+        $this->db->select_sum('transaction.rest');
+        
+        $this->db->from('transaction, account, account_category');
+        $this->db->where('account.id = transaction.account_id');
+        $this->db->where('account_category.id = transaction.category_id');
+        
+        $this->db->where('transaction.month', $month);
+        $this->db->where('transaction.year', $year);
+        $this->db->where('transaction.dppa_id', $dppa);
+        $this->db->where('transaction.category_id', $acategory);
+        $this->db->where('account.category', $category); // 522
+        $this->db->where('account.parent_id', $parentacc); 
+        $val = $this->db->get()->row_array();
+        
+        if ($type == 0){ return $val['amount']; }
+        elseif ($type == 1) { return $val['progress_amount']; }
+        elseif ($type == 2) { return $val['opening']; }
+        elseif ($type == 3) { return $val['rest']; }
+        
+    }
+    
+    // mendapatkan balance berdasarkan category account : 522 rincian rekening
+
 
 }
 

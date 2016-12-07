@@ -193,6 +193,93 @@ class Balance_lib extends Main_Model {
         }
         else { return ''; }
     }
+    
+    // tarik data balance berdasarkan program kegiatan
+    function get_balance_based_top_program($dppa,$year,$parent)
+    {
+        $this->db->select_sum('balance.amount');
+        $this->db->from('balance, account, account_category');
+        $this->db->where('account.id = balance.account_id');
+        $this->db->where('account_category.id = balance.category_id');
+        $this->db->where('balance.year', $year);
+        $this->db->where('balance.dppa_id', $dppa);
+        $this->db->where('balance.priority', 0);
+        $this->db->where('account_category.parent_id', $parent);
+        $val = $this->db->get()->row_array();
+        return $val['amount']; 
+    }
+    
+    function get_balance_based_child_program($dppa,$year,$acategory)
+    {
+        $this->db->select_sum('balance.amount');
+        $this->db->from('balance, account, account_category');
+        $this->db->where('account.id = balance.account_id');
+        $this->db->where('account_category.id = balance.category_id');
+        $this->db->where('balance.year', $year);
+        $this->db->where('balance.dppa_id', $dppa);
+        $this->db->where('balance.priority', 0);
+        $this->db->where('account_category.id', $acategory);
+        $val = $this->db->get()->row_array();
+        return $val['amount']; 
+    }
+    
+    function get_category_account_based_acategory($acategory_id,$dppa,$year)
+    {
+        $this->db->select('account.category');
+        $this->db->from('balance, account, account_category');
+        $this->db->where('account.id = balance.account_id');
+        $this->db->where('account_category.id = balance.category_id');
+        $this->db->where('balance.category_id', $acategory_id);
+        $this->db->where('balance.dppa_id', $dppa);
+        $this->db->where('balance.year', $year);
+        $this->db->distinct();
+        return $this->db->get();
+    }
+    
+    // mendapatkan balance berdasarkan category account : 522
+    function get_balance_based_program_category_account($category,$acategory,$dppa,$year)
+    {
+        $this->db->select_sum('balance.amount');
+        $this->db->from('balance, account, account_category');
+        $this->db->where('account.id = balance.account_id');
+        $this->db->where('account_category.id = balance.category_id');
+        $this->db->where('balance.year', $year);
+        $this->db->where('balance.dppa_id', $dppa);
+        $this->db->where('balance.priority', 0);
+        $this->db->where('balance.category_id', $acategory);
+        $this->db->where('account.category', $category);
+        $val = $this->db->get()->row_array();
+        return $val['amount']; 
+    }
+    
+    // mendapatkan balance berdasarkan category account : 522 rincian rekening
+    function get_balance_based_parent_acc($acategory,$parent,$dppa,$year)
+    {
+        $this->db->select_sum('amount');
+        $this->db->from('balance,account');
+        $this->db->where('account.id = balance.account_id');
+        $this->db->where('balance.year', $year);
+        $this->db->where('balance.dppa_id', $dppa);
+        $this->db->where('balance.priority', 0);
+        $this->db->where('balance.category_id', $acategory);
+        $this->db->where('account.parent_id', $parent);
+        $val = $this->db->get()->row_array();
+        return $val['amount']; 
+    }
+    
+    // mendapatkan balance berdasarkan category account : 522 rincian rekening
+    function get_balance_based_program_account($acategory,$acc,$dppa,$year)
+    {
+        $this->db->select('amount');
+        $this->db->from('balance');
+        $this->db->where('balance.year', $year);
+        $this->db->where('balance.dppa_id', $dppa);
+        $this->db->where('balance.priority', 0);
+        $this->db->where('balance.category_id', $acategory);
+        $this->db->where('balance.account_id', $acc);
+        $val = $this->db->get()->row_array();
+        return $val['amount']; 
+    }
 
     function type($val)
     {

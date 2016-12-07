@@ -241,6 +241,39 @@ class Account_lib extends Main_Model {
         
         return $this->db->get(); 
     }
+    
+    // get parent based category belanja
+    function get_parent_based_category_belanja_program($acategory,$category,$dppa,$year)
+    {
+        $this->db->select('account.parent_id');
+        $this->db->from('balance, account, account_category');
+        $this->db->where('account.id = balance.account_id');
+        $this->db->where('account_category.id = balance.category_id');
+        $this->db->where('balance.year', $year);
+        $this->db->where('balance.dppa_id', $dppa);
+        $this->db->where('balance.priority', 0);
+        $this->db->where('balance.category_id', $acategory);
+        $this->db->where('account.category', $category);
+        $this->db->distinct();
+        return $this->db->get();
+    }
+    
+    function get_account_category_program_parent($acategory,$category,$parent,$dppa,$year)
+    {
+        $this->db->select('account.id, account.code, account.name');
+        $this->db->from('balance, account, account_category');
+        $this->db->where('account.id = balance.account_id');
+        $this->db->where('account_category.id = balance.category_id');
+        $this->db->where('balance.year', $year);
+        $this->db->where('balance.dppa_id', $dppa);
+        $this->db->where('balance.priority', 0);
+        $this->db->where('balance.category_id', $acategory);
+        $this->db->where('account.category', $category);
+        $this->db->where('account.parent_id', $parent);
+        return $this->db->get();
+    }
+    
+    
 
 }
 

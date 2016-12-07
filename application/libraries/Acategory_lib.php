@@ -7,6 +7,8 @@ class Acategory_lib extends Main_Model {
         $this->deleted = $deleted;
         $this->tableName = 'account_category';
     }
+    
+    protected $field = array('id', 'parent_id', 'type', 'code', 'name', 'dppa_id', 'description', 'orders', 'created', 'updated', 'deleted');
 
     function combo()
     {
@@ -103,6 +105,25 @@ class Acategory_lib extends Main_Model {
             if ($val){ return $val->type; }
         }
         else { return ''; }
+    }
+    
+    function get_top_category($type=2)
+    {
+       $this->db->select($this->field);
+       $this->db->where('deleted', NULL);
+       $this->db->where('parent_id', 0);
+       $this->db->where('type', $type);     
+       $this->db->order_by('orders', 'asc');
+       return $this->db->get($this->tableName);
+    }
+    
+    function get_child_category($parent)
+    {
+       $this->db->select($this->field);
+       $this->db->where('deleted', NULL);
+       $this->db->where('parent_id', $parent);
+       $this->db->order_by('orders', 'asc');
+       return $this->db->get($this->tableName);
     }
 
     function type($val)

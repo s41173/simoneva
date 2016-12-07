@@ -17,9 +17,10 @@ class Dppa extends MX_Controller
         $this->balance = new Balance_lib();
         $this->transaction = new Transaction_lib();
         $this->account = new Account_lib();
+        $this->category = new Acategory_lib();
     }
 
-    private $properti, $modul, $title, $dppa, $balance, $transaction, $account;
+    private $properti, $modul, $title, $dppa, $balance, $transaction, $account, $category;
     function index()
     {
        $this->get_last(); 
@@ -432,8 +433,11 @@ class Dppa extends MX_Controller
         // get account parent belanja tidak langsung
         $data['account_category_1'] = $this->account->get_account_category($this->input->post('cdppa'),$this->input->post('tyear'),1)->result();
         
-//        get account parent belanja langsung
-        $data['account_category_2'] = $this->account->get_account_category($this->input->post('cdppa'),$this->input->post('tyear'),2)->result();
+        
+        // =========================================  belanja langsung ===================================
+        
+//        get jenis program dan kegiatan
+        $data['program'] = $this->category->get_top_category(2)->result();
         
         
         

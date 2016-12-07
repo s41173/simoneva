@@ -52,6 +52,7 @@ $(document).ready(function (e) {
 				}
 			}) 
 			return false;
+            swal('Error Login...!', "", "error");
 			
 		}
 		else{ swal("Invalid Username Or Password..!!", "", "error"); }

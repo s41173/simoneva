@@ -162,14 +162,14 @@ BULAN : <?php echo strtoupper(get_month($month)).'  '.$year; ?> </h1>
     <td> <?php echo idr_format($transaction_amount_1); ?> </td> <!-- jumlah SP2D -->
     <td> <?php echo idr_format($pagu_1-$transaction_amount_1); ?> </td> <!-- Sisa Dana DPA -->
     <td>100</td>
-    <td> <?php echo $transaction_amount_1/$pagu_1*100; ?> </td>
+    <td> <?php echo @floatval($transaction_amount_1/$pagu_1*100); ?> </td>
     <td> <?php echo idr_format($previous_progress_1); ?> </td> <!-- Opening Saldo -->
     <td> <?php echo idr_format($now_progress_1); ?> </td> <!-- Progress Bulan Ini -->
-    <td> <?php echo $now_progress_1/$pagu_1*100; ?> </td>
+    <td> <?php echo @floatval($now_progress_1/$pagu_1*100); ?> </td>
     <td> <?php echo idr_format($total_progress_1); ?> </td>
-    <td> <?php echo $total_progress_1/$pagu_1*100; ?> </td>
+    <td> <?php echo @floatval($total_progress_1/$pagu_1*100); ?> </td>
     <td> <?php echo idr_format($rest_balance_1); ?> </td>
-    <td> <?php echo $rest_balance_1/$pagu_1*100; ?> </td>
+    <td> <?php echo @floatval($rest_balance_1/$pagu_1*100); ?> </td>
 </tr>            
             
 <?php
@@ -189,30 +189,10 @@ BULAN : <?php echo strtoupper(get_month($month)).'  '.$year; ?> </h1>
            $pagu = $bl->get_account_category_balance($dppa_id,$year,$res->category);
            $sp2d = $tr->get_total_monthly_category_balance($dppa_id,$res->category,$month,$year,0);
            $prev = $tr->get_total_monthly_category_balance($dppa_id,$res->category,$month,$year,2);
-           $progress = $tr->get_total_monthly_category_balance($dppa_id,$res->category,$month,$year,1);
-           $tot_progress = $prev + $progress;
-           $rest = $pagu-$tot_progress;
+           $prog = $tr->get_total_monthly_category_balance($dppa_id,$res->category,$month,$year,1);
             
-           ?>   
-           <tr>
-            <td></td>
-            <td align="right"> <nobr> <?php echo $res->category; ?> </nobr></td>
-            <td> <?php echo $acc->get_belanja_type($res->category); ?> </td> 
-            <td>  </td>
-            <td> <?php echo idr_format($pagu); ?> </td>
-            <td> <?php echo idr_format($sp2d); ?> </td>
-            <td> <?php echo idr_format($pagu-$sp2d); ?> </td>
-            <td>100</td>
-            <td> <?php echo $sp2d/$pagu*100; ?> </td>
-            <td> <?php echo idr_format($prev); ?> </td>
-            <td> <?php echo idr_format($progress); ?> </td>
-            <td> <?php echo $progress/$pagu*100; ?> </td>
-            <td> <?php echo idr_format($tot_progress); ?> </td>
-            <td> <?php echo $tot_progress/$pagu*100; ?> </td>
-            <td> <?php echo idr_format($rest); ?> </td>
-            <td> <?php echo $rest/$pagu*100; ?> </td>
-           </tr>  
-           <?php $rpt->get_trans_parent_acc($res->category,$dppa_id,$month,$year);
+           echo $rpt->table($res->category, $acc->get_belanja_type($res->category), $pagu,$sp2d,$prev,$prog);
+           $rpt->get_trans_parent_acc($res->category,$dppa_id,$month,$year);
         }
     }
 
@@ -237,7 +217,25 @@ BULAN : <?php echo strtoupper(get_month($month)).'  '.$year; ?> </h1>
     <td> <?php echo @floatval($total_progress_2/$pagu_2*100); ?> </td>
     <td> <?php echo idr_format($rest_balance_2); ?> </td>
     <td> <?php echo @floatval($rest_balance_2/$pagu_2*100); ?> </td>
-</tr>             
+</tr>  
+            
+<?php
+            
+    // fungsi mendapatkan program belanja langsung 
+    if ($program)
+    {
+        foreach ($program as $res)
+        {
+           $pagu = $bl->get_balance_based_top_program($dppa_id,$year,$res->id);
+           $sp2d = $tr->get_total_monthly_based_program($dppa_id,$res->id,'null',$month,$year,0);
+           $prev = $tr->get_total_monthly_based_program($dppa_id,$res->id,'null',$month,$year,2);
+           $prog = $tr->get_total_monthly_based_program($dppa_id,$res->id,'null',$month,$year,1);
+            
+           echo $rpt->table($res->code, $res->name, $pagu,$sp2d,$prev,$prog);
+           $rpt->get_trans_based_jenis_kegiatan($dppa_id,$res->id,$month,$year);
+        }
+    }        
+?>            
             
 
 		</tbody>
