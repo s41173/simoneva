@@ -133,7 +133,7 @@ class Procurement extends MX_Controller
 	// ---------------------------------------- //
         
         $data['account'] = $this->account->combo_child();
-        $data['category'] = $this->category->combo_child();
+        $data['category'] = $this->category->combo_child_procurement();
         $data['month'] = combo_month();
         $data['dppa'] = $this->dppa->combo_child();
  

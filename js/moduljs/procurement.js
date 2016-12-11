@@ -167,6 +167,7 @@ $(document).ready(function (e) {
 										s[i][3],
 										s[i][2],
 										s[i][5],
+										s[i][8],
 										s[i][6]+' - '+s[i][7],
 										    ]);										
 											} // End For 
