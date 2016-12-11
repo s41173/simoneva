@@ -46,6 +46,25 @@ class Acategory_lib extends Main_Model {
         foreach($val as $row){ $data['options'][$row->id] = ucfirst($row->code.' : '.$row->name); }
         return $data;
     }
+    
+    function combo_child_procurement_dppa($dppa,$type=null)
+    {
+        $this->db->select('account_category.id, account_category.code, account_category.name');
+        $this->db->from('balance, account, account_category');
+        $this->db->where('account.id = balance.account_id');
+        $this->db->where('account_category.id = balance.category_id');
+        $this->db->where('account_category.deleted', NULL);
+        $this->db->where('account_category.parent_id >', 0);
+        $this->db->where('account_category.dppa_id', $dppa);
+        
+        $value = array('522', '523');
+        $this->db->where_in('account.category', $value);
+        $this->db->order_by('account_category.name', 'asc');
+        $val = $this->db->get()->result();
+        if ($type){ $data['options'][''] = '-- Select Category --'; }
+        foreach($val as $row){ $data['options'][$row->id] = ucfirst($row->code.' : '.$row->name); }
+        return $data;
+    }
 
     function combo_all()
     {

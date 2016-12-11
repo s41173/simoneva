@@ -114,6 +114,18 @@ $(document).ready(function (e) {
 		
 	});
 	
+		// fungsi dppa money
+	$(document).on('click','.text-procurement',function(e)
+	{	
+		e.preventDefault();
+		var element = $(this);
+		var del_id = element.attr("id");
+		var url = sites_procurement +"/"+ del_id;
+		
+		window.location.href = url;
+		
+	});
+	
 		
 // document ready end	
 });
@@ -163,6 +175,7 @@ $(document).ready(function (e) {
 '<a href="" class="btn btn-primary btn-xs text-dppa" id="' +s[i][0]+ '" title="Category Status"> <i class="fa fa-cogs"> </i> </a>'+
 '<a href="" class="btn btn-warning btn-xs text-money" id="' +s[i][0]+ '" title="Balance Status"> <i class="fa fa-money"> </i> </a> '+
 '<a href="" class="btn btn-info btn-xs text-transaction" id="' +s[i][0]+ '" title="Transaction Status"> <i class="fa fa-calculator"> </i> </a> '+
+'<a href="" class="btn btn-danger btn-xs text-procurement" id="' +s[i][0]+ '" title="Procurement Status"> <i class="fa fa-shopping-cart"> </i> </a> '+
 '<a href="" class="text-primary" id="' +s[i][0]+ '" title=""> <i class="fa fas-2x fa-edit"> </i> </a> <a href="#" class="text-danger" id="'+s[i][0]+'" title="delete"> <i class="fa fas-2x fa-trash"> </i> </a>'
 											   ]);										
 											} // End For

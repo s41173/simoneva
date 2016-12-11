@@ -1,12 +1,12 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-class Transaction extends MX_Controller
+class Procurement extends MX_Controller
 {
     function __construct()
     {
         parent::__construct();
         
-        $this->load->model('Transaction_model', '', TRUE);
+        $this->load->model('Procurement_model', '', TRUE);
 
         $this->properti = $this->property->get();
         $this->acl->otentikasi();
@@ -17,11 +17,12 @@ class Transaction extends MX_Controller
         $this->account = new Account_lib();
         $this->category = new Acategory_lib();
         $this->balance = new Balance_lib();
+//        $this->procurement = new Procurement_lib();
         $this->transaction = new Transaction_lib();
         $this->period = new Period_lib();
     }
 
-    private $properti, $modul, $title, $transaction, $dppa, $account, $category, $balance, $period;
+    private $properti, $modul, $title, $procurement, $transaction, $dppa, $account, $category, $balance, $period;
 
     function index()
     {
@@ -30,8 +31,8 @@ class Transaction extends MX_Controller
     
     public function getdatatable($search=null,$dppa='null',$cat='null',$month='null',$year='null')
     {
-        if(!$search){ $result = $this->Transaction_model->get_last($this->modul['limit'])->result(); }
-        else { $result = $this->Transaction_model->search($dppa,$cat,$month,$year)->result(); }
+        if(!$search){ $result = $this->Procurement_model->get_last($this->modul['limit'])->result(); }
+        else { $result = $this->Procurement_model->search($dppa,$cat,$month,$year)->result(); }
         
         if ($result){
 	foreach($result as $res)
@@ -40,7 +41,7 @@ class Transaction extends MX_Controller
                        $this->account->get_code($res->account_id).' : '.$this->account->get_name($res->account_id),
                        $this->category->get_name($res->category_id), 
                        strtoupper($this->dppa->get_name($res->dppa_id)),
-                       idr_format($res->amount), $res->month, $res->year,
+                       idr_format($res->amount), $res->month, $res->year, $res->vendor,
                        $res->created, $res->updated, $res->deleted);
 	}
             $this->output
@@ -54,7 +55,7 @@ class Transaction extends MX_Controller
     
     public function getdatatable_dppa($dppa)
     {
-        $result = $this->Transaction_model->get_last_dppa($dppa)->result(); 
+        $result = $this->Procurement_model->get_last_dppa($dppa)->result(); 
         
         if ($result){
 	foreach($result as $res)
@@ -63,7 +64,7 @@ class Transaction extends MX_Controller
                               $this->account->get_code($res->account_id).' : '.$this->account->get_name($res->account_id),
                               $this->category->get_name($res->category_id), 
                               strtoupper($this->dppa->get_name($res->dppa_id)),
-                              idr_format($res->amount), $res->month, $res->year,
+                              idr_format($res->amount), $res->month, $res->year, $res->vendor,
                               $res->created, $res->updated, $res->deleted);
 	}
             $this->output
@@ -82,7 +83,7 @@ class Transaction extends MX_Controller
 
         $data['title'] = $this->properti['name'].' | Administrator  '.ucwords($this->modul['title']);
         $data['h2title'] = $this->modul['title'].' : '.ucfirst($this->dppa->get_name($dppa));
-        $data['main_view'] = 'transaction_dppa_view';
+        $data['main_view'] = 'procurement_dppa_view';
 	$data['form_action'] = site_url($this->title.'/add_process/'.$dppa);
         $data['form_action_update'] = site_url($this->title.'/update_process/'.$dppa);
         $data['form_action_del'] = site_url($this->title.'/delete_all');
@@ -91,7 +92,7 @@ class Transaction extends MX_Controller
 	// ---------------------------------------- //
         
         $data['account'] = $this->account->combo_child();
-        $data['category'] = $this->category->combo_child_based_dppa($this->session->userdata('dppa'),'null');
+        $data['category'] = $this->category->combo_child_procurement_dppa($this->session->userdata('dppa'),'null');
         $data['month'] = combo_month();
         $data['default']['month'] = $this->period->get('month');
  
@@ -108,10 +109,10 @@ class Transaction extends MX_Controller
         $this->table->set_empty("&nbsp;");
 
         //Set heading untuk table
-        $this->table->set_heading('#','No', 'SKPD', 'Program', 'Rekening', 'Nilai', 'Periode', 'Action');
+        $this->table->set_heading('#','No', 'SKPD', 'Program', 'Rekening', 'Nilai', 'Vendor', 'Periode', 'Action');
 
         $data['table'] = $this->table->generate();
-        $data['source'] = site_url('transaction/getdatatable_dppa/'.$dppa);
+        $data['source'] = site_url('procurement/getdatatable_dppa/'.$dppa);
             
         // Load absen view dengan melewatkan var $data sbgai parameter
 	$this->load->view('template', $data);
@@ -123,7 +124,7 @@ class Transaction extends MX_Controller
 
         $data['title'] = $this->properti['name'].' | Administrator  '.ucwords($this->modul['title']);
         $data['h2title'] = $this->modul['title'];
-        $data['main_view'] = 'transaction_view';
+        $data['main_view'] = 'procurement_view';
 	$data['form_action'] = site_url($this->title.'/add_process');
         $data['form_action_update'] = site_url($this->title.'/update_process');
         $data['form_action_del'] = site_url($this->title.'/delete_all');
@@ -149,10 +150,10 @@ class Transaction extends MX_Controller
         $this->table->set_empty("&nbsp;");
 
         //Set heading untuk table
-        $this->table->set_heading('No', 'SKPD', 'Program', 'Rekening', 'Nilai', 'Periode');
+        $this->table->set_heading('No', 'SKPD', 'Program', 'Rekening', 'Nilai', 'Vendor', 'Periode');
 
         $data['table'] = $this->table->generate();
-        $data['source'] = site_url('transaction/getdatatable');
+        $data['source'] = site_url('procurement/getdatatable');
             
         // Load absen view dengan melewatkan var $data sbgai parameter
 	$this->load->view('template', $data);
@@ -161,9 +162,9 @@ class Transaction extends MX_Controller
     function publish($uid = null)
     {
        if ($this->acl->otentikasi2($this->title,'ajax') == TRUE){ 
-       $val = $this->Transaction_model->get_by_id($uid)->row();
+       $val = $this->Procurement_model->get_by_id($uid)->row();
        if ($val->publish == 0){ $lng = array('publish' => 1); }else { $lng = array('publish' => 0); }
-       $this->Transaction_model->update($uid,$lng);
+       $this->Procurement_model->update($uid,$lng);
        echo 'true|Status Changed...!';
        }else{ echo "error|Sorry, you do not have the right to change publish status..!"; }
     }
@@ -183,7 +184,7 @@ class Transaction extends MX_Controller
         {
            if ( $this->cek_relation($cek[$i]) == TRUE ) 
            {
-              $this->Transaction_model->force_delete($cek[$i]); 
+              $this->Procurement_model->force_delete($cek[$i]); 
            }
            else { $x=$x+1; }
            
@@ -203,11 +204,11 @@ class Transaction extends MX_Controller
 
     function delete($uid,$type='hard')
     {
-        $transaction = $this->Transaction_model->get_by_id($uid)->row();
+        $procurement = $this->Procurement_model->get_by_id($uid)->row();
         
-        if ($this->acl->otentikasi_admin($this->title,'ajax') == TRUE && $this->valid_period($transaction->month, $transaction->year) == TRUE){
+        if ($this->acl->otentikasi_admin($this->title,'ajax') == TRUE && $this->valid_period($procurement->month, $procurement->year) == TRUE){
         if ($type == 'soft'){
-           $this->Transaction_model->delete($uid);
+           $this->Procurement_model->delete($uid);
            $this->session->set_flashdata('message', "1 $this->title successfully removed..!");
            
            echo "true|1 $this->title successfully removed..!";
@@ -216,7 +217,7 @@ class Transaction extends MX_Controller
        {
         if ( $this->cek_relation($uid) == TRUE )
         {
-           $this->Transaction_model->force_delete($uid);
+           $this->Procurement_model->force_delete($uid);
            $this->session->set_flashdata('message', "1 $this->title successfully removed..!");
            
            echo "true|1 $this->title successfully removed..!";
@@ -238,34 +239,33 @@ class Transaction extends MX_Controller
         $data['title'] = $this->properti['name'].' | Administrator  '.ucwords($this->modul['title']);
         $data['h2title'] = $this->modul['title'];
 	$data['form_action'] = site_url($this->title.'/add_process');
-	$data['link'] = array('link_back' => anchor('transaction/','<span>back</span>', array('class' => 'back')));
+	$data['link'] = array('link_back' => anchor('procurement/','<span>back</span>', array('class' => 'back')));
 
 	// Form validation 
         
-        $this->form_validation->set_rules('ccategory', 'Program Anggaran', 'required|callback_valid_transaction'); 
+        $this->form_validation->set_rules('ccategory', 'Program Anggaran', 'required|callback_valid_procurement'); 
         $this->form_validation->set_rules('caccount', 'Rekening Anggaran', 'required'); 
-        $this->form_validation->set_rules('tamount', 'Nilai Anggaran', 'required|numeric|callback_valid_amount_transaction['.$this->input->post('tbudget').']'); 
+        $this->form_validation->set_rules('tnilai', 'Nilai Anggaran', 'required|numeric|callback_valid_amount_procurement['.$this->input->post('tprogress').']'); 
         $this->form_validation->set_rules('cmonth', 'Bulan Anggaran', 'required|numeric|callback_valid_period['.$this->input->post('tyear').']'); 
         $this->form_validation->set_rules('tyear', 'Tahun Anggaran', 'required|numeric'); 
-        $this->form_validation->set_rules('tprogress', 'Nilai Progress', 'required|numeric|callback_valid_progress['.$this->input->post('tamount').']'); 
-        $this->form_validation->set_rules('topening', 'Saldo Awal', 'required|numeric'); 
-        $this->form_validation->set_rules('trest', 'Sisa Saldo', 'required|numeric'); 
+        $this->form_validation->set_rules('tnilai', 'Nilai Kontrak', 'required|numeric'); 
 
         if ($this->form_validation->run($this) == TRUE)
         {
-             $transaction = array('category_id' => $this->input->post('ccategory'),
+             $procurement = array('category_id' => $this->input->post('ccategory'),
                               'dppa_id' => $dppa,
                               'type' => $this->account->get_type($this->input->post('caccount')),
                               'account_id' => $this->input->post('caccount'),
-                              'opening' => $this->input->post('topening'),
-                              'amount' => $this->input->post('tamount'),
-                              'progress_amount' => $this->input->post('tprogress'),
-                              'rest' => $this->input->post('trest'),
+                              'amount' => $this->input->post('tnilai'),
                               'month' => $this->input->post('cmonth'),             
                               'year' => $this->input->post('tyear'),
+                              'vendor' => $this->input->post('tvendor'),
+                              'contact' => $this->input->post('tcontact'),
+                              'contract_no' => $this->input->post('tcontract'),
+                              'contract_date' => $this->input->post('tcontract_date'),
                               'created' => date('Y-m-d H:i:s'));
              
-             $this->Transaction_model->add($transaction);
+             $this->Procurement_model->add($procurement);
              echo 'true|Data successfully saved..!';
         }
         else { echo 'error|'.validation_errors();  }
@@ -278,23 +278,23 @@ class Transaction extends MX_Controller
     // Fungsi update untuk menset texfield dengan nilai dari database
     function update($uid=null,$type='get')
     {        
-        $transaction = $this->Transaction_model->get_by_id($uid)->row();
+        $procurement = $this->Procurement_model->get_by_id($uid)->row();
         if ($type=='update'){
             $this->session->unset_userdata('langid');
-	    $this->session->set_userdata('langid', $transaction->id);    
+	    $this->session->set_userdata('langid', $procurement->id);    
             
-            $field = array($transaction->id, $transaction->type, $this->account->get_code($transaction->account_id).' : '.$this->account->get_name($transaction->account_id),
-                           $this->category->get_name($transaction->category_id), $transaction->dppa_id, 
-                           $transaction->amount, get_month($transaction->month), $transaction->opening, $transaction->progress_amount,
-                           $transaction->rest, $transaction->year,
-                           $this->get_budget($transaction->category_id, $transaction->account_id, $transaction->year, 'non'),
-                           $transaction->month);
+            $field = array($procurement->id, $procurement->type, $this->account->get_code($procurement->account_id).' : '.$this->account->get_name($procurement->account_id),
+                           $this->category->get_name($procurement->category_id), $procurement->dppa_id, 
+                           $procurement->amount, get_month($procurement->month), $procurement->opening, $procurement->progress_amount,
+                           $procurement->rest, $procurement->year,
+                           $this->get_budget($procurement->category_id, $procurement->account_id, $procurement->year, 'non'),
+                           $procurement->month);
         }
         else{
         
-        $field = array($transaction->id, $transaction->type, $transaction->account_id, $transaction->category_id, $transaction->dppa_id, 
-                       $transaction->amount, $transaction->month, $transaction->opening, $transaction->progress_amount,
-                       $transaction->rest, $transaction->year);
+        $field = array($procurement->id, $procurement->type, $procurement->account_id, $procurement->category_id, $procurement->dppa_id, 
+                       $procurement->amount, $procurement->month, $procurement->opening, $procurement->progress_amount,
+                       $procurement->rest, $procurement->year);
         }
         
         echo implode('|', $field);
@@ -311,23 +311,22 @@ class Transaction extends MX_Controller
     }
     
     //menampilkan budget masing2 category
-    function get_budget($cat=null,$acc=null,$year=null,$type='ajax')
+    function get_sp2d($cat=null,$acc=null,$month=null,$year=null,$type='ajax')
     {
         $res = 0;
         if ($cat != null && $acc != null){ 
-            $budget = $this->balance->get_budet($this->session->userdata('dppa'), $cat, $acc, $year);
-//            $realisasi = $this->transaction->get_realisasi($this->session->userdata('dppa'),$cat, $acc, $year);
-            $realisasi = 0;
-            $res = $budget-$realisasi; 
+            $sp2d = $this->transaction->get_total_monthly($this->session->userdata('dppa'), $cat, $acc, $month, $year,0);
+            $progress = $this->transaction->get_total_monthly($this->session->userdata('dppa'), $cat, $acc, $month, $year,1);
+ 
         }
         else {$res = 0;}
-        if ($type=='ajax'){ echo $res; }else{ return $res; }
+        if ($type=='ajax'){ echo $sp2d.'|'.$progress; }else{ return $sp2d.'|'.$progress; }
     }
     
     function get_opening($cat=null,$acc=null,$month=null,$year=null)
     {
         if ($cat != null && $acc != null){ 
-            $res = $this->Transaction_model->get_by_criteria($this->session->userdata('dppa'),$cat,$acc,$month,$year)->row();
+            $res = $this->Procurement_model->get_by_criteria($this->session->userdata('dppa'),$cat,$acc,$month,$year)->row();
             if ($res){ echo @$res->opening; }else { echo 0; }
         }
         else { echo 0; }
@@ -337,7 +336,7 @@ class Transaction extends MX_Controller
     {
         if ($progress > $amount)
         {
-           $this->form_validation->set_message('valid_progress', "Invalid Progress Amount Transaction..!");
+           $this->form_validation->set_message('valid_progress', "Invalid Progress Amount Procurement..!");
            return FALSE; 
         }
         else { return TRUE; }
@@ -345,44 +344,44 @@ class Transaction extends MX_Controller
     
     public function valid_period($month,$year)
     {
-        if ($this->Transaction_model->valid_period($month,$year) == FALSE)
+        if ($this->Procurement_model->valid_period($month,$year) == FALSE)
         {
-           $this->form_validation->set_message('valid_period', "Invalid Period Transaction..!");
+           $this->form_validation->set_message('valid_period', "Invalid Period Procurement..!");
            return FALSE; 
         }
         else { return TRUE; }
     }
     
-    public function valid_amount_transaction($amount,$budget)
+    public function valid_amount_procurement($amount,$budget)
     {   
         if ($amount > $budget){ 
-           $this->form_validation->set_message('valid_amount_transaction', "Invalid Amount Transaction..!");
+           $this->form_validation->set_message('valid_amount_procurement', "Invalid Amount Procurement..!");
            return FALSE; 
         }
         else{ return TRUE; }
     }
 
-    public function valid_transaction($category)
+    public function valid_procurement($category)
     {
         $account = $this->input->post('caccount');
         $month = $this->input->post('cmonth');
         $year = $this->input->post('tyear');
         
-        if ($this->Transaction_model->valid_transaction($category,$account,$month,$year) == FALSE)
+        if ($this->Procurement_model->valid_procurement($category,$account,$month,$year) == FALSE)
         {
-            $this->form_validation->set_message('valid_transaction', "This account $this->title is already registered.!");
+            $this->form_validation->set_message('valid_procurement', "This account $this->title is already registered.!");
             return FALSE;
         }
         else{ return TRUE; }
     }
 
-    function validation_transaction($category)
+    function validation_procurement($category)
     {
         
 	$id = $this->session->userdata('langid');
-	if ($this->Transaction_model->validating('name',$name,$id) == FALSE)
+	if ($this->Procurement_model->validating('name',$name,$id) == FALSE)
         {
-            $this->form_validation->set_message('validation_transaction', 'This transaction is already registered!');
+            $this->form_validation->set_message('validation_procurement', 'This procurement is already registered!');
             return FALSE;
         }
         else { return TRUE; }
@@ -395,12 +394,12 @@ class Transaction extends MX_Controller
 
         $data['title'] = $this->properti['name'].' | Administrator  '.ucwords($this->modul['title']);
         $data['h2title'] = $this->modul['title'];
-        $data['main_view'] = 'transaction_update';
+        $data['main_view'] = 'procurement_update';
 	$data['form_action'] = site_url($this->title.'/update_process');
-	$data['link'] = array('link_back' => anchor('transaction/','<span>back</span>', array('class' => 'back')));
+	$data['link'] = array('link_back' => anchor('procurement/','<span>back</span>', array('class' => 'back')));
 
         
-        $this->form_validation->set_rules('tamount', 'Nilai Anggaran', 'required|numeric|callback_valid_amount_transaction['.$this->input->post('tbudget').']'); 
+        $this->form_validation->set_rules('tamount', 'Nilai Anggaran', 'required|numeric|callback_valid_amount_procurement['.$this->input->post('tbudget').']'); 
         $this->form_validation->set_rules('cmonth', 'Bulan Anggaran', 'required|numeric|callback_valid_period['.$this->input->post('tyear').']'); 
         $this->form_validation->set_rules('tyear', 'Tahun Anggaran', 'required|numeric'); 
         $this->form_validation->set_rules('tprogress', 'Nilai Progress', 'required|numeric|callback_valid_progress['.$this->input->post('tamount').']'); 
@@ -409,13 +408,13 @@ class Transaction extends MX_Controller
 
         if ($this->form_validation->run($this) == TRUE)
         {
-             $transaction = array(
+             $procurement = array(
                            'amount' => $this->input->post('tamount'),
                            'progress_amount' => $this->input->post('tprogress'),
                            'rest' => $this->input->post('trest'),
                            );
 
-             $this->Transaction_model->update($this->session->userdata('langid'), $transaction);
+             $this->Procurement_model->update($this->session->userdata('langid'), $procurement);
              echo 'true|Data successfully saved..!';
         }
         else { echo 'error|'.validation_errors();  }
@@ -425,9 +424,9 @@ class Transaction extends MX_Controller
     
     function remove_image($uid)
     {
-       $img = $this->Transaction_model->get_transaction_by_id($uid)->row();
+       $img = $this->Procurement_model->get_procurement_by_id($uid)->row();
        $img = $img->image;
-       if ($img){ $img = "./images/transaction/".$img; unlink("$img"); } 
+       if ($img){ $img = "./images/procurement/".$img; unlink("$img"); } 
     }
     
     function report_process()
@@ -442,10 +441,10 @@ class Transaction extends MX_Controller
 
 //        Property Details
         $data['company'] = $this->properti['name'];
-        $data['reports'] = $this->Transaction_model->report($this->input->post('cdppa'),$this->input->post('tyear'))->result();
+        $data['reports'] = $this->Procurement_model->report($this->input->post('cdppa'),$this->input->post('tyear'))->result();
         
-        if ($this->input->post('ctype') == 0){ $this->load->view('transaction_report', $data); }
-        else { $this->load->view('transaction_pivot', $data); }
+        if ($this->input->post('ctype') == 0){ $this->load->view('procurement_report', $data); }
+        else { $this->load->view('procurement_pivot', $data); }
     }
     
     function closing()
@@ -457,21 +456,21 @@ class Transaction extends MX_Controller
         $prev = $month-1;
         if ($prev != 0)
         {
-            $previous = $this->Transaction_model->search($dppa,'null',$prev,$year)->result();
+            $previous = $this->Procurement_model->search($dppa,'null',$prev,$year)->result();
             $this->db->trans_start();
-            $this->Transaction_model->cleaning($dppa,$month,$year);
+            $this->Procurement_model->cleaning($dppa,$month,$year);
             foreach ($previous as $res)
             {
                $trans = array('category_id' => $res->category_id, 'dppa_id' => $dppa,
                               'type' => $this->account->get_type($res->account_id),'account_id' => $res->account_id,
                               'opening' => $res->rest, 'amount' => $res->amount, 'month' => $month, 'year' => $year,
                               'created' => date('Y-m-d H:i:s')); 
-               $this->Transaction_model->add($trans);
+               $this->Procurement_model->add($trans);
             }
             $this->db->trans_complete();
             
-            if ($this->db->trans_status() === FALSE){ $this->db->trans_rollback(); $this->session->set_flashdata('message', "Transaction Error..!!");    }
-            else { $this->db->trans_commit(); $this->session->set_flashdata('message', "Transaction Successfull..!!");    }
+            if ($this->db->trans_status() === FALSE){ $this->db->trans_rollback(); $this->session->set_flashdata('message', "Procurement Error..!!");    }
+            else { $this->db->trans_commit(); $this->session->set_flashdata('message', "Procurement Successfull..!!");    }
         }
         else{ $this->session->set_flashdata('message', "Generate Data Can't Realize..!!");   }        
         redirect($this->title.'/get_dppa/'.$dppa); 

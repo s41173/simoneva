@@ -3,11 +3,8 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/opt/lampp/htdocs/simoneva/application/libraries/Account_lib.php</file>
-            <file>file:/opt/lampp/htdocs/simoneva/application/libraries/Balance_lib.php</file>
-            <file>file:/opt/lampp/htdocs/simoneva/application/modules/dppa/controllers/dppa.php</file>
-            <file>file:/opt/lampp/htdocs/simoneva/application/libraries/Acategory_lib.php</file>
-            <file>file:/opt/lampp/htdocs/simoneva/application/libraries/Transaction_lib.php</file>
+            <file>file:/opt/lampp/htdocs/simoneva/application/modules/procurement/controllers/procurement.php</file>
+            <file>file:/opt/lampp/htdocs/simoneva/application/modules/procurement/models/procurement_model.php</file>
         </group>
     </open-files>
 </project-private>
