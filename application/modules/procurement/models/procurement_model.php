@@ -15,7 +15,7 @@ class Procurement_model extends Custom_Model
         $this->period = $this->period->get();
     }
     
-    protected $field = array('id', 'type', 'account_id', 'category_id', 'dppa_id', 'amount', 'month',
+    protected $field = array('id', 'type', 'account_id', 'category_id', 'dppa_id', 'top', 'title', 'budget', 'amount', 'month',
                              'year', 'vendor', 'contact', 'contract_no', 'contract_date', 
                              'created', 'updated', 'deleted');
     protected $com,$period;
@@ -60,13 +60,14 @@ class Procurement_model extends Custom_Model
         return $this->db->get(); 
     }
     
-    function report($dppa,$year)
+    function report($dppa,$month,$year)
     {
         $this->db->select($this->field);
         $this->db->from($this->tableName); 
         $this->db->where('deleted', $this->deleted);
         $this->cek_null_string($dppa, 'dppa_id');
         $this->cek_null_string($year, 'year');
+        $this->cek_null_string($month, 'month');
         return $this->db->get(); 
     }
     
@@ -99,10 +100,24 @@ class Procurement_model extends Custom_Model
         return $val['amount'];
     }
     
+    function total_periode_filter($dppa,$account,$category,$month,$year,$type=0)
+    {
+        $this->db->select_sum('amount');
+        $this->db->select_sum('budget');
+        
+        $this->db->where('year', $year);
+        $this->db->where('month', $month);
+        $this->db->where('account_id', $account);
+        $this->db->where('category_id', $category);
+        $this->db->where('dppa_id', $dppa);
+        $val = $this->db->get($this->tableName)->row_array();
+        if ($type == 0){ return $val['amount']; }else{ return $val['budget']; }
+    }
+    
     function valid_procurement($category,$account,$month,$year)
     {
         $this->db->where('category_id', $category);
-        $this->db->where('account_id', $account);
+//        $this->db->where('account_id', $account);
         $this->db->where('month', $month);
         $this->db->where('year', $year);
         $query = $this->db->get($this->tableName)->num_rows();

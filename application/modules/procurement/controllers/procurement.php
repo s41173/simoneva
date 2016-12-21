@@ -17,7 +17,7 @@ class Procurement extends MX_Controller
         $this->account = new Account_lib();
         $this->category = new Acategory_lib();
         $this->balance = new Balance_lib();
-//        $this->procurement = new Procurement_lib();
+        $this->procurement = new Procurement_lib();
         $this->transaction = new Transaction_lib();
         $this->period = new Period_lib();
     }
@@ -87,6 +87,8 @@ class Procurement extends MX_Controller
 	$data['form_action'] = site_url($this->title.'/add_process/'.$dppa);
         $data['form_action_update'] = site_url($this->title.'/update_process/'.$dppa);
         $data['form_action_del'] = site_url($this->title.'/delete_all');
+        $data['form_action_report'] = site_url($this->title.'/report_process');
+        
         $data['link'] = array('link_back' => anchor('dppa/','Back', array('class' => 'btn btn-danger')));
         $this->session->set_userdata('dppa',$dppa);
 	// ---------------------------------------- //
@@ -95,6 +97,7 @@ class Procurement extends MX_Controller
         $data['category'] = $this->category->combo_child_procurement_dppa($this->session->userdata('dppa'),'null');
         $data['month'] = combo_month();
         $data['default']['month'] = $this->period->get('month');
+        $data['dppa'] = $this->dppa->combo_child();
  
         $config['first_tag_open'] = $config['last_tag_open']= $config['next_tag_open']= $config['prev_tag_open'] = $config['num_tag_open'] = '<li>';
         $config['first_tag_close'] = $config['last_tag_close']= $config['next_tag_close']= $config['prev_tag_close'] = $config['num_tag_close'] = '</li>';
@@ -248,21 +251,33 @@ class Procurement extends MX_Controller
         $this->form_validation->set_rules('tnilai', 'Nilai Anggaran', 'required|numeric|callback_valid_amount_procurement['.$this->input->post('tprogress').']'); 
         $this->form_validation->set_rules('cmonth', 'Bulan Anggaran', 'required|numeric|callback_valid_period['.$this->input->post('tyear').']'); 
         $this->form_validation->set_rules('tyear', 'Tahun Anggaran', 'required|numeric'); 
-        $this->form_validation->set_rules('tnilai', 'Nilai Kontrak', 'required|numeric'); 
+        $this->form_validation->set_rules('tprogress', 'Progress Keuangan', 'required|numeric'); 
+        $this->form_validation->set_rules('ttitle', 'Nama Kegiatan', 'required'); 
+        $this->form_validation->set_rules('tbudget', 'Budget SPK', 'required|numeric|callback_valid_budget_procurement['.$this->input->post('tamount').']'); 
 
         if ($this->form_validation->run($this) == TRUE)
         {
-             $procurement = array('category_id' => $this->input->post('ccategory'),
+            $top = 0;
+            if ( $this->Procurement_model->valid_procurement($this->input->post('ccategory'),
+                                                             $this->input->post('caccount'),
+                                                             $this->input->post('cmonth'),
+                                                             $this->input->post('tyear')) == TRUE) 
+            { $top = 1; }
+            
+            $procurement = array('category_id' => $this->input->post('ccategory'),
                               'dppa_id' => $dppa,
                               'type' => $this->account->get_type($this->input->post('caccount')),
                               'account_id' => $this->input->post('caccount'),
+                              'title' => $this->input->post('ttitle'),
                               'amount' => $this->input->post('tnilai'),
+                              'budget' => $this->input->post('tamount'),
                               'month' => $this->input->post('cmonth'),             
                               'year' => $this->input->post('tyear'),
                               'vendor' => $this->input->post('tvendor'),
                               'contact' => $this->input->post('tcontact'),
                               'contract_no' => $this->input->post('tcontract'),
                               'contract_date' => $this->input->post('tcontract_date'),
+                              'top' => $top,
                               'created' => date('Y-m-d H:i:s'));
              
              $this->Procurement_model->add($procurement);
@@ -354,8 +369,33 @@ class Procurement extends MX_Controller
     
     public function valid_amount_procurement($amount,$budget)
     {   
-        if ($amount > $budget){ 
+        $category = $this->input->post('ccategory');
+        $account = $this->input->post('caccount');
+        $month = $this->input->post('cmonth');
+        $year = $this->input->post('tyear');
+        
+        $tot = $this->Procurement_model->total_periode_filter($this->session->userdata('dppa'),$account,$category,$month,$year);
+        $amounts = $amount+$tot;
+        
+        if ($amounts > $budget){ 
            $this->form_validation->set_message('valid_amount_procurement', "Invalid Amount Procurement..!");
+           return FALSE; 
+        }
+        else{ return TRUE; }
+    }
+    
+    public function valid_budget_procurement($amount,$budget)
+    {   
+        $category = $this->input->post('ccategory');
+        $account = $this->input->post('caccount');
+        $month = $this->input->post('cmonth');
+        $year = $this->input->post('tyear');
+        
+        $tot = $this->Procurement_model->total_periode_filter($this->session->userdata('dppa'),$account,$category,$month,$year,1);
+        $amounts = $amount+$tot;
+        
+        if ($amounts > $budget){ 
+           $this->form_validation->set_message('valid_budget_procurement', "Invalid Budget Amount Procurement..!");
            return FALSE; 
         }
         else{ return TRUE; }
@@ -367,13 +407,15 @@ class Procurement extends MX_Controller
         $month = $this->input->post('cmonth');
         $year = $this->input->post('tyear');
         
-        if ($this->Procurement_model->valid_procurement($category,$account,$month,$year) == FALSE)
-        {
-            $this->form_validation->set_message('valid_procurement', "This account $this->title is already registered.!");
-            return FALSE;
-        }
-        else{ return TRUE; }
+//        if ($this->Procurement_model->valid_procurement($category,$account,$month,$year) == FALSE)
+//        {
+//            $this->form_validation->set_message('valid_procurement', "This account $this->title is already registered.!");
+//            return FALSE;
+//        }
+//        else{ return TRUE; }
+        return TRUE;
     }
+    
 
     function validation_procurement($category)
     {
@@ -438,10 +480,11 @@ class Procurement extends MX_Controller
         $data['log'] = $this->session->userdata('log');
         $data['dppa'] = $this->dppa->get_name($this->input->post('cdppa'));
         $data['year'] = $this->input->post('tyear');
+        $data['month'] = $this->input->post('cmonth');
 
 //        Property Details
         $data['company'] = $this->properti['name'];
-        $data['reports'] = $this->Procurement_model->report($this->input->post('cdppa'),$this->input->post('tyear'))->result();
+        $data['reports'] = $this->Procurement_model->report($this->input->post('cdppa'), $this->input->post('cmonth'),$this->input->post('tyear'))->result();
         
         if ($this->input->post('ctype') == 0){ $this->load->view('procurement_report', $data); }
         else { $this->load->view('procurement_pivot', $data); }

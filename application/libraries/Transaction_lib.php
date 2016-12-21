@@ -152,7 +152,7 @@ class Transaction_lib extends Main_Model {
     }
     
     // fungsi untuk mendapatkan summary periode bulan
-    function get_total_monthly($dppa,$cat='null',$acc='null',$month,$year,$type=0)
+    function get_total_monthly($dppa='null',$cat='null',$acc='null',$month='null',$year,$type=0)
     {        
         $this->db->select_sum('transaction.amount');
         $this->db->select_sum('transaction.progress_amount');
@@ -160,10 +160,10 @@ class Transaction_lib extends Main_Model {
         $this->db->select_sum('transaction.rest');
         
         $this->db->where('year', $year);
-        $this->db->where('month', $month);
-        $this->db->where('dppa_id', $dppa);
+        $this->cek_null_string($month, 'month');
         $this->cek_null_string($cat, 'category_id');
         $this->cek_null_string($acc, 'account_id');
+        $this->cek_null_string($dppa, 'dppa_id');
         $val = $this->db->get($this->tableName)->row_array();
         
         if ($type == 0){ return $val['amount']; }
@@ -277,6 +277,8 @@ class Transaction_lib extends Main_Model {
         $this->db->where('transaction.month', $month);
         $this->db->where('transaction.dppa_id', $dppa);
         $this->cek_null_string($acc, 'account_id');
+        $this->db->where('account_category.deleted', NULL);
+        
         $val = $this->db->get()->row_array();
         
         if ($type == 0){ return $val['amount']; }
@@ -302,6 +304,8 @@ class Transaction_lib extends Main_Model {
         $this->db->where('transaction.month', $month);
         $this->db->where('transaction.dppa_id', $dppa);
         $this->cek_null_string($acc, 'account_id');
+        $this->db->where('account_category.deleted', NULL);
+        
         $val = $this->db->get()->row_array();
         
         if ($type == 0){ return $val['amount']; }
@@ -327,6 +331,8 @@ class Transaction_lib extends Main_Model {
         $this->db->where('transaction.dppa_id', $dppa);
         $this->db->where('transaction.category_id', $acategory);
         $this->db->where('account.category', $category);
+        $this->db->where('account_category.deleted', NULL);
+        
         $val = $this->db->get()->row_array();
         
         if ($type == 0){ return $val['amount']; }
@@ -354,6 +360,8 @@ class Transaction_lib extends Main_Model {
         $this->db->where('transaction.category_id', $acategory);
         $this->db->where('account.category', $category); // 522
         $this->db->where('account.parent_id', $parentacc); 
+        $this->db->where('account_category.deleted', NULL);
+        
         $val = $this->db->get()->row_array();
         
         if ($type == 0){ return $val['amount']; }

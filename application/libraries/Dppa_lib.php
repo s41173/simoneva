@@ -58,6 +58,19 @@ class Dppa_lib extends Main_Model {
         return $data;
     }
 
+    function get($id=null)
+    {
+        if ($id)
+        {
+            $this->db->select('id, code, name');
+            $this->db->where('id', $id);
+            $val = $this->db->get($this->tableName)->row();
+            if ($val){ return $val->name; }
+        }
+        else if($id == 0){ return 'Top'; }
+        else { return ''; }
+    }
+    
     function get_name($id=null)
     {
         if ($id)
@@ -66,6 +79,19 @@ class Dppa_lib extends Main_Model {
             $this->db->where('id', $id);
             $val = $this->db->get($this->tableName)->row();
             if ($val){ return $val->name; }
+        }
+        else if($id == 0){ return 'Top'; }
+        else { return ''; }
+    }
+    
+    function get_code($id=null)
+    {
+        if ($id)
+        {
+            $this->db->select('id, code, name');
+            $this->db->where('id', $id);
+            $val = $this->db->get($this->tableName)->row();
+            if ($val){ return $val->code; }
         }
         else if($id == 0){ return 'Top'; }
         else { return ''; }

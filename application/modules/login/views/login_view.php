@@ -13,6 +13,7 @@
     <!-- sweet alert js -->
     <script type="text/javascript" src="<?php echo base_url().'js/sweetalert/sweetalert.min.js'; ?>"></script>
     <style type="text/css">@import url("<?php echo base_url() . 'js/sweetalert/sweetalert.css'; ?>");</style>
+    <style type="text/css">@import url("<?php echo base_url() . 'css/bootstrap.min.css'; ?>");</style>
     
 </head>
 
@@ -67,6 +68,10 @@ $(document).ready(function (e) {
 
 <body>
 
+<div class="container-fluid">
+<div class="row">
+<div class="col-xs-12 col-md-12">
+    
 <form action="<?php echo $form_action; ?>" name="login_form" id="loginform" method="post">
 <div class="containerx">
 <img src="<?php echo $logo; ?>" alt="<?php echo $pname; ?>" class="logo">
@@ -97,6 +102,9 @@ $(document).ready(function (e) {
 </div>
 </form>
 
+    </div>   
+ </div>    
+</div>
 </body>
 
 <style type="text/css">

@@ -115,6 +115,13 @@
 <input id="tprogress" class="form-control col-md-7 col-xs-12" type="number" name="tprogress" required readonly>
           </div>
       </div>
+        
+      <div class="form-group">
+      <label class="control-label col-md-3 col-sm-3 col-xs-12"> Kegiatan  </label>
+          <div class="col-md-5 col-sm-5 col-xs-12">
+<input id="ttitle" class="form-control col-md-7 col-xs-12" type="text" name="ttitle" required>
+          </div>
+      </div>
       
       <div class="form-group">
       <label class="control-label col-md-3 col-sm-3 col-xs-12"> Pelaksana </label>
@@ -134,9 +141,10 @@ placeholder="Tanggal Kontrak">
       </div>
         
       <div class="form-group">
-      <label class="control-label col-md-3 col-sm-3 col-xs-12"> Nilai  </label>
+      <label class="control-label col-md-3 col-sm-3 col-xs-12"> Nilai / Realisasi  </label>
           <div class="col-md-3 col-sm-3 col-xs-12">
-<input id="tnilai" class="form-control col-md-7 col-xs-12" type="number" name="tnilai" required>
+<input id="tbudget" class="form-control col-md-7 col-xs-12" type="number" name="tbudget" required placeholder="Nilai Kontrak">
+<input id="tnilai" class="form-control col-md-7 col-xs-12" type="number" name="tnilai" required placeholder="Realisasi Nilai">
           </div>
       </div>
       
@@ -175,8 +183,7 @@ placeholder="Tanggal Kontrak">
              </div>
 
               <!-- Trigger the modal with a button --> 
-<!--<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal3">   </button>-->
-<a class="btn btn-primary" href="<?php echo site_url('transaction/closing'); ?>"> Generate Begin Saldo </a>
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal3"> Laporan Pengadaan </button>
                <!-- links -->
 	           <?php if (!empty($link)){foreach($link as $links){echo $links . '';}} ?>
                <!-- links -->
@@ -205,7 +212,7 @@ placeholder="Tanggal Kontrak">
       
       <!-- Modal - Report Form -->
       <div class="modal fade" id="myModal3" role="dialog">
-         <?php /*$this->load->view('category_report');*/ ?>    
+         <?php $this->load->view('procurement_report_panel'); ?>    
       </div>
       <!-- Modal - Report Form -->
       

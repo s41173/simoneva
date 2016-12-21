@@ -4,7 +4,7 @@
 <div class="modal-content">
 <div class="modal-header">
   <button type="button" class="close" data-dismiss="modal">&times;</button>
-  <h4 class="modal-title"> Transaction Report </h4>
+  <h4 class="modal-title"> Laporan Pengadaan </h4>
 </div>
 <div class="modal-body">
  
@@ -20,19 +20,21 @@
 action="<?php echo $form_action_report; ?>" enctype="multipart/form-data">
      
     <div class="form-group">
-        <label class="control-label col-md-3 col-sm-3 col-xs-12"> DPPA </label>
+        <label class="control-label col-md-3 col-sm-3 col-xs-12"> SKPD </label>
         <div class="col-md-9 col-sm-9 col-xs-12">
           <?php $js = "class='form-control' id='cdppa_report'"; 
            echo form_dropdown('cdppa', $dppa, isset($default['dppa']) ? $default['dppa'] : '', $js); ?>
         </div>
     </div>
-        
+    
     <div class="form-group">
-        <label class="control-label col-md-3 col-sm-3 col-xs-12"> Tahun </label>
-        <div class="col-md-3 col-sm-3 col-xs-12">
-        <input id="tyear" maxlength="4" class="form-control col-md-7 col-xs-12" type="number" name="tyear" value="<?php echo date('Y'); ?>" required placeholder="Tahun Periode">
+        <label class="control-label col-md-3 col-sm-3 col-xs-6"> Periode </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+			<?php $js = "class='form-control' id='cmonth' tabindex='-1' style='width:150px; float:left;' "; 
+	        echo form_dropdown('cmonth', $month, isset($default['month']) ? $default['month'] : '', $js); ?>
+ <input type="number" class="form-control" name="tyear" id="tyear" title="Year" maxlength="4" value="<?php echo date('Y'); ?>" />
         </div>
-    </div>
+      </div>    
     
     <div class="form-group">
         <label class="control-label col-md-3 col-sm-3 col-xs-12"> Jenis </label>

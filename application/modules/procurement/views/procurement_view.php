@@ -126,7 +126,7 @@
       
       <!-- Modal - Report Form -->
       <div class="modal fade" id="myModal3" role="dialog">
-         <?php //$this->load->view('transaction_report_panel'); ?>    
+         <?php $this->load->view('procurement_report_panel'); ?>    
       </div>
       <!-- Modal - Report Form -->
       

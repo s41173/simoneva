@@ -43,7 +43,7 @@
 
 	<div style="border:0px solid red; float:left;">
 		<table border="0">
-            <tr> <td> Tahun </td> <td> : </td> <td> <?php echo $year; ?> </td> </tr>
+            <tr> <td> Periode </td> <td> : </td> <td> <?php echo get_month($month).' - '.$year; ?> </td> </tr>
 			<tr> <td> Run Date </td> <td> : </td> <td> <?php echo $rundate; ?> </td> </tr>
 			<tr> <td> Log </td> <td> : </td> <td> <?php echo $log; ?> </td> </tr>
 		</table>
@@ -51,7 +51,7 @@
 
 	<center>
 	   <div style="border:0px solid green; width:430px;">
-	      <h4> <?php echo isset($company) ? $company : ''; ?> <br> Laporan Transaksi SP2D (Pivot Table) </h4>
+	      <h4> <?php echo isset($company) ? $company : ''; ?> <br> Laporan Transaksi Pengadaan (Pivot Table) </h4>
 	   </div>
 	</center>
 
@@ -66,8 +66,8 @@
 		<table id="input" border="0" width="100%" style="visibility:hidden;">
 		  <thead>
            <tr>
- 	       <th> No </th> <th> DPPA </th> <th> Jenis </th> <th> Program </th> <th> Rekening </th> <th> Bulan </th>
-           <th> Tahun </th> <th> SP2D </th> <th> Progress </th>
+<th> No </th> <th> SKPD </th> <th> Jenis </th> <th> Program </th> <th> Rekening </th> <th> Kegiatan </th> <th> Bulan </th>
+<th> Tahun </th> <th> Nilai </th> <th> Realisasi </th> <th> Vendor </th> <th> Contact </th> <th> Contract </th>
 		   </tr>
            </thead>
 
@@ -105,15 +105,19 @@
 				{	
 				   echo " 
 				   <tr> 
-				       <td class=\"strongs\">".$i."</td> 
+				      <td class=\"strongs\">".$i."</td> 
 					   <td class=\"strongs\">".dppa($res->dppa_id)."</td>
                        <td class=\"strongs\">".types($res->type)."</td>
 					   <td class=\"strongs\">".category($res->category_id)."</td> 
 					   <td class=\"strongs\">".account($res->account_id)."</td>
-   					   <td class=\"strongs\">".$res->month."</td> 
+                       <td class=\"strongs\">".$res->title."</td>
+   					   <td class=\"strongs\">".get_month($res->month)."</td> 
                        <td class=\"strongs\">".$res->year."</td>
+                       <td class=\"strongs\">".$res->budget."</td>
                        <td class=\"strongs\">".$res->amount."</td>
-                       <td class=\"strongs\">".$res->progress_amount."</td>
+                       <td class=\"strongs\">".$res->vendor."</td>
+                       <td class=\"strongs\">".$res->contact."</td>
+                       <td class=\"strongs\">".$res->contract_no.' / '.tglin($res->contract_date)."</td>
 				   </tr>";
 				   $i++;
 				}
@@ -125,7 +129,7 @@
 		</table>
 	</div>
 	
-     <a style="float:left; margin:10px;" title="Back" href="<?php echo site_url('balance'); ?>"> 
+     <a style="float:left; margin:10px;" title="Back" href="<?php echo site_url('procurement'); ?>"> 
         <img src="<?php echo base_url().'images/back.png'; ?>"> 
      </a>
     

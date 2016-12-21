@@ -132,17 +132,17 @@ class Account_lib extends Main_Model {
     function get_belanja_type($val)
     {
        switch ($val) {
-        case 511:$res = strtoupper('Belanja Pegawai');break;
-        case 512:$res = strtoupper('Belanja Bunga');break;
-        case 513:$res = strtoupper('Belanja Subsidi');break;
-        case 514:$res = strtoupper('Belanja Hibah');break;
-        case 515:$res = strtoupper('Belanja Bantuan Sosial');break;
-        case 516:$res = strtoupper('BELANJA BAGI HASIL KEPADA PROVINSI/KABUPATEN/KOTA DAN PEMERINTAHAN DESA');break;
-        case 517:$res = strtoupper('BELANJA BANTUAN KEUANGAN KEPADA PROVINSI/KABUPATEN/KOTA , PEMERINTAHAN DESA DAN PARTAI POLITIK');break;
-        case 518:$res = strtoupper('Belanja Tidak Terduga');break;
-        case 521:$res = strtoupper('Belanja Pegawai');break;
-        case 522:$res = strtoupper('Belanja Barang Dan Jasa');break;
-        case 523:$res = strtoupper('Belanja Modal');break;
+        case 511:$res = ucfirst('Belanja Pegawai');break;
+        case 512:$res = ucfirst('Belanja Bunga');break;
+        case 513:$res = ucfirst('Belanja Subsidi');break;
+        case 514:$res = ucfirst('Belanja Hibah');break;
+        case 515:$res = ucfirst('Belanja Bantuan Sosial');break;
+        case 516:$res = ucfirst('Belanja Bagi Hasil Kepada Provinsi/Kabupaten/Kota Dan Pemerintahan Desa');break;
+        case 517:$res = ucfirst('Belanja Bantuan Keuangan Kepada Provinsi/Kabupaten/Kota, Pemerintahan Desa Dan Partai Politik');break;
+        case 518:$res = ucfirst('Belanja Tidak Terduga');break;
+        case 521:$res = ucfirst('Belanja Pegawai');break;
+        case 522:$res = ucfirst('Belanja Barang Dan Jasa');break;
+        case 523:$res = ucfirst('Belanja Modal');break;
        } 
        return $res;
     }
@@ -254,6 +254,7 @@ class Account_lib extends Main_Model {
         $this->db->where('balance.priority', 0);
         $this->db->where('balance.category_id', $acategory);
         $this->db->where('account.category', $category);
+        $this->db->where('account_category.deleted', NULL);
         $this->db->distinct();
         return $this->db->get();
     }
@@ -270,6 +271,7 @@ class Account_lib extends Main_Model {
         $this->db->where('balance.category_id', $acategory);
         $this->db->where('account.category', $category);
         $this->db->where('account.parent_id', $parent);
+        $this->db->where('account_category.deleted', NULL);
         return $this->db->get();
     }
     

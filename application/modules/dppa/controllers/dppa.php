@@ -437,9 +437,10 @@ class Dppa extends MX_Controller
         // =========================================  belanja langsung ===================================
         
 //        get jenis program dan kegiatan
-        $data['program'] = $this->category->get_top_category(2)->result();
+        $data['program'] = $this->category->get_top_category($this->input->post('cdppa'),2)->result();
         
-        
+        // get jenis belanja modal dan belanja barang
+        $data['events'] = $this->category->list_procurement_dppa($this->input->post('cdppa'))->result();
         
 ////        Property Details
         $data['company'] = $this->properti['name'];

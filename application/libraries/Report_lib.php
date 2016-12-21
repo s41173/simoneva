@@ -25,7 +25,7 @@ class Report_lib extends Main_Model {
            $prev = $this->transaction->get_total_monthly($dppa_id,'null',$res->id,$month,$year,2);
            $prog = $this->transaction->get_total_monthly($dppa_id,'null',$res->id,$month,$year,1);
 
-           echo $this->table($res->code, $res->name, $pagu,$sp2d,$prev,$prog);
+           echo $this->table($res->code, ucfirst($res->name), $pagu,$sp2d,$prev,$prog);
         }
     }
     
@@ -40,7 +40,7 @@ class Report_lib extends Main_Model {
            $prev = $this->transaction->get_total_monthly_parent_balance($dppa_id,$res->id,$month,$year,2);
            $prog = $this->transaction->get_total_monthly_parent_balance($dppa_id,$res->id,$month,$year,1);
             
-           echo $this->table($res->code, $res->name, $pagu,$sp2d,$prev,$prog);
+           echo $this->table($res->code, ucfirst($res->name), $pagu,$sp2d,$prev,$prog,'top-rekening');
            $this->get_trans_acc($res->id,$dppa_id,$month,$year);
         }
         
@@ -60,7 +60,7 @@ class Report_lib extends Main_Model {
               $prev = $this->transaction->get_total_monthly_based_kegiatan($dppa,$res->id,'null',$month,$year,2);
               $prog = $this->transaction->get_total_monthly_based_kegiatan($dppa,$res->id,'null',$month,$year,1);
                
-              echo $this->table($res->code, $res->name, $pagu,$sp2d,$prev,$prog);
+              echo $this->table($res->code, ucfirst($res->name), $pagu,$sp2d,$prev,$prog,'kegiatan');
               $this->get_trans_based_kode_belanja_kegiatan($dppa,$res->id,$month,$year);   
            }
        }    
@@ -78,7 +78,7 @@ $sp2d = $this->transaction->get_total_based_program_category_acc($res->category,
 $prev = $this->transaction->get_total_based_program_category_acc($res->category,$acategory_id,$dppa,$month,$year,2); 
 $prog = $this->transaction->get_total_based_program_category_acc($res->category,$acategory_id,$dppa,$month,$year,1);  
     
-    echo $this->table($res->category, $this->account->get_belanja_type($res->category), $pagu,$sp2d,$prev,$prog);
+    echo $this->table($res->category, $this->account->get_belanja_type($res->category), $pagu,$sp2d,$prev,$prog,'kategori-belanja');
     $this->get_trans_parent_rekening_kegiatan($acategory_id,$res->category,$dppa,$month,$year); 
                
            }
@@ -99,7 +99,7 @@ $sp2d = $this->transaction->get_total_based_program_top_acc($category,$acategory
 $prev = $this->transaction->get_total_based_program_top_acc($category,$acategory,$res->parent_id,$dppa,$month,$year,2); 
 $prog = $this->transaction->get_total_based_program_top_acc($category,$acategory,$res->parent_id,$dppa,$month,$year,1);
 
-    echo $this->table($this->account->get_code($res->parent_id), $this->account->get_name($res->parent_id), $pagu,$sp2d,$prev,$prog);
+    echo $this->table($this->account->get_code($res->parent_id), $this->account->get_name($res->parent_id), $pagu,$sp2d,$prev,$prog,'top-rekening');
     $this->get_trans_based_rekening_kegiatan($acategory,$category,$res->parent_id,$dppa,$month,$year);
                
            }
@@ -119,18 +119,18 @@ $results = $this->account->get_account_category_program_parent($acategory,$categ
              $prev = $this->transaction->get_total_monthly($dppa,$acategory,$res->id,$month,$year,2);
              $progress = $this->transaction->get_total_monthly($dppa,$acategory,$res->id,$month,$year,1);
              
-             echo $this->table($res->code,$res->name,$pagu,$sp2d,$prev,$progress);
+             echo $this->table($res->code, ucfirst($res->name),$pagu,$sp2d,$prev,$progress);
                
            }
        }
     }
     
-    function table($val1=null,$val2=null,$pagu=0,$sp2d=0,$prev=0,$progress=0)
+    function table($val1=null,$val2=null,$pagu=0,$sp2d=0,$prev=0,$progress=0,$class='')
     {
         $tot_progress = $prev + $progress;
         $rest = $pagu-$tot_progress;
         
-        return "<tr>
+        return "<tr class='$class'>
             <td></td>
             <td align=\"right\"> <nobr>  ".$val1." </nobr></td>
             <td> ".$val2." </td> 

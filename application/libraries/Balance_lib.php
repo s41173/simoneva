@@ -118,6 +118,17 @@ class Balance_lib extends Main_Model {
         elseif ($type == 1){ return $val->amount; }
     }
     
+    function get_total_priority($dppa='null',$year)
+    {
+        $this->db->select_sum('amount');
+        $this->db->where('year', $year);
+        $this->db->where('priority', 1);
+        $this->db->where('deleted', NULL);
+        $this->cek_null_string($dppa, 'dppa_id');
+        $val = $this->db->get($this->tableName)->row_array();
+        return $val['amount'];
+    }
+    
     // get jenis balance belanja langsung / tidak langsung
     function get_child_balance($dppa,$year,$type=1)
     {
@@ -205,6 +216,7 @@ class Balance_lib extends Main_Model {
         $this->db->where('balance.dppa_id', $dppa);
         $this->db->where('balance.priority', 0);
         $this->db->where('account_category.parent_id', $parent);
+        $this->db->where('account_category.deleted', NULL);
         $val = $this->db->get()->row_array();
         return $val['amount']; 
     }
@@ -219,6 +231,7 @@ class Balance_lib extends Main_Model {
         $this->db->where('balance.dppa_id', $dppa);
         $this->db->where('balance.priority', 0);
         $this->db->where('account_category.id', $acategory);
+        $this->db->where('account_category.deleted', NULL);
         $val = $this->db->get()->row_array();
         return $val['amount']; 
     }
@@ -232,6 +245,7 @@ class Balance_lib extends Main_Model {
         $this->db->where('balance.category_id', $acategory_id);
         $this->db->where('balance.dppa_id', $dppa);
         $this->db->where('balance.year', $year);
+        $this->db->where('account_category.deleted', NULL);
         $this->db->distinct();
         return $this->db->get();
     }
@@ -248,6 +262,7 @@ class Balance_lib extends Main_Model {
         $this->db->where('balance.priority', 0);
         $this->db->where('balance.category_id', $acategory);
         $this->db->where('account.category', $category);
+        $this->db->where('account_category.deleted', NULL);
         $val = $this->db->get()->row_array();
         return $val['amount']; 
     }

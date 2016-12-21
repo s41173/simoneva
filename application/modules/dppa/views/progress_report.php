@@ -54,20 +54,29 @@
 			letter-spacing: 20px;
 			font:bold 13px arial;
 		}
-		tbody tr td:nth-child(8),
+		
+        tbody tr td:nth-child(8),
 		tbody tr td:nth-child(9),
 		tbody tr td:nth-child(14),
 		tbody tr td:nth-child(12),
-		tbody tr td:nth-child(3),
 		tbody tr td:nth-child(4),
-		tbody tr td:nth-child(7),
-		tbody tr td:nth-child(15),
-		tbody tr td:nth-child(5),
-		tbody tr td:nth-child(6),
-		tbody tr td:nth-child(16),
-		tbody tr td:nth-child(10){
+		tbody tr td:nth-child(16)
+		{
 			text-align: center;
 		}
+        
+        tbody tr td:nth-child(3){ text-align: left;}
+        tbody tr td:nth-child(5),tbody tr td:nth-child(6),tbody tr td:nth-child(7){ text-align: right;}
+        tbody tr td:nth-child(10),tbody tr td:nth-child(11),tbody tr td:nth-child(13),tbody tr td:nth-child(15)
+        { text-align: right;}
+        
+        .belanja{ background-color: #ffff99;}
+        .jenis-belanja{ background-color: #b2ffb2;}
+        .kategori-belanja{ background-color: #ffc6c6;}
+        .top-rekening{ background-color: #f791f7;}
+        .program{ background-color: #ff7a7a;}
+        .kegiatan{ background-color: #c9c9ff;}
+        
 	</style>
 </head>
 <body>
@@ -132,10 +141,10 @@ BULAN : <?php echo strtoupper(get_month($month)).'  '.$year; ?> </h1>
 		</thead>
 		<tbody>
     
- <tr>
+ <tr class="belanja">
     <td></td>
     <td align="right"> <nobr> <?php echo $code_dppa; ?> 00 00 5</nobr></td>
-    <td>Belanja</td> 
+    <td> BELANJA </td> 
     <td> <?php echo $source; ?> </td> <!-- sumber -->
     <td> <?php echo idr_format($pagu) ?> </td> <!-- pagu dpa -->
     <td> <?php echo idr_format($transaction_amount); ?> </td> <!-- jumlah SP2D -->
@@ -153,10 +162,10 @@ BULAN : <?php echo strtoupper(get_month($month)).'  '.$year; ?> </h1>
 
 <!--belanja tidak langsung-->
 
- <tr>
+ <tr class="jenis-belanja">
     <td></td>
     <td align="right"> <nobr> <?php echo $code_dppa; ?> 00 00 5 1</nobr></td>
-    <td> Belanja tidak langsung </td> 
+    <td>  BELANJA TIDAK LANGSUNG </td> 
     <td> </td> <!-- sumber -->
     <td> <?php echo idr_format($pagu_1) ?> </td> <!-- pagu dpa -->
     <td> <?php echo idr_format($transaction_amount_1); ?> </td> <!-- jumlah SP2D -->
@@ -191,7 +200,7 @@ BULAN : <?php echo strtoupper(get_month($month)).'  '.$year; ?> </h1>
            $prev = $tr->get_total_monthly_category_balance($dppa_id,$res->category,$month,$year,2);
            $prog = $tr->get_total_monthly_category_balance($dppa_id,$res->category,$month,$year,1);
             
-           echo $rpt->table($res->category, $acc->get_belanja_type($res->category), $pagu,$sp2d,$prev,$prog);
+           echo $rpt->table($res->category, $acc->get_belanja_type($res->category), $pagu,$sp2d,$prev,$prog,'kategori-belanja');
            $rpt->get_trans_parent_acc($res->category,$dppa_id,$month,$year);
         }
     }
@@ -200,10 +209,10 @@ BULAN : <?php echo strtoupper(get_month($month)).'  '.$year; ?> </h1>
  
 <!--belanja langsung-->
 
- <tr>
+ <tr class="jenis-belanja">
     <td></td>
     <td align="right"> <nobr> <?php echo $code_dppa; ?> 00 00 5 2</nobr></td>
-    <td> Belanja langsung </td> 
+    <td> BELANJA LANGSUNG </td> 
     <td> </td> <!-- sumber -->
     <td> <?php echo idr_format($pagu_2) ?> </td> <!-- pagu dpa -->
     <td> <?php echo idr_format($transaction_amount_2); ?> </td> <!-- jumlah SP2D -->
@@ -231,7 +240,7 @@ BULAN : <?php echo strtoupper(get_month($month)).'  '.$year; ?> </h1>
            $prev = $tr->get_total_monthly_based_program($dppa_id,$res->id,'null',$month,$year,2);
            $prog = $tr->get_total_monthly_based_program($dppa_id,$res->id,'null',$month,$year,1);
             
-           echo $rpt->table($res->code, $res->name, $pagu,$sp2d,$prev,$prog);
+           echo $rpt->table($res->code, ucfirst($res->name), $pagu,$sp2d,$prev,$prog,'program');
            $rpt->get_trans_based_jenis_kegiatan($dppa_id,$res->id,$month,$year);
         }
     }        

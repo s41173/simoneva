@@ -4,7 +4,7 @@
 <div class="modal-content">
 <div class="modal-header">
   <button type="button" class="close" data-dismiss="modal">&times;</button>
-  <h4 class="modal-title"> Tambah Kode Rekening </h4>
+  <h4 class="modal-title"> Tambah Program Kegiatan </h4>
 </div>
 <div class="modal-body">
  
@@ -24,24 +24,30 @@
 <form id="upload_form_non" data-parsley-validate class="form-horizontal form-label-left" method="POST" 
 action="<?php echo $form_action; ?>" enctype="multipart/form-data">
      
+    <div class="form-group">
+      <label for="middle-name" class="control-label col-md-3 col-sm-3 col-xs-12"> SKPD Code </label>
+      <div class="col-md-6 col-sm-6 col-xs-12">
+        <input id="tskpdcode" class="form-control col-md-7 col-xs-12" type="text" name="tskpdcode" value="<?php echo $code; ?>" required readonly>
+      </div>
+    </div> 
      
     <div class="form-group">
       <label for="middle-name" class="control-label col-md-3 col-sm-3 col-xs-12"> Kode </label>
       <div class="col-md-6 col-sm-6 col-xs-12">
-        <input id="tcode" class="form-control col-md-7 col-xs-12" type="text" name="tcode" required placeholder="Kode Rekening">
+        <input id="tcode" class="form-control col-md-7 col-xs-12" type="text" name="tcode" required placeholder="Kode Kegiatan">
       </div>
     </div> 
      
     <div class="form-group">
       <label for="middle-name" class="control-label col-md-3 col-sm-3 col-xs-12"> Nama </label>
       <div class="col-md-6 col-sm-6 col-xs-12">
-        <input id="tname" class="form-control col-md-7 col-xs-12" type="text" name="tname" required placeholder="Nama Rekening">
+        <input id="tname" class="form-control col-md-7 col-xs-12" type="text" name="tname" required placeholder="Nama">
       </div>
     </div>
     
     <div class="form-group">
        <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name"> Kategori Rekening <span class="required">*</span></label>
-       <div class="col-md-6 col-sm-6 col-xs-12">
+       <div class="col-md-8 col-sm-8 col-xs-12">
            
            <?php $js = "class='select2_single form-control' id='cparent' tabindex='-1' style='width:100%;' "; 
 		        echo form_dropdown('cparent', $parent, isset($default['parent']) ? $default['parent'] : '', $js); ?>
@@ -51,7 +57,7 @@ action="<?php echo $form_action; ?>" enctype="multipart/form-data">
     <div class="form-group">
       <label for="middle-name" class="control-label col-md-3 col-sm-3 col-xs-12"> Urutan </label>
       <div class="col-md-2 col-sm-2 col-xs-12">
-        <input id="torder" class="form-control col-md-7 col-xs-12" type="number" name="torder" required placeholder="Order">
+        <input id="torder" class="form-control col-md-7 col-xs-12" type="number" name="torder" required>
       </div>
     </div>
     

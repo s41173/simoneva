@@ -67,8 +67,9 @@ class Acategory_lib extends Main_Model {
         return $data;
     }
     
-    function combo_child_procurement_dppa($dppa,$type=null)
+    function combo_child_procurement_dppa($dppa)
     {
+        $data=null;
         $this->db->select('account_category.id, account_category.code, account_category.name');
         $this->db->from('balance, account, account_category');
         $this->db->where('account.id = balance.account_id');
@@ -81,9 +82,26 @@ class Acategory_lib extends Main_Model {
         $this->db->where_in('account.category', $value);
         $this->db->order_by('account_category.name', 'asc');
         $val = $this->db->get()->result();
-        if ($type){ $data['options'][''] = '-- Select Category --'; }
-        foreach($val as $row){ $data['options'][$row->id] = ucfirst($row->code.' : '.$row->name); }
+        
+        if ($val){ foreach($val as $row){ $data['options'][$row->id] = ucfirst($row->code.' : '.$row->name); } }
+        else { $data['options'][''] = '-- Select Category --'; }
         return $data;
+    }
+    
+    function list_procurement_dppa($dppa,$type=null)
+    {
+        $this->db->select('account_category.id, account_category.code, account_category.name');
+        $this->db->from('balance, account, account_category');
+        $this->db->where('account.id = balance.account_id');
+        $this->db->where('account_category.id = balance.category_id');
+        $this->db->where('account_category.deleted', NULL);
+        $this->db->where('account_category.parent_id >', 0);
+        $this->db->where('account_category.dppa_id', $dppa);
+        
+        $value = array('522', '523');
+        $this->db->where_in('account.category', $value);
+        $this->db->order_by('account_category.name', 'asc');
+        return $this->db->get();
     }
 
     function combo_all()
@@ -102,6 +120,7 @@ class Acategory_lib extends Main_Model {
         $this->db->select('id, code, name');
         $this->db->where('deleted', NULL);
         $this->db->where('dppa_id', $id);
+        $this->db->where('parent_id', 0);
         $this->db->order_by('name', 'asc');
         $val = $this->db->get($this->tableName)->result();
         if ($val){ foreach($val as $row){ $data['options'][$row->id] = ucfirst($row->name); } }
@@ -146,12 +165,13 @@ class Acategory_lib extends Main_Model {
         else { return ''; }
     }
     
-    function get_top_category($type=2)
+    function get_top_category($dppa,$type=2)
     {
        $this->db->select($this->field);
        $this->db->where('deleted', NULL);
        $this->db->where('parent_id', 0);
-       $this->db->where('type', $type);     
+       $this->db->where('type', $type);
+       $this->db->where('dppa_id', $dppa);
        $this->db->order_by('orders', 'asc');
        return $this->db->get($this->tableName);
     }

@@ -78,6 +78,7 @@ class Acategory extends MX_Controller
         $this->session->set_userdata('dppa',$dppa);
 	// ---------------------------------------- //
         
+        $data['code'] = $this->dppa->get_code($dppa);
         $data['parent'] = $this->acategory->combo_dppa($dppa);
         $data['parent_update'] = $this->acategory->combo_update($dppa,$this->session->userdata('langid'));
  
@@ -231,15 +232,13 @@ class Acategory extends MX_Controller
         $this->form_validation->set_rules('ctype', 'Jenis Kategory', 'callback_valid_type['.$this->input->post('cparent').']');
 
         
-//        protected $field = array('id', 'parent_id', 'type', 'code', 'name', 'dppa_id', 'description', 'created', 'updated', 'deleted');
-        
         if ($this->form_validation->run($this) == TRUE)
         {
             if ($this->input->post('cparent')=='0'){ $type = $this->input->post('ctype'); }
             else{ $type = $this->acategory->get_type($this->input->post('cparent')); }
             
             $acategory = array('name' => strtolower($this->input->post('tname')),
-                             'code' => strtolower($this->input->post('tcode')),
+                             'code' => strtolower($this->input->post('tskpdcode').$this->input->post('tcode')),
                              'parent_id' => $this->input->post('cparent'),
                              'type' => $type,
                              'dppa_id' => $dppa,

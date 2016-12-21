@@ -65,14 +65,18 @@
                     datafields:
                     [
                         { name: "No", type: "string" },
-						{ name: "DPPA", type: "string" },
+						{ name: "SKPD", type: "string" },
                         { name: "Jenis", type: "string" },
 						{ name: "Program", type: "string" },
 						{ name: "Rekening", type: "string" },
+                        { name: "Kegiatan", type: "string" },
                         { name: "Bulan", type: "string" },
                         { name: "Tahun", type: "string" },
-                        { name: "SP2D", type: "number" },
-                        { name: "Progress", type: "number" }
+                        { name: "Nilai", type: "number" },
+                        { name: "Realisasi", type: "number" },
+                        { name: "Vendor", type: "text" },
+                        { name: "Contact", type: "text" },
+                        { name: "Contract", type: "text" }
                     ]
                 };
 			
@@ -96,26 +100,29 @@
 				autoshowfiltericon: false,
                 columns: [
                   { text: 'No', dataField: 'No', width: 50 },
-				  { text: 'DPPA', dataField: 'DPPA', width : 220 },
+				  { text: 'SKPD', dataField: 'SKPD', width : 220 },
                   { text: 'Jenis', dataField: 'Jenis', width : 220 },
   				  { text: 'Program', dataField: 'Program', width : 300 },
 				  { text: 'Rekening', dataField: 'Rekening', width : 350 },
+                  { text: 'Kegiatan', dataField: 'Kegiatan', width : 350 },
                   { text: 'Bulan', dataField: 'Bulan', width : 90 },
                   { text: 'Tahun', dataField: 'Tahun', width : 100 },
-   { text: 'SP2D', datafield: 'SP2D', width: 200, cellsalign: 'right', cellsformat: 'number', aggregates: ['sum'] },
-   { text: 'Progress', datafield: 'Progress', width: 200, cellsalign: 'right', cellsformat: 'number', aggregates: ['sum'] },
+   { text: 'Nilai', datafield: 'Nilai', width: 170, cellsalign: 'right', cellsformat: 'number', aggregates: ['sum'] },
+   { text: 'Realisasi', datafield: 'Realisasi', width: 170, cellsalign: 'right', cellsformat: 'number', aggregates: ['sum'] },
+   { text: 'Vendor', dataField: 'Vendor', width : 250 },
+   { text: 'Contact', dataField: 'Contract', width : 250 },
                 ]
             });
 			
-			$('#jqxgrid').jqxGrid({ pagesizeoptions: ['100', '500', '1000', '2000', '3000', '5000']}); 
+			$('#jqxgrid').jqxGrid({ pagesizeoptions: ['1000', '5000', '10000', '20000', '30000', '50000']}); 
 			
 			$("#bexport").click(function() {
 				
 				var type = $("#crtype").val();	
-				if (type == 0){ $("#jqxgrid").jqxGrid('exportdata', 'html', 'Program-Summary'); }
-				else if (type == 1){ $("#jqxgrid").jqxGrid('exportdata', 'xls', 'Program-Summary'); }
-				else if (type == 2){ $("#jqxgrid").jqxGrid('exportdata', 'pdf', 'Program-Summary'); }
-				else if (type == 3){ $("#jqxgrid").jqxGrid('exportdata', 'csv', 'Program-Summary'); }
+				if (type == 0){ $("#jqxgrid").jqxGrid('exportdata', 'html', 'Procurement-Summary'); }
+				else if (type == 1){ $("#jqxgrid").jqxGrid('exportdata', 'xls', 'Procurement-Summary'); }
+				else if (type == 2){ $("#jqxgrid").jqxGrid('exportdata', 'pdf', 'Procurement-Summary'); }
+				else if (type == 3){ $("#jqxgrid").jqxGrid('exportdata', 'csv', 'Procurement-Summary'); }
 			});
 			
 			$('#jqxgrid').on('celldoubleclick', function (event) {
@@ -150,7 +157,7 @@
 	
 	<div style="border:0px solid red; float:left;">
 		<table border="0">
-            <tr> <td> Tahun </td> <td> : </td> <td> <?php echo $year; ?> </td> </tr>
+            <tr> <td> Periode </td> <td> : </td> <td> <?php echo get_month($month).' - '.$year; ?> </td> </tr>
 			<tr> <td> Run Date </td> <td> : </td> <td> <?php echo $rundate; ?> </td> </tr>
 			<tr> <td> Log </td> <td> : </td> <td> <?php echo $log; ?> </td> </tr>
 		</table>
@@ -158,7 +165,7 @@
 
 	<center>
 	   <div style="border:0px solid green; width:530px;">	
-	       <h4> <?php echo isset($company) ? $company : ''; ?> <br> Laporan Transaksi SP2D </h4>
+	       <h4> <?php echo isset($company) ? $company : ''; ?> <br> Laporan Pengadaan </h4>
 	   </div>
 	</center>
 	
@@ -189,8 +196,8 @@
 		<table id="table" border="0" width="100%">
 		   <thead>
            <tr>
- 	       <th> No </th> <th> DPPA </th> <th> Jenis </th> <th> Program </th> <th> Rekening </th> <th> Bulan </th>
-           <th> Tahun </th> <th> SP2D </th> <th> Progress </th>
+<th> No </th> <th> SKPD </th> <th> Jenis </th> <th> Program </th> <th> Rekening </th> <th> Kegiatan </th> <th> Bulan </th>
+<th> Tahun </th> <th> Nilai </th> <th> Realisasi </th> <th> Vendor </th> <th> Contact </th> <th> Contract </th>
 		   </tr>
            </thead>
 		  
@@ -233,10 +240,14 @@
                        <td class=\"strongs\">".types($res->type)."</td>
 					   <td class=\"strongs\">".category($res->category_id)."</td> 
 					   <td class=\"strongs\">".account($res->account_id)."</td>
-   					   <td class=\"strongs\">".$res->month."</td> 
+                       <td class=\"strongs\">".$res->title."</td>
+   					   <td class=\"strongs\">".get_month($res->month)."</td> 
                        <td class=\"strongs\">".$res->year."</td>
+                       <td class=\"strongs\">".$res->budget."</td>
                        <td class=\"strongs\">".$res->amount."</td>
-                       <td class=\"strongs\">".$res->progress_amount."</td>
+                       <td class=\"strongs\">".$res->vendor."</td>
+                       <td class=\"strongs\">".$res->contact."</td>
+                       <td class=\"strongs\">".$res->contract_no.' / '.tglin($res->contract_date)."</td>
 				   </tr>";
 				   $i++;
 				}
@@ -247,7 +258,7 @@
         
         </div>
         
-        <a style="float:left; margin:10px;" title="Back" href="<?php echo site_url('transaction'); ?>"> 
+        <a style="float:left; margin:10px;" title="Back" href="<?php echo site_url('procurement'); ?>"> 
           <img src="<?php echo base_url().'images/back.png'; ?>"> 
         </a>
         
