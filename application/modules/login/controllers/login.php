@@ -26,11 +26,14 @@ class Login extends MX_Controller {
 
    function index()
    {
-        $data['pname'] = $this->properti['name'];
-        $data['logo'] = $this->properti['logo'];
-        $data['form_action'] = site_url('login/login_process');
+       $data['pname'] = $this->properti['name'];
+       $data['logo'] = $this->properti['logo'];
+       $data['form_action'] = site_url('login/login_process');
 
-        $this->load->view('login_view', $data);
+        
+       $this->load->library('user_agent');
+       if ($this->agent->is_mobile()) { $this->load->view('m_login', $data);} 
+       else { $this->load->view('login_view', $data); }
     }
 
     // function untuk memeriksa input user dari form sebagai admin

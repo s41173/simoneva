@@ -53,6 +53,16 @@ action="<?php echo $form_action_report; ?>" target="_blank" enctype="multipart/f
         </div>
     </div>
     
+     <div class="form-group">
+        <label class="control-label col-md-3 col-sm-3 col-xs-12"> Format </label>
+        <div class="col-md-3 col-sm-3 col-xs-12">     
+			<select name="cformat" class="form-control">
+              <option value="0"> HTML </option>
+              <option value="1"> PDF </option>
+            </select>
+        </div>
+    </div>
+    
       <div class="ln_solid"></div>
       <div class="form-group">
           <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">

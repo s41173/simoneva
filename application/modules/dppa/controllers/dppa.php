@@ -74,7 +74,7 @@ class Dppa extends MX_Controller
 	$data['form_action'] = site_url($this->title.'/add_process');
         $data['form_action_update'] = site_url($this->title.'/update_process');
         $data['form_action_del'] = site_url($this->title.'/delete_all');
-        $data['form_action_report'] = site_url($this->title.'/report_process');
+        $data['form_action_report'] = site_url($this->title.'/report');
         $data['link'] = array('link_back' => anchor('main/','Back', array('class' => 'btn btn-danger')));
 
         $data['parent'] = $this->dppa->combo();
@@ -379,7 +379,7 @@ class Dppa extends MX_Controller
        if ($img){ $img = "./images/dppa/".$img; @unlink("$img"); } 
     }
     
-    function report_process()
+    function report()
     {
         $this->acl->otentikasi2($this->title);
         $data['title'] = $this->properti['name'].' | Report '.ucwords($this->modul['title']);
@@ -448,9 +448,21 @@ class Dppa extends MX_Controller
                 
 //        $data['reports'] = $this->Dppa_model->report($this->input->post('cdppa'),$this->input->post('tyear'))->result();
         
-        if ($this->input->post('ctype') == 0){ $this->load->view('progress_report', $data); }
-        elseif ($this->input->post('ctype') == 1) { $this->load->view('procurement_report', $data); }
-        elseif ($this->input->post('ctype') == 2) { $this->load->view('dppa_progress_report', $data); }
+        if ($this->input->post('ctype') == 0){ $page = 'progress_report'; }
+        elseif ($this->input->post('ctype') == 1) { $page = 'procurement_report'; }
+        elseif ($this->input->post('ctype') == 2) { $page = 'dppa_progress_report'; }
+                
+        if ($this->input->post('cformat') == 0){  $this->load->view($page, $data); }
+        elseif ($this->input->post('cformat') == 1)
+        {
+            $html=$this->load->view($page, $data, true);
+            $this->load->library('m_pdf');
+            $pdfFilePath = "progress.pdf";
+            //generate the PDF from the given html
+            $this->m_pdf->pdf->WriteHTML($html);
+            //download it.
+            $this->m_pdf->pdf->Output($pdfFilePath, "D");  
+        }
     }
 
 }

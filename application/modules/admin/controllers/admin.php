@@ -63,7 +63,8 @@ class Admin extends MX_Controller
         $data['form_action_del'] = site_url($this->title.'/delete_all');
         $data['link'] = array('link_back' => anchor('main/','Back', array('class' => 'btn btn-danger')));
 
-        $data['city'] = $this->city->combo_province();
+//        $data['city'] = $this->city->combo_province();
+        $data['city'] = $this->city->combo();
         $data['roles'] = $this->role->combo();
         $data['dppa'] = $this->dppa->combo_child();
 	// ---------------------------------------- //

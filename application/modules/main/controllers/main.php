@@ -26,7 +26,7 @@ class Main extends MX_Controller
 
     function index()
     {       
-	$this->main_panel();
+	$this->main_panel();   
     }
 
     private function user_agent()
