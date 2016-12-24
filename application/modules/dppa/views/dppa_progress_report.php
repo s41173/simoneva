@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>Document</title>
+    <link rel="shortcut icon" href="<?php echo base_url().'images/fav_icon.png';?>" >
+    <title> <?php echo isset($title) ? $title : ''; ?>  </title>
 </head>
 <body>
 
@@ -79,25 +80,47 @@
 			document.write('<th>'+i+'</th>');
 		}
 	</script>
- 
 	</tr>
-	<tr>
-		<td align="center">1</td>
-		<td>DINAS PENDIDIKAN</td>
-		<td>&#10003;</td>
-		<td>&#10003;</td>
-		<td>&#10003;</td>
-		<td>&#10003;</td>
-		<td>&#10003;</td>
-		<td>&#10003;</td>
-		<td>&#10003;</td>
-		<td>&#10003;</td>
-		<td>&#10003;</td>
-		<td>&#10003;</td>
-		<td>&#10003;</td>
-		<td>&#10003;</td>
-		<td>format tidak sesuai</td>
-	</tr>
+    
+    <?php
+      
+       function statusx($skpd,$month,$year)
+       {
+          $tr = new Transaction_lib();
+          $res = $tr->cek_monthly($skpd,$month,$year);
+          if ($res == true){ return '&#10003;'; }else { return ''; }
+       }
+       
+       if ($skpd)
+       {
+           $i=1;
+           foreach ($skpd as $res)
+           {
+               echo "
+               <tr>
+               <td> ".$i." </td>
+               <td> ".strtoupper($res->name)." </td>
+               <td> ".statusx($res->id,1,$year)." </td>
+               <td> ".statusx($res->id,2,$year)." </td>
+               <td> ".statusx($res->id,3,$year)." </td>
+               <td> ".statusx($res->id,4,$year)." </td>
+               <td> ".statusx($res->id,5,$year)." </td>
+               <td> ".statusx($res->id,6,$year)." </td>
+               <td> ".statusx($res->id,7,$year)." </td>
+               <td> ".statusx($res->id,8,$year)." </td>
+               <td> ".statusx($res->id,9,$year)." </td>
+               <td> ".statusx($res->id,10,$year)." </td>
+               <td> ".statusx($res->id,11,$year)." </td>
+               <td> ".statusx($res->id,12,$year)." </td>
+               <td> </td>
+               </tr>
+               ";
+               $i++;
+           }
+       }
+    
+    ?>
+    
 </table>
 <br><br>
 <b><br>

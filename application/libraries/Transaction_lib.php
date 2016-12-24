@@ -172,6 +172,16 @@ class Transaction_lib extends Main_Model {
         elseif ($type == 3) { return $val['rest']; }
     }
     
+    function cek_monthly($dppa,$month,$year)
+    {        
+        $this->db->where('year', $year);
+        $this->cek_null_string($month, 'month');
+        $this->cek_null_string($dppa, 'dppa_id');
+        $val = $this->db->get($this->tableName)->num_rows();
+        
+        if ($val > 0){ return TRUE; }else { return FALSE; }
+    }
+    
     function get_total_monthly_based_belanja($dppa,$cat='null',$acc='null',$month,$year,$type=0,$belanja=1)
     {
         $this->db->select_sum('amount');

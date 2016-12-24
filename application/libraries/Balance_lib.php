@@ -107,6 +107,17 @@ class Balance_lib extends Main_Model {
         return $val['amount'];
     }
     
+    function get_belanja($dppa,$year,$type=1)
+    {
+        $this->db->select_sum('amount');
+        $this->db->where('year', $year);
+        $this->db->where('type', $type);
+        $this->db->where('dppa_id', $dppa);
+        $this->db->where('priority', 0);
+        $val = $this->db->get($this->tableName)->row_array();
+        return $val['amount'];
+    }
+    
     function get_priority($dppa,$year,$type=0)
     {
         $this->db->select('source, amount');

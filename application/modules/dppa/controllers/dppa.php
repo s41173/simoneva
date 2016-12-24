@@ -448,9 +448,12 @@ class Dppa extends MX_Controller
                 
 //        $data['reports'] = $this->Dppa_model->report($this->input->post('cdppa'),$this->input->post('tyear'))->result();
         
+        $data['skpd'] = $this->Dppa_model->get_last(100)->result();
+        
         if ($this->input->post('ctype') == 0){ $page = 'progress_report'; }
         elseif ($this->input->post('ctype') == 1) { $page = 'procurement_report'; }
-        elseif ($this->input->post('ctype') == 2) { $page = 'dppa_progress_report'; }
+        elseif ($this->input->post('ctype') == 2) { $page = 'recapitulation_report'; }
+        elseif ($this->input->post('ctype') == 3) { $page = 'dppa_progress_report'; }
                 
         if ($this->input->post('cformat') == 0){  $this->load->view($page, $data); }
         elseif ($this->input->post('cformat') == 1)

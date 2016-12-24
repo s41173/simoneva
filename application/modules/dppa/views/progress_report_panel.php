@@ -48,7 +48,8 @@ action="<?php echo $form_action_report; ?>" target="_blank" enctype="multipart/f
 			<select name="ctype" class="form-control">
               <option value="0"> Perkembangan Pelaksanaan Kegiatan </option>
               <option value="1"> Perkembangan Proses Pengadaan </option>
-              <option value="2"> Status Perkembangan Kegiatan SKPD </option>
+              <option value="2"> Rekapitulasi Belanja </option>
+              <option value="3"> Status Perkembangan Kegiatan SKPD </option>
             </select>
         </div>
     </div>
