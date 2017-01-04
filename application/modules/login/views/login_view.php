@@ -15,15 +15,19 @@
     <style type="text/css">@import url("<?php echo base_url() . 'js/sweetalert/sweetalert.css'; ?>");</style>
     <style type="text/css">@import url("<?php echo base_url() . 'css/bootstrap.min.css'; ?>");</style>
     
-</head>
+    <style type="text/css">
 
-<script type="text/javascript">
+      #forgot{ color:#000; font-size:12px; text-decoration:none; }
+      #forgot:hover { text-decoration:underline; }
+      #brand{ text-decoration:none; color:#6D4187; font-weight:bold;}
+
+    </style>
+    
+    <script type="text/javascript">
 
 $(document).ready(function (e) {
 	
-	
-	
-	$('#user,#pass').keypress(function (e) {
+   $('#user,#pass').keypress(function (e) {
 	 var key = e.which;
 	 if(key == 13)  // the enter key code
 	  {
@@ -65,6 +69,8 @@ $(document).ready(function (e) {
 });
 
 </script>
+    
+</head>
 
 <body>
 
@@ -97,6 +103,10 @@ $(document).ready(function (e) {
     <p>&copy; Copyrights <a id="brand" href="http://sismonevkotapematangsiantar.net"> 
         <?php echo $pname.'&nbsp;'.date('Y'); ?> </a>. 
     <br>All rights reserved.</p>
+    
+    <a href="<?php echo site_url('login/download/'); ?>">
+        <img src="<?php echo base_url().'images/gplay.png'; ?>" alt="Google Play"> 
+    </a>
 </div>
 	
 </div>
@@ -106,13 +116,5 @@ $(document).ready(function (e) {
  </div>    
 </div>
 </body>
-
-<style type="text/css">
-
-  #forgot{ color:#000; font-size:12px; text-decoration:none; }
-  #forgot:hover { text-decoration:underline; }
-  #brand{ text-decoration:none; color:#6D4187; font-weight:bold;}
-
-</style>
 
 </html>

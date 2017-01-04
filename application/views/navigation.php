@@ -54,7 +54,7 @@
 						 }
 						  
 					 ?>
-						
+					 	
                      <?php $this->load->view('staticnavigation'); ?>   
                         
                      </ul>

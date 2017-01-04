@@ -26,6 +26,22 @@ class Account_lib extends Main_Model {
         return $data;
     }
     
+    function combo_complete($vals=null)
+    {
+        $data = null;
+        $this->db->select($this->field);
+        $this->db->where('deleted', NULL);
+        $this->db->where('publish',1);
+        $this->db->where('parent_id',0);
+        $this->db->order_by('name', 'asc');
+        $val = $this->db->get($this->tableName)->result();
+        if ($vals=null){ $data['options'][0] = 'Top'; }
+        if ($val){ foreach($val as $row){ $data['options'][$row->id] = ucfirst($row->code.' : '.$row->name); } }
+        else { $data['options'][''] = ' -- '; }
+        
+        return $data;
+    }
+    
     function combo_child()
     {
         $data = null;

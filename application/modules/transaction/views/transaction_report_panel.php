@@ -20,7 +20,7 @@
 action="<?php echo $form_action_report; ?>" enctype="multipart/form-data">
      
     <div class="form-group">
-        <label class="control-label col-md-3 col-sm-3 col-xs-12"> DPPA </label>
+        <label class="control-label col-md-3 col-sm-3 col-xs-12"> SKPD </label>
         <div class="col-md-9 col-sm-9 col-xs-12">
           <?php $js = "class='form-control' id='cdppa_report'"; 
            echo form_dropdown('cdppa', $dppa, isset($default['dppa']) ? $default['dppa'] : '', $js); ?>

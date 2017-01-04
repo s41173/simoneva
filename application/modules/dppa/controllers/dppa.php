@@ -467,6 +467,24 @@ class Dppa extends MX_Controller
             $this->m_pdf->pdf->Output($pdfFilePath, "D");  
         }
     }
+    
+    function download($val=null)
+    {
+        $this->load->helper('download');
+        
+        if (!$val)
+        {
+          $data = file_get_contents("ug/sismonev_guide.pdf"); // Read the file's contents
+          $name = 'sismonev_guide.pdf';
+        }
+        else
+        {
+          $data = file_get_contents("ug/sismoneva.apk"); // Read the file's contents
+          $name = 'sismoneva.apk'; 
+        }
+
+        force_download($name, $data);
+    }
 
 }
 

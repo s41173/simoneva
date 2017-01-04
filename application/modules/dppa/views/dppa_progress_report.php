@@ -10,12 +10,13 @@
 <style>
 	*{
 		margin: 0;
-		text-align:center;
 		font:normal 10px arial;
+        text-align: center;
 	}
 	th{
 		background: #ccc;
 		font-weight: bold;
+        text-align: center;
 	}
 	tr:nth-child(3) th{
 		background: #eee !important;
@@ -40,6 +41,8 @@
 	b{
 		font-weight: bold !important;
 	}
+    table tr,td{ text-align: center;}
+    table tr,td.skpd{ text-align: left;}
 </style>
 <table class="xx" width="100%" border='1'>
 	<tr>
@@ -99,7 +102,7 @@
                echo "
                <tr>
                <td> ".$i." </td>
-               <td> ".strtoupper($res->name)." </td>
+               <td class=\"skpd\"> ".strtoupper($res->name)." </td>
                <td> ".statusx($res->id,1,$year)." </td>
                <td> ".statusx($res->id,2,$year)." </td>
                <td> ".statusx($res->id,3,$year)." </td>

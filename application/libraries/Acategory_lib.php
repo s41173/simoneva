@@ -43,8 +43,12 @@ class Acategory_lib extends Main_Model {
         $this->db->order_by('name', 'asc');
         $val = $this->db->get($this->tableName)->result();
         if ($type){ $data['options'][''] = '-- Select Category --'; }
-        foreach($val as $row){ $data['options'][$row->id] = ucfirst($row->code.' : '.$row->name); }
-        return $data;
+        if ($val)
+        {
+           foreach($val as $row){ $data['options'][$row->id] = ucfirst($row->code.' : '.$row->name); }
+           return $data;
+        }
+        else { $data['options'][''] = '-- Select Category --'; return $data; }
     }
     
     function combo_child_procurement()

@@ -86,6 +86,7 @@
  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal"> <i class="fa fa-plus"></i>&nbsp;Add New </button>
  
  <a href="<?php echo site_url('account/report'); ?>" class="btn btn-primary"> Report </a>
+ <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#myModal3"> CSV Import </button>                  
                
                <!-- links -->
 	           <?php if (!empty($link)){foreach($link as $links){echo $links . '';}} ?>
@@ -109,7 +110,7 @@
       
       <!-- Modal - Report Form -->
       <div class="modal fade" id="myModal3" role="dialog">
-         <?php //$this->load->view('account_report'); ?>    
+         <?php $this->load->view('account_import'); ?>    
       </div>
       <!-- Modal - Report Form -->
       

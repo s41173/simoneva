@@ -12,6 +12,7 @@
        <li><a href="<?php echo site_url('log'); ?>">History</a></li>
        <li><a href="<?php echo site_url('roles'); ?>">Role</a></li>
        <li><a href="<?php echo site_url('configuration'); ?>">Global Configuration</a></li>
+       <li> <a href="<?php echo site_url('dppa/download'); ?>"> User Guide </a> </li>
        <li> <a href="#" target="_blank"> Web - Mail </a> </li>
     </ul>
 </li>

@@ -125,8 +125,10 @@ class Balance_lib extends Main_Model {
         $this->db->where('dppa_id', $dppa);
         $this->db->where('priority', 1);
         $val = $this->db->get($this->tableName)->row();
-        if ($type == 0){ return $val->source; }
-        elseif ($type == 1){ return $val->amount; }
+        if ($val){
+          if ($type == 0){ return $val->source; }
+          elseif ($type == 1){ return $val->amount; }
+        }else { return 0; }
     }
     
     function get_total_priority($dppa='null',$year)
