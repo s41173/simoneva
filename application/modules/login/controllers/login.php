@@ -177,7 +177,6 @@ DO NOT REPLY TO THIS MESSAGE. For further help or to contact support, please ema
         
        $data = file_get_contents("ug/sismoneva.apk"); // Read the file's contents
        $name = 'sismoneva.apk';    
-
        force_download($name, $data);
     }
 

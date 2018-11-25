@@ -127,9 +127,11 @@
 </table>
 <br><br>
 <b><br>
+<!--
 KEPALA BAGIAN ADMINISTRASI PEMBANGUNAN<br><br><br><br><br>
 POLTAK MANURUNG, SE<br>
 NIP : 9999 999999
+-->
 	</b>
 </body>
 </html>

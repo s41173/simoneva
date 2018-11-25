@@ -171,10 +171,17 @@ BULAN : <?php echo strtoupper(get_month($month)).'  '.$year; ?> </h1>
         {
           foreach($results as $res)
           {
-            $pagux = $bl->get_balance_based_program_category_account($res->category,$category,$dppa,$year);
-            $sp2dx = $tr->get_total_based_program_category_acc($res->category,$category,$dppa,$month,$year,0);
-            $progressx = $tr->get_total_based_program_category_acc($res->category,$category,$dppa,$month,$year,1);
-            $restx = $tr->get_total_based_program_category_acc($res->category,$category,$dppa,$month,$year,3);  
+              
+            if ($res->category == '523'){
+                $pagux = $bl->get_balance_based_program_category_account($res->category,$category,$dppa,$year);
+                $sp2dx = $tr->get_total_based_program_category_acc($res->category,$category,$dppa,$month,$year,0);
+                $progressx = $tr->get_total_based_program_category_acc($res->category,$category,$dppa,$month,$year,1);
+                $restx = $tr->get_total_based_program_category_acc($res->category,$category,$dppa,$month,$year,3);  
+           
+//            $pagux = $bl->get_balance_based_program_category_account($res->category,$category,$dppa,$year);
+//            $sp2dx = $tr->get_total_based_program_category_acc($res->category,$category,$dppa,$month,$year,0);
+//            $progressx = $tr->get_total_based_program_category_acc($res->category,$category,$dppa,$month,$year,1);
+//            $restx = $tr->get_total_based_program_category_acc($res->category,$category,$dppa,$month,$year,3);  
               
             ?>
               
@@ -196,6 +203,8 @@ BULAN : <?php echo strtoupper(get_month($month)).'  '.$year; ?> </h1>
             </tr>    
                 
             <?php get_top_procurement($res->category,$category,$dppa,$month,$year);
+                
+              }
           }
         }
     }
@@ -309,7 +318,7 @@ BULAN : <?php echo strtoupper(get_month($month)).'  '.$year; ?> </h1>
 				<td> <?php echo @floatval($restx/$pagux*100); ?> </td>		 
             </tr>
             
-            <?php   get_kode_belanja($res->id,$dppa_id,$month,$year);
+            <?php  get_kode_belanja($res->id,$dppa_id,$month,$year);
         }
     }
     
@@ -330,18 +339,19 @@ BULAN : <?php echo strtoupper(get_month($month)).'  '.$year; ?> </h1>
 		}
 	</style>
 
+<!--
 	<table width="100%" class="xx">
 		<tr>
 			<td colspan="2" align="center"><b><br> PEMATANG SIANTAR,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <?php echo strtoupper(get_month($month)).'  '.$year; ?> <br>MENGETAHUI :</b><br>&nbsp;<br><br></td>
+            <?php //echo strtoupper(get_month($month)).'  '.$year; ?> <br>MENGETAHUI :</b><br>&nbsp;<br><br></td>
 			</tr><tr>
 			<td valign="top" width="50%" align="center">
 				 
 				Kepala Bagian Administrasi Pembangunan Kasubbag Evaluasi dan Pelaporan <br>	
 				Sekretariat Daerah Kota Pematangsiantar Sekretariat Daerah Kota Pematangsiantar<br><br><br><br><br><br><br>
 
-				<?php echo $bendahara; ?> <br>
-				NIP : <?php echo $bendahara_nip; ?>
+				<?php //echo $bendahara; ?> <br>
+				NIP : <?php //echo $bendahara_nip; ?>
 
 			
  
@@ -353,11 +363,12 @@ BULAN : <?php echo strtoupper(get_month($month)).'  '.$year; ?> </h1>
 				Sekretariat Daerah Kota Pematangsiantar<br><br><br><br><br><br><br>
 
 
-				<?php echo $kadis; ?> <br/>
-				NIP : <?php echo $kadis_nip; ?>
+				<?php //echo $kadis; ?> <br/>
+				NIP : <?php //echo $kadis_nip; ?>
 			</td>
 		</tr>
 	</table>
+-->
 
 </body>
 </html>

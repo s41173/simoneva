@@ -28,7 +28,7 @@
     <div class="form-group">
       <label for="middle-name" class="control-label col-md-3 col-sm-3 col-xs-12"> Kode </label>
       <div class="col-md-3 col-sm-3 col-xs-12">
-        <input id="tprefix" class="form-control col-md-2 col-xs-12" type="text" name="tprefix" required readonly> 
+        <input id="tprefix" class="form-control col-md-2 col-xs-12" type="text" name="tprefix" required> 
       </div>
       <div class="col-md-3 col-sm-3 col-xs-12">
         <input id="tcode" class="form-control col-md-2 col-xs-12" type="text" name="tcode" required>

@@ -41,10 +41,18 @@ class Admin_lib {
 
     function get_id($username)
     {
-        $this->ci->db->select('id, username');
+        $this->ci->db->select('id, username,dppa');
         $this->ci->db->where('username', $username);
         $val = $this->ci->db->get($this->tableName)->row();
         return $val->id;
+    }
+    
+    function get_dppa($username)
+    {
+        $this->ci->db->select('id, username,dppa');
+        $this->ci->db->where('username', $username);
+        $val = $this->ci->db->get($this->tableName)->row();
+        return $val->dppa;
     }
 
     function get_username($id)

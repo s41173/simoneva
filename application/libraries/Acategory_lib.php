@@ -137,7 +137,8 @@ class Acategory_lib extends Main_Model {
         $this->db->select('id, code, name');
         $this->db->where('deleted', NULL);
         $this->db->order_by('name', 'asc');
-        $this->db->where_not_in('id', $id);
+//        $this->db->where_not_in('id', $id);
+        $this->db->where('dppa_id', $id);
         $val = $this->db->get($this->tableName)->result();
         $data['options'][0] = 'Top';
         foreach($val as $row){ $data['options'][$row->id] = ucfirst($row->name); }
@@ -180,11 +181,12 @@ class Acategory_lib extends Main_Model {
        return $this->db->get($this->tableName);
     }
     
-    function get_child_category($parent)
+    function get_child_category($dppa,$parent)
     {
        $this->db->select($this->field);
        $this->db->where('deleted', NULL);
        $this->db->where('parent_id', $parent);
+       $this->db->where('dppa_id', $dppa);
        $this->db->order_by('orders', 'asc');
        return $this->db->get($this->tableName);
     }

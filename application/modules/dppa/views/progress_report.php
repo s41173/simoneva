@@ -110,7 +110,7 @@ BULAN : <?php echo strtoupper(get_month($month)).'  '.$year; ?> </h1>
 			<tr> 
 				<th rowspan="2">RENC (%)</th>
 				<th rowspan="2">REAL (%)</th>
-				<th rowspan="2">SID BULAN LALU (Rp)</th>
+				<th rowspan="2">SD BULAN LALU (Rp)</th>
 				<th colspan="2">BULAN INI</th>
 				<th colspan="2">S/D BULAN INI</th>
 			</tr>
@@ -150,14 +150,14 @@ BULAN : <?php echo strtoupper(get_month($month)).'  '.$year; ?> </h1>
     <td> <?php echo idr_format($transaction_amount); ?> </td> <!-- jumlah SP2D -->
     <td> <?php echo idr_format($pagu-$transaction_amount); ?> </td> <!-- Sisa Dana DPA -->
     <td>100</td>
-    <td> <?php echo $transaction_amount/$pagu*100; ?> </td>
+    <td> <?php echo number_format(@floatval($transaction_amount/$pagu*100),1); ?> </td>
     <td> <?php echo idr_format($previous_progress); ?> </td> <!-- Opening Saldo -->
     <td> <?php echo idr_format($now_progress); ?> </td> <!-- Progress Bulan Ini -->
-    <td> <?php echo $now_progress/$pagu*100; ?> </td>
+    <td> <?php echo number_format(@floatval($now_progress/$pagu*100),1); ?> </td>
     <td> <?php echo idr_format($total_progress); ?> </td>
-    <td> <?php echo $total_progress/$pagu*100; ?> </td>
+    <td> <?php echo number_format(@floatval($total_progress/$pagu*100),1); ?> </td>
     <td> <?php echo idr_format($rest_balance); ?> </td>
-    <td> <?php echo $rest_balance/$pagu*100; ?> </td>
+    <td> <?php echo number_format(@floatval($rest_balance/$pagu*100),1); ?> </td>
 </tr>   
 
 <!--belanja tidak langsung-->
@@ -171,14 +171,14 @@ BULAN : <?php echo strtoupper(get_month($month)).'  '.$year; ?> </h1>
     <td> <?php echo idr_format($transaction_amount_1); ?> </td> <!-- jumlah SP2D -->
     <td> <?php echo idr_format($pagu_1-$transaction_amount_1); ?> </td> <!-- Sisa Dana DPA -->
     <td>100</td>
-    <td> <?php echo @floatval($transaction_amount_1/$pagu_1*100); ?> </td>
+    <td> <?php echo number_format(@floatval($transaction_amount_1/$pagu_1*100),1); ?> </td>
     <td> <?php echo idr_format($previous_progress_1); ?> </td> <!-- Opening Saldo -->
     <td> <?php echo idr_format($now_progress_1); ?> </td> <!-- Progress Bulan Ini -->
-    <td> <?php echo @floatval($now_progress_1/$pagu_1*100); ?> </td>
+    <td> <?php echo number_format(@floatval($now_progress_1/$pagu_1*100),1); ?> </td>
     <td> <?php echo idr_format($total_progress_1); ?> </td>
-    <td> <?php echo @floatval($total_progress_1/$pagu_1*100); ?> </td>
+    <td> <?php echo number_format(@floatval($total_progress_1/$pagu_1*100),1); ?> </td>
     <td> <?php echo idr_format($rest_balance_1); ?> </td>
-    <td> <?php echo @floatval($rest_balance_1/$pagu_1*100); ?> </td>
+    <td> <?php echo number_format(@floatval($rest_balance_1/$pagu_1*100),1); ?> </td>
 </tr>            
             
 <?php
@@ -197,11 +197,11 @@ BULAN : <?php echo strtoupper(get_month($month)).'  '.$year; ?> </h1>
         {
            $pagu = $bl->get_account_category_balance($dppa_id,$year,$res->category);
            $sp2d = $tr->get_total_monthly_category_balance($dppa_id,$res->category,$month,$year,0);
-           $prev = $tr->get_total_monthly_category_balance($dppa_id,$res->category,$month,$year,2);
+           $prev = $tr->get_total_monthly_category_previous_balance($dppa_id,$res->category,$month,$year);      
            $prog = $tr->get_total_monthly_category_balance($dppa_id,$res->category,$month,$year,1);
             
-           echo $rpt->table($res->category, $acc->get_belanja_type($res->category), $pagu,$sp2d,$prev,$prog,'kategori-belanja');
-           $rpt->get_trans_parent_acc($res->category,$dppa_id,$month,$year);
+ echo $rpt->table($res->category, $acc->get_belanja_type($res->category), $pagu,$sp2d,$prev,$prog,'kategori-belanja');
+          $rpt->get_trans_parent_acc($res->category,$dppa_id,$month,$year);
         }
     }
 
@@ -218,14 +218,14 @@ BULAN : <?php echo strtoupper(get_month($month)).'  '.$year; ?> </h1>
     <td> <?php echo idr_format($transaction_amount_2); ?> </td> <!-- jumlah SP2D -->
     <td> <?php echo idr_format($pagu_2-$transaction_amount_2); ?> </td> <!-- Sisa Dana DPA -->
     <td>100</td>
-    <td> <?php echo @floatval($transaction_amount_2/$pagu_2*100); ?> </td>
+    <td> <?php echo number_format(@floatval($transaction_amount_2/$pagu_2*100),1); ?> </td>
     <td> <?php echo idr_format($previous_progress_2); ?> </td> <!-- Opening Saldo -->
     <td> <?php echo idr_format($now_progress_2); ?> </td> <!-- Progress Bulan Ini -->
-    <td> <?php echo @floatval($now_progress_2/$pagu_2*100); ?> </td>
+    <td> <?php echo number_format(@floatval($now_progress_2/$pagu_2*100),1); ?> </td>
     <td> <?php echo idr_format($total_progress_2); ?> </td>
-    <td> <?php echo @floatval($total_progress_2/$pagu_2*100); ?> </td>
+    <td> <?php echo number_format(@floatval($total_progress_2/$pagu_2*100),1); ?> </td>
     <td> <?php echo idr_format($rest_balance_2); ?> </td>
-    <td> <?php echo @floatval($rest_balance_2/$pagu_2*100); ?> </td>
+    <td> <?php echo number_format(@floatval($rest_balance_2/$pagu_2*100),1); ?> </td>
 </tr>  
             
 <?php
@@ -261,10 +261,11 @@ BULAN : <?php echo strtoupper(get_month($month)).'  '.$year; ?> </h1>
 		}
 	</style>
 
+<!--
 	<table width="100%" class="xx">
 		<tr>
 			<td colspan="2" align="center"><b><br> PEMATANG SIANTAR,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
-            <?php echo strtoupper(get_month($month)).'  '.$year; ?>
+            <?php //echo strtoupper(get_month($month)).'  '.$year; ?>
             <br>MENGETAHUI :</b><br>&nbsp;<br><br></td>
 			</tr><tr>
 			<td valign="top" width="50%" align="center">
@@ -272,21 +273,15 @@ BULAN : <?php echo strtoupper(get_month($month)).'  '.$year; ?> </h1>
 				Kepala Bagian Administrasi Pembangunan Kasubbag Evaluasi dan Pelaporan <br>	
 				Sekretariat Daerah Kota Pematangsiantar Sekretariat Daerah Kota Pematangsiantar<br><br><br><br><br><br><br>
 
-				<?php echo $bendahara; ?> <br>
-				NIP : <?php echo $bendahara_nip; ?>
-
 			</td>
 			<td valign="top" width="50%" align="center">
 				
 				Kasubbag Evaluasi dan Pelaporan<br>
 				Sekretariat Daerah Kota Pematangsiantar<br><br><br><br><br><br><br>
-
-
-				<?php echo $kadis; ?> <br/>
-				NIP : <?php echo $kadis_nip; ?>
 			</td>
 		</tr>
 	</table>
+-->
 
 </body>
 </html>

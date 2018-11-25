@@ -70,7 +70,6 @@ var url2 = "<?php echo $graph2;?>";
         
             </div>
         
-        
             <div class="ixcon">
                 <a href="<?php echo base_url().'index.php/acategory/';?>">
                 <img alt="setting" src="<?php echo base_url().'images/service.png';?>">

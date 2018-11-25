@@ -66,9 +66,10 @@ class Balance_model extends Custom_Model
         return $this->db->get(); 
     }
     
-    function total_child($year)
+    function total_child($year,$dppa)
     {
         $this->db->select_sum('amount');
+        $this->db->where('dppa_id', $dppa);
         $this->db->where('year', $year);
         $this->db->where('priority', 0);
         $val = $this->db->get($this->tableName)->row_array();
@@ -84,10 +85,22 @@ class Balance_model extends Custom_Model
         return $val['amount'];
     }
     
-    function valid_balance($account,$year)
+    function valid_balance($account,$year,$category)
     {
         $this->db->where('account_id', $account);
         $this->db->where('year', $year);
+        $this->db->where('category_id', $category);
+        $query = $this->db->get($this->tableName)->num_rows();
+
+        if($query > 0){ return FALSE; }
+        else{ return TRUE; }
+    }
+    
+    function valid_priority($year,$dppa)
+    {
+        $this->db->where('dppa_id', $dppa);
+        $this->db->where('year', $year);
+        $this->db->where('priority', 1);
         $query = $this->db->get($this->tableName)->num_rows();
 
         if($query > 0){ return FALSE; }

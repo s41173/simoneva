@@ -37,6 +37,7 @@ class Dppa extends MX_Controller
     
     public function getdatatable($search=null)
     {
+        $this->dppa->cek_user_dppa($this->session->userdata('username'));
         if(!$search){ $result = $this->Dppa_model->get_last($this->modul['limit'])->result(); }
         
         if ($result){
@@ -317,7 +318,7 @@ class Dppa extends MX_Controller
 	$data['link'] = array('link_back' => anchor('dppa/','<span>back</span>', array('class' => 'back')));
 
 	// Form validation
-        $this->form_validation->set_rules('tcode', 'Dppa Code', 'required|callback_validation_code');
+//        $this->form_validation->set_rules('tcode', 'Dppa Code', 'required|callback_validation_code');
         $this->form_validation->set_rules('tname', 'Name', 'required|max_length[100]|callback_validation_dppa');
         $this->form_validation->set_rules('cparent', 'Parent Dppa', 'required');
 
@@ -381,7 +382,7 @@ class Dppa extends MX_Controller
     
     function report()
     {
-        $this->acl->otentikasi2($this->title);
+//        $this->acl->otentikasi2($this->title);
         $data['title'] = $this->properti['name'].' | Report '.ucwords($this->modul['title']);
 
         $data['rundate'] = tglin(date('Y-m-d'));

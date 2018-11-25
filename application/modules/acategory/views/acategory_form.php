@@ -66,9 +66,9 @@ action="<?php echo $form_action; ?>" enctype="multipart/form-data">
        <div class="col-md-6 col-sm-6 col-xs-12">
            
            <select name="ctype" id="ctype" class="form-control col-md-7 col-xs-12" style="width:100%;">
-               <option value="1"> BIAYA LANGSUNG </option>
-               <option value="2"> BIAYA TIDAK LANGSUNG </option>
-               <option value="3"> PEMBIAYAAN DAERAH </option>
+       <option value="1"> BIAYA TIDAK LANGSUNG </option>
+       <option value="2"> BIAYA LANGSUNG </option>
+       <option value="3"> PEMBIAYAAN DAERAH </option>
            </select>
            
        </div>

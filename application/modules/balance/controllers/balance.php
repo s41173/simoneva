@@ -89,7 +89,7 @@ class Balance extends MX_Controller
 	// ---------------------------------------- //
         
         $data['account'] = $this->account->combo_child();
-        $data['category'] = $this->category->combo_child_based_dppa($this->session->userdata('dppa'));
+        $data['category'] = $this->category->combo_child_based_dppa($dppa);
  
         $config['first_tag_open'] = $config['last_tag_open']= $config['next_tag_open']= $config['prev_tag_open'] = $config['num_tag_open'] = '<li>';
         $config['first_tag_close'] = $config['last_tag_close']= $config['next_tag_close']= $config['prev_tag_close'] = $config['num_tag_close'] = '</li>';
@@ -236,8 +236,8 @@ class Balance extends MX_Controller
         if ($this->input->post('type')=='priority')
         {
            $this->form_validation->set_rules('csource', 'Sumber Anggaran', 'required'); 
-           $this->form_validation->set_rules('tamount', 'Nilai Anggaran', 'required|numeric|callback_valid_child_balance'); 
-           $this->form_validation->set_rules('tyear', 'Tahun Anggaran', 'required|numeric|callback_valid_priority'); 
+           $this->form_validation->set_rules('tamount', 'Nilai Anggaran', 'required|numeric|callback_valid_child_balance['.$dppa.']'); 
+           $this->form_validation->set_rules('tyear', 'Tahun Anggaran', 'required|numeric|callback_valid_priority['.$dppa.']'); 
            
            if ($this->form_validation->run($this) == TRUE)
            {
@@ -324,9 +324,9 @@ class Balance extends MX_Controller
         else { return TRUE; }
     }
     
-    public function valid_priority($year)
+    public function valid_priority($year,$dppa)
     {
-        if ($this->Balance_model->valid('year',$year) == FALSE)
+        if ($this->Balance_model->valid_priority($year,$dppa) == FALSE)
         {
             $this->form_validation->set_message('valid_priority', "This $this->title priority balance is already registered.!");
             return FALSE;
@@ -334,10 +334,10 @@ class Balance extends MX_Controller
         else{ return TRUE; } 
     }
     
-    public function valid_amount_balance($amount)
+    public function valid_amount_balance($amount,$dppa=0)
     {
         $priority_balance = $this->Balance_model->total_priority($this->input->post('tyear'));
-        $child_balance = $this->Balance_model->total_child($this->input->post('tyear'));
+        $child_balance = $this->Balance_model->total_child($this->input->post('tyear'),$dppa);
         
         if ($amount+$child_balance > $priority_balance){ 
            $this->form_validation->set_message('valid_amount_balance', "Invalid Child Balance..!");
@@ -347,9 +347,9 @@ class Balance extends MX_Controller
     }
     
     // validasi add priority balance tidak boleh < child balance
-    public function valid_child_balance($amount)
+    public function valid_child_balance($amount,$dppa)
     {
-        $p_balance = $this->Balance_model->total_child($this->input->post('tyear'));
+        $p_balance = $this->Balance_model->total_child($this->input->post('tyear'),$dppa);
         if ($p_balance > $amount){ 
            $this->form_validation->set_message('valid_child_balance', "Invalid Balance..!");
            return FALSE; 
@@ -360,7 +360,8 @@ class Balance extends MX_Controller
 
     public function valid_balance($account,$year)
     {
-        if ($this->Balance_model->valid_balance($account,$year) == FALSE)
+        $category = $this->input->post('ccategory');
+        if ($this->Balance_model->valid_balance($account,$year,$category) == FALSE)
         {
             $this->form_validation->set_message('valid_balance', "This account $this->title is already registered.!");
             return FALSE;

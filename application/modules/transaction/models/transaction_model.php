@@ -118,6 +118,15 @@ class Transaction_model extends Custom_Model
         $this->db->delete($this->tableName);
     }
     
+    function valids_period($months,$year)
+    {   
+        if ( intval($this->period->month) != intval($months) || intval($this->period->year) != intval($year) )
+        {
+            return FALSE;
+        }
+        else {  return TRUE; }
+    }
+    
 }
 
 ?>

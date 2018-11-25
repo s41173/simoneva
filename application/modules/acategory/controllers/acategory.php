@@ -225,7 +225,7 @@ class Acategory extends MX_Controller
 
 	// Form validation
         $this->form_validation->set_rules('tcode', 'Kode Rekening', 'required|callback_valid_code');
-        $this->form_validation->set_rules('tname', 'Nama Rekening', 'required|callback_valid_acategory');
+        $this->form_validation->set_rules('tname', 'Nama Rekening', 'required|callback_valid_acategory['.$dppa.']');
         $this->form_validation->set_rules('tdesc', 'Keterangan', '');
         $this->form_validation->set_rules('cparent', 'Parent', 'numeric');
         $this->form_validation->set_rules('torder', 'Order', 'numeric|required');
@@ -234,20 +234,20 @@ class Acategory extends MX_Controller
         
         if ($this->form_validation->run($this) == TRUE)
         {
-            if ($this->input->post('cparent')=='0'){ $type = $this->input->post('ctype'); }
+            if (!$this->input->post('cparent')){ $type = $this->input->post('ctype'); }
             else{ $type = $this->acategory->get_type($this->input->post('cparent')); }
             
             $acategory = array('name' => strtolower($this->input->post('tname')),
-                             'code' => strtolower($this->input->post('tskpdcode').$this->input->post('tcode')),
+                             'code' => strtolower($this->input->post('tskpdcode').' '.$this->input->post('tcode')),
                              'parent_id' => $this->input->post('cparent'),
                              'type' => $type,
                              'dppa_id' => $dppa,
                              'orders' => $this->input->post('torder'),
                              'description' => $this->input->post('tdesc'),
                              'created' => date('Y-m-d H:i:s'));
-
+            
             $this->Acategory_model->add($acategory);
-//            $this->session->set_flashdata('message', "One $this->title data successfully saved!");
+            $this->session->set_flashdata('message', "One $this->title data successfully saved!");
             
             echo 'true|Data successfully saved..!';
         }
@@ -300,9 +300,9 @@ class Acategory extends MX_Controller
         else { return TRUE; }
     }
 
-    public function valid_acategory($name)
+    public function valid_acategory($name,$dppa)
     {
-        if ($this->Acategory_model->valid('name',$name) == FALSE)
+        if ($this->Acategory_model->valid_category($name,$dppa) == FALSE)
         {
             $this->form_validation->set_message('valid_acategory', "This $this->title is already registered.!");
             return FALSE;
@@ -310,10 +310,10 @@ class Acategory extends MX_Controller
         else{ return TRUE; }
     }
 
-    function validation_acategory($name)
+    function validation_acategory($name,$dppa)
     {
 	$id = $this->session->userdata('langid');
-	if ($this->Acategory_model->validating('name',$name,$id) == FALSE)
+	if ($this->Acategory_model->validating_category($name,$dppa,$id) == FALSE)
         {
             $this->form_validation->set_message('validation_acategory', 'This acategory is already registered!');
             return FALSE;
@@ -333,8 +333,9 @@ class Acategory extends MX_Controller
 	$data['link'] = array('link_back' => anchor('acategory/','<span>back</span>', array('class' => 'back')));
 
 	// Form validation
-        $this->form_validation->set_rules('tcode', 'Kode Rekening', 'required|callback_validation_code');
-        $this->form_validation->set_rules('tname', 'Nama Rekening', 'required|callback_validation_acategory');        
+//        $this->form_validation->set_rules('tcode', 'Kode Rekening', 'required|callback_validation_code');
+        $this->form_validation->set_rules('tcode', 'Kode Rekening', 'required');
+        $this->form_validation->set_rules('tname', 'Nama Rekening', 'required|callback_validation_acategory['.$dppa.']');        
         $this->form_validation->set_rules('tdesc', 'Keterangan', '');
         $this->form_validation->set_rules('cparent', 'Parent', 'numeric');
         $this->form_validation->set_rules('torder', 'Order', 'numeric|required');

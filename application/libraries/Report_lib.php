@@ -22,7 +22,7 @@ class Report_lib extends Main_Model {
         {
            $pagu = $this->balance->get_budet($dppa_id,'null',$res->id,$year);
            $sp2d = $this->transaction->get_total_monthly($dppa_id,'null',$res->id,$month,$year,0);
-           $prev = $this->transaction->get_total_monthly($dppa_id,'null',$res->id,$month,$year,2);
+           $prev = $this->transaction->get_previous_tot($dppa_id,null,$res->id,$month,$year);
            $prog = $this->transaction->get_total_monthly($dppa_id,'null',$res->id,$month,$year,1);
 
            echo $this->table($res->code, ucfirst($res->name), $pagu,$sp2d,$prev,$prog);
@@ -37,7 +37,8 @@ class Report_lib extends Main_Model {
         {
            $pagu = $this->balance->get_account_parent_balance($dppa_id,$year,$res->id);
            $sp2d = $this->transaction->get_total_monthly_parent_balance($dppa_id,$res->id,$month,$year,0);
-           $prev = $this->transaction->get_total_monthly_parent_balance($dppa_id,$res->id,$month,$year,2);
+//           $prev = $this->transaction->get_total_monthly_parent_balance($dppa_id,$res->id,$month,$year,2);
+           $prev = $this->transaction->get_previous_total_monthly_parent_balance($dppa_id,null,$res->id,$month,$year);
            $prog = $this->transaction->get_total_monthly_parent_balance($dppa_id,$res->id,$month,$year,1);
             
            echo $this->table($res->code, ucfirst($res->name), $pagu,$sp2d,$prev,$prog,'top-rekening');
@@ -50,7 +51,7 @@ class Report_lib extends Main_Model {
     
     function get_trans_based_jenis_kegiatan($dppa,$program,$month,$year)
     {    
-       $kegiatan = $this->category->get_child_category($program)->result();
+       $kegiatan = $this->category->get_child_category($dppa,$program)->result();
        if ($kegiatan)
        {
            foreach ($kegiatan as $res)
@@ -139,14 +140,14 @@ $results = $this->account->get_account_category_program_parent($acategory,$categ
             <td> ".idr_format($sp2d)." </td>
             <td> ".idr_format($pagu-$sp2d)." </td>
             <td>100</td>
-            <td> ".@floatval($sp2d/$pagu*100)." </td>
+            <td> ".number_format(@floatval($sp2d/$pagu*100),1)." </td>
             <td> ".idr_format($prev)."</td>
             <td> ".idr_format($progress)."</td>
-            <td> ".@floatval($progress/$pagu*100)."</td>
+            <td> ".number_format(@floatval($progress/$pagu*100),1)."</td>
             <td> ".idr_format($tot_progress)."</td>
-            <td> ".@floatval($tot_progress/$pagu*100)."</td>
+            <td> ".number_format(@floatval($tot_progress/$pagu*100),1)."</td>
             <td> ".idr_format($rest)."</td>
-            <td> ".@floatval($rest/$pagu*100)."</td>
+            <td> ".number_format(@floatval($rest/$pagu*100),1)."</td>
            </tr>";
     }
     

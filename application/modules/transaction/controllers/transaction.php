@@ -26,6 +26,7 @@ class Transaction extends MX_Controller
     function index()
     {
        $this->get_last(); 
+//        echo $this->transaction->get_previous_tot(6,1213,2,2,2018);
     }
     
     public function getdatatable($search=null,$dppa='null',$cat='null',$month='null',$year='null')
@@ -205,7 +206,8 @@ class Transaction extends MX_Controller
     {
         $transaction = $this->Transaction_model->get_by_id($uid)->row();
         
-        if ($this->acl->otentikasi_admin($this->title,'ajax') == TRUE && $this->valid_period($transaction->month, $transaction->year) == TRUE){
+//        if ($this->acl->otentikasi_admin($this->title,'ajax') == TRUE && $this->valid_period($transaction->month, $transaction->year) == TRUE){
+        if ( $this->valid_period($transaction->month, $transaction->year) == TRUE){
         if ($type == 'soft'){
            $this->Transaction_model->delete($uid);
            $this->session->set_flashdata('message', "1 $this->title successfully removed..!");
@@ -233,7 +235,7 @@ class Transaction extends MX_Controller
     
     function add_process($dppa=null)
     {
-        if ($this->acl->otentikasi2($this->title,'ajax') == TRUE){
+//        if ($this->acl->otentikasi2($this->title,'ajax') == TRUE){
 
         $data['title'] = $this->properti['name'].' | Administrator  '.ucwords($this->modul['title']);
         $data['h2title'] = $this->modul['title'];
@@ -245,7 +247,7 @@ class Transaction extends MX_Controller
         $this->form_validation->set_rules('ccategory', 'Program Anggaran', 'required|callback_valid_transaction'); 
         $this->form_validation->set_rules('caccount', 'Rekening Anggaran', 'required'); 
         $this->form_validation->set_rules('tamount', 'Nilai Anggaran', 'required|numeric|callback_valid_amount_transaction['.$this->input->post('tbudget').']'); 
-        $this->form_validation->set_rules('cmonth', 'Bulan Anggaran', 'required|numeric|callback_valid_period['.$this->input->post('tyear').']'); 
+//        $this->form_validation->set_rules('cmonth', 'Bulan Anggaran', 'required|numeric|callback_valid_period['.$this->input->post('tyear').']'); 
         $this->form_validation->set_rules('tyear', 'Tahun Anggaran', 'required|numeric'); 
         $this->form_validation->set_rules('tprogress', 'Nilai Progress', 'required|numeric|callback_valid_progress['.$this->input->post('tamount').']'); 
         $this->form_validation->set_rules('topening', 'Saldo Awal', 'required|numeric'); 
@@ -271,7 +273,7 @@ class Transaction extends MX_Controller
         else { echo 'error|'.validation_errors();  }
 
         
-        }else { echo "error|Sorry, you do not have the right to edit $this->title component..!"; }
+//        }else { echo "error|Sorry, you do not have the right to edit $this->title component..!"; }
 
     }
 
@@ -345,7 +347,7 @@ class Transaction extends MX_Controller
     
     public function valid_period($month,$year)
     {
-        if ($this->Transaction_model->valid_period($month,$year) == FALSE)
+        if ($this->Transaction_model->valids_period($month,$year) == FALSE)
         {
            $this->form_validation->set_message('valid_period', "Invalid Period Transaction..!");
            return FALSE; 
@@ -455,11 +457,12 @@ class Transaction extends MX_Controller
         $year = $this->period->get('year');
         
         $prev = $month-1;
-        if ($prev != 0)
+        if ($prev != 0 && $this->session->userdata('dppa') != null)
         {
-            $previous = $this->Transaction_model->search($dppa,'null',$prev,$year)->result();
+            $previous = $this->Transaction_model->search($dppa,'null',$prev,$year)->result();           
+            
             $this->db->trans_start();
-            $this->Transaction_model->cleaning($dppa,$month,$year);
+            $this->Transaction_model->cleaning($dppa,$month,$year); // clean transaksi bulan ini
             foreach ($previous as $res)
             {
                $trans = array('category_id' => $res->category_id, 'dppa_id' => $dppa,
@@ -471,10 +474,10 @@ class Transaction extends MX_Controller
             $this->db->trans_complete();
             
             if ($this->db->trans_status() === FALSE){ $this->db->trans_rollback(); $this->session->set_flashdata('message', "Transaction Error..!!");    }
-            else { $this->db->trans_commit(); $this->session->set_flashdata('message', "Transaction Successfull..!!");    }
+            else { $this->db->trans_commit(); $this->session->set_flashdata('message', "Transaction Successfull..!!"); redirect($this->title.'/get_dppa/'.$dppa); } 
         }
         else{ $this->session->set_flashdata('message', "Generate Data Can't Realize..!!");   }        
-        redirect($this->title.'/get_dppa/'.$dppa); 
+
     }
 
 }

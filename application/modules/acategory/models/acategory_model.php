@@ -64,6 +64,25 @@ class Acategory_model extends Custom_Model
         return $this->db->get(); 
     }
     
+    function valid_category($name,$dppa)
+    {
+        $this->db->where('name', $name);
+        $this->db->where('dppa_id', $dppa);
+        $query = $this->db->get($this->tableName)->num_rows();
+
+        if($query > 0){ return FALSE; }else{ return TRUE; }
+    }
+    
+    function validating_category($name,$dppa,$id)
+    {
+        $this->db->where('name', $name);
+        $this->db->where('dppa_id', $dppa);
+        $this->db->where_not_in('id', $id);
+        $query = $this->db->get($this->tableName)->num_rows();
+
+        if($query > 0){ return FALSE; }else{ return TRUE; }
+    }
+    
 }
 
 ?>

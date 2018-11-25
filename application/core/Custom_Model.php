@@ -163,15 +163,6 @@ class Custom_Model extends CI_Model {
         return $this->db->get($this->tableName);
     }
     
-    function valid_period($months,$year)
-    {   
-        if ( intval($this->period->month) != intval($months) || intval($this->period->year) != intval($year) )
-        {
-            return FALSE;
-        }
-        else {  return TRUE; }
-    }
-    
     function valid($field,$val)
     {
         $this->db->where($field, $val);

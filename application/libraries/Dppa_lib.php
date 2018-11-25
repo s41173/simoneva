@@ -108,6 +108,14 @@ class Dppa_lib extends Main_Model {
        } 
        else{ return FALSE; }
     }
+    
+    function cek_user_dppa($username)
+    {
+        $admin = new Admin_lib();
+        if ($admin->get_dppa($username) == 0){
+            $this->session->unset_userdata('dppa');
+        }
+    }
 
 }
 

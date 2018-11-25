@@ -34,7 +34,7 @@
        <div class="col-md-6 col-sm-6 col-xs-12">
            
            <?php $js = "class='select2_single form-control' id='cparent_update' tabindex='-1' style='width:100%;' "; 
-		        echo form_dropdown('cparent', $parent_update, isset($default['parent']) ? $default['parent'] : '', $js); ?>
+		        echo form_dropdown('cparent', $parent, isset($default['parent']) ? $default['parent'] : '', $js); ?>
        </div>
     </div>
      
